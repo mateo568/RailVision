@@ -1,0 +1,21 @@
+#map{
+    height: 90vh;
+    width: 90vh;
+    margin-left: 20px;
+}
+
+.card{
+   margin-top: 15px; 
+}
+
+.card-body .row{
+    margin-top: 10px;
+}
+
+#botonesForm{
+    margin-top: 15px;
+}
+
+#botonesForm .btn, #botonArray{
+    width: 90%;
+}

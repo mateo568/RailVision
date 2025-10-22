@@ -1,0 +1,115 @@
+<section>
+    <div class="row">
+        <div class="col">
+            <div class="mapa">
+        <div id="map"></div>
+    </div>
+        </div>
+        <div class="col">
+            <form [formGroup]="nuevoViaje" (submit)="submit()">
+                <div class="row">
+                    <div class="col">
+                        <label for="">Estacion partida</label>
+                        <select name="" id="" formControlName="estacionIda" class="form-select">
+                            <option value="" selected>Seleccionar...</option>
+                            <option value="">Cordoba</option>
+                            <option value="">Santa Maria</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="">Estacion llegada</label>
+                        <select name="" id="" formControlName="estacionVuelta" class="form-select">
+                            <option value="" selected>Seleccionar...</option>
+                            <option value="">Rio Cuarto</option>
+                            <option value="">San Francisco</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <label for="">Tren</label>
+                        <select name="" id="" formControlName="tren" class="form-select">
+                            <option value="" selected>Seleccionar...</option>
+                            <option value="">MC-1000</option>
+                            <option value="">SV-5000</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="">Fecha</label>
+                        <input type="date" class="form-control" formControlName="fecha">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <label for="">Hora salida</label>
+                        <input type="time" class="form-control" formControlName="horarioSalida">
+                    </div>
+                    <div class="col-6">
+                        <label for="">Hora llegada</label>
+                        <input type="time" class="form-control" formControlName="horarioLlegada">
+                    </div>
+                </div>
+
+                <div class="row" formArrayName="cargas">
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-header">
+                                Cargamento (Peso total: 0/20t - Vagones totales 0/6)
+                            </div>
+                            <div class="card-body">
+                                @for(carga of arrayCargas.controls; track $index){
+                                    <div class="row">
+                                        <div class="col-5">
+                                            <label for="">Tipo</label>
+                                            <select name="" id="" class="form-select" formControlName="tipo">
+                                                <option value="" selected>Seleccionar...</option>
+                                                <option value="">Mineria</option>
+                                                <option value="">Agricultura</option>
+                                                <option value="">General</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-5">
+                                            <label for="">Detalle</label>
+                                            <input type="text" class="form-control" formControlName="detalle">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-5">
+                                            <label for="">Cantidad vagones</label>
+                                            <input type="number" class="form-control" formControlName="cantVagones">
+                                        </div>
+                                        <div class="col-5">
+                                            <label for="">Peso (t)</label>
+                                            <input type="number" class="form-control" formControlName="peso">
+                                        </div>
+                                        <div class="col">
+                                            <button type="button" class="btn btn-danger" (click)="eliminarCarga($index)">X</button>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                }
+
+                                <div class="row">
+                                    <div class="col"></div>
+                                    <div class="col-2">
+                                        <button type="button" id="botonArray" 
+                                        class="btn btn-primary" (click)="agregarCarga()">Agregar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="botonesForm" class="row">
+                    <div class="col-2">
+                        <button class="btn btn-secondary" (click)="irMenuViajes()">Volver</button>
+                    </div>
+                    <div class="col-2">
+                        <button class="btn btn-success" type="submit">Crear</button>
+                    </div>
+                </div>
+            </form>
+        </div>   
+    </div>
+
+</section>

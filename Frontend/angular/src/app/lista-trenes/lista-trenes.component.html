@@ -1,0 +1,150 @@
+<div class="mb-5">
+    
+    <div class="row">
+        
+        <div class="col-1">
+            <label for="">Estado</label>
+            <select class="form-select">
+                <option selected></option>
+                <option value="1">DISPONIBLE</option>
+                <option value="2">OCUPADO</option>
+                <option value="3">INHABILITADO</option>
+            </select>
+        </div>
+
+        <div class="col-1">
+            <label for="">Estado</label>
+            <select class="form-select">
+                <option selected></option>
+                <option value="1">DISPONIBLE</option>
+                <option value="2">OCUPADO</option>
+                <option value="3">INHABILITADO</option>
+            </select>
+        </div>
+       
+        <div class="col"></div>
+       
+        <div id="botonCrear" class="col-1">
+           <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal">Crear</button>
+       </div>
+   </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Registrar nuevo tren</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col">
+                            <label for="">Capacidad maxima peso (t)</label>
+                            <input type="number" class="form-control" formControlName="capacidad">
+                        </div>
+                        <div class="col">
+                            <label for="">Cantidad maxima vagones</label>
+                            <input type="number" class="form-control" formControlName="cantVagones">
+                        </div>
+                    </div>
+                    <!-- <div class="row">
+                        <div class="col">
+                            <label for="">Tipo</label>
+                            <select name="" id="" formControlName="tipo" class="form-select">
+                                <option value="" selected>Seleccionar...</option>
+                                <option value="">Electrico</option>
+                                <option value="">Diesel</option>
+                            </select>
+                        </div>
+                    </div> -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary">Registrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row tabla">
+       <table class="table table-bordered">
+           <thead>
+               <tr>
+               <th scope="col">Numeracion</th>
+               <th scope="col">Ubicacion actual</th>
+               <th scope="col">Capacidad Total (t)</th>
+               <th scope="col">Cant. Vagones</th>
+               <th scope="col">Estado</th>
+               </tr>
+           </thead>
+           <tbody>
+               <tr>
+                   <td>MC-0001</td>
+                   <td>Cordoba</td>
+                   <td>500</td>
+                   <td>5</td>
+                   <td class="table-success">DISPONIBLE</td>
+               </tr>
+                <tr>
+                   <td>MC-0001</td>
+                   <td>Cordoba</td>
+                   <td>500</td>
+                   <td>5</td>
+                   <td class="table-success">DISPONIBLE</td>
+               </tr>
+                <tr>
+                   <td>MC-0001</td>
+                   <td>Cordoba</td>
+                   <td>500</td>
+                   <td>5</td>
+                   <td class="table-success">DISPONIBLE</td>
+               </tr>
+    
+               <tr>
+                   <td>SV-0001</td>
+                   <td>Viajando</td>
+                   <td>200</td>
+                   <td>3</td>
+                   <td class="table-primary">OCUPADO</td>
+               </tr>
+               <tr>
+                   <td>SV-0001</td>
+                   <td>Viajando</td>
+                   <td>200</td>
+                   <td>3</td>
+                   <td class="table-primary">OCUPADO</td>
+               </tr>
+               <tr>
+                   <td>SV-0001</td>
+                   <td>Viajando</td>
+                   <td>200</td>
+                   <td>3</td>
+                   <td class="table-primary">OCUPADO</td>
+               </tr>
+    
+               <tr>
+                   <td>GR-0001</td>
+                   <td>Rio Cuarto</td>
+                   <td>400</td>
+                   <td>6</td>
+                   <td class="table-danger">INHABILITADO</td>
+               </tr>
+               <tr>
+                   <td>GR-0001</td>
+                   <td>Rio Cuarto</td>
+                   <td>400</td>
+                   <td>6</td>
+                   <td class="table-danger">INHABILITADO</td>
+               </tr>
+               <tr>
+                   <td>GR-0001</td>
+                   <td>Rio Cuarto</td>
+                   <td>400</td>
+                   <td>6</td>
+                   <td class="table-danger">INHABILITADO</td>
+               </tr>
+           </tbody>
+       </table>
+    </div>
+
+</div>

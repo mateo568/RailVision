@@ -1,0 +1,38 @@
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <div class="row a">
+                <div class="col">
+                    <img src="https://www.shutterstock.com/image-vector/train-emblem-logo-icon-vector-260nw-2464421075.jpg" alt="">
+                </div>
+                <form [formGroup]="nuevoLogin" class="col align-self-center">
+                    <div class="dato">
+                        <label class="form-label" for="">Usuario</label>
+                        <input type="text" class="form-control" formControlName="usuario">
+                        @if (nuevoLogin.controls["usuario"]; as dato) {
+                            @if (dato.invalid) {
+                                @if (dato.errors?.['required']) {
+                                <span>El campo es requerido</span>
+                                }
+                            }
+                        }
+                    </div>
+
+                    <div class="dato">
+                        <label class="form-label" for="">Contraseña</label>
+                        <input type="password" class="form-control" formControlName="contra">
+                        @if (nuevoLogin.controls["contra"]; as dato) {
+                            @if (dato.invalid) {
+                                @if (dato.errors?.['required']) {
+                                <span>El campo es requerido</span>
+                                }
+                            }
+                        }
+                    </div>
+
+                    <button class="btn btn-secondary" (click)="login()">Ingresar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

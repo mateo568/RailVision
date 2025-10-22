@@ -1,0 +1,51 @@
+<div class="mb-1">
+    <div class="row">
+        <div class="col"></div>
+        <div id="form" class="col">
+            <form [formGroup]="nuevoEmpleado" (submit)="submit()">
+                <label for="">Nombre completo</label>
+                <input type="text" class="form-control" formControlName="nombre">
+
+                <label for="">Email</label>
+                <input type="text" class="form-control" formControlName="email">
+
+                <label for="">Telefono</label>
+                <input type="number" class="form-control" formControlName="telefono">
+
+                <div class="row">
+                    <div class="col">
+                        <label for="">Direccion</label>
+                        <input type="text" class="form-control" formControlName="direccion">
+                    </div>
+                    <div class="col">
+                        <label for="">Departamento</label>
+                        <input type="text" class="form-control" formControlName="departamento">
+                    </div>
+                </div>
+
+                <label for="">Con hijos</label>
+                <input type="checkbox" class="form-check-input form-control" formControlName="hijos">
+
+                <label for="">Obra social</label>
+                <input type="text" class="form-control" formControlName="obraSocial">
+                
+                <label for="">CBU/Alias</label>
+                <input type="text" class="form-control" formControlName="cbu">
+
+                <label for="">CUIL</label>
+                <input type="text" class="form-control" formControlName="cuil">
+
+                <div id="botonesForm" class="row">
+                    <div class="col"></div>
+                    <div class="col-3">
+                        <button type="button" class="btn btn-secondary boton" (click)="irListaEmpleados()">Volver</button>
+                    </div>
+                    <div class="col-3">
+                        <button class="btn btn-success boton" type="submit">Crear</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col"></div>
+    </div>
+</div>

@@ -1,0 +1,14 @@
+#map{
+    height: 90vh;
+    width: 90vh;
+    margin-left: 20px;
+}
+
+#botonLista, #botonForm{
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.accordion-item{
+    margin-top: 10px;
+}

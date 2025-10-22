@@ -1,0 +1,108 @@
+<div class="mb-5">
+
+    <div class="row">
+        <div id="divVolver" class="col-1">
+            <button id="botonVolver" class="btn btn-secondary" (click)="irMenuViajes()">Volver</button>
+        </div>
+        <div class="col-1">
+            <label for="">Tren</label>
+            <select class="form-select" aria-label="Default select example">
+                <option selected>Seleccionar...</option>
+                <option value="1">BXL-7000</option>
+                <option value="2">BST-1000</option>
+                <option value="3">BRR-2000</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- <table class="table table-bordered">
+        <thead>
+            <tr>
+            <th scope="col">Ruta</th>
+            <th scope="col">Horaio</th>
+            <th scope="col">Tren</th>
+            <th scope="col">Detalles</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="table-success">
+                <td colspan="4">EN CURSO</td>
+            </tr>
+            <tr>
+                <td>Cordoba - Santa Maria</td>
+                <td>15:40 - 17:00</td>
+                <td>BXL-7000</td>
+            </tr>
+
+            <tr class="table-primary">
+                <td colspan="4">PROGRAMADO</td>
+            </tr>
+            <tr>
+                <td>Cordoba - Colonia caroya</td>
+                <td>16:30 - 17:20</td>
+                <td>BST-1000</td>
+            </tr>
+
+            <tr class="table-light">
+                <td colspan="4">FINALIZADO</td>
+            </tr>
+            <tr>
+                <td>Rio Cuarto - Vicuña Mackena</td>
+                <td>15:30 - 16:15</td>
+                <td>BRR-2000</td>
+            </tr>
+        </tbody>
+    </table> -->
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+            <th scope="col">Ruta</th>
+            <th scope="col">Horaio</th>
+            <th scope="col">Tren</th>
+            <th scope="col">Estado</th>
+            <th scope="col">Detalles</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Cordoba - Santa Maria</td>
+                <td>15:40 - 17:00</td>
+                <td>BXL-7000</td>
+                <td class="table-success">EN CURSO</td>
+            </tr>
+            <tr>
+                <td>Cordoba - Santa Maria</td>
+                <td>15:40 - 17:00</td>
+                <td>BXL-7000</td>
+                <td class="table-success">EN CURSO</td>
+            </tr>
+
+            <tr>
+                <td>Cordoba - Colonia caroya</td>
+                <td>16:30 - 17:20</td>
+                <td>BST-1000</td>
+                <td class="table-primary">PROGRAMADO</td>
+            </tr>
+            <tr>
+                <td>Cordoba - Colonia caroya</td>
+                <td>16:30 - 17:20</td>
+                <td>BST-1000</td>
+                <td class="table-primary">PROGRAMADO</td>
+            </tr>
+
+            <tr>
+                <td>Rio Cuarto - Vicuña Mackena</td>
+                <td>15:30 - 16:15</td>
+                <td>BRR-2000</td>
+                <td class="table-light">FINALIZADO</td>
+            </tr>
+            <tr>
+                <td>Rio Cuarto - Vicuña Mackena</td>
+                <td>15:30 - 16:15</td>
+                <td>BRR-2000</td>
+                <td class="table-light">FINALIZADO</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

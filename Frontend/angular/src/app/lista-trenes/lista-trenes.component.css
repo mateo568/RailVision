@@ -1,0 +1,11 @@
+#botonCrear{
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    margin-right: 15px;
+}
+
+.tabla{
+  margin-top: 15px;
+  margin-right: 15px;
+}

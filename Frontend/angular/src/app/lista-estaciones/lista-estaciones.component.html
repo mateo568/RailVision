@@ -1,0 +1,110 @@
+<div class="mb-5 "> 
+    <div class="row">
+        <div class="col">
+            <div class="mapa">
+                <div id="map"></div>
+            </div>
+        </div>
+        <div class="col">
+            <div id="opciones" class="row">
+                <div id="crear" class="col-2">
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#ModalPostEstacion">Crear</button>
+                </div>
+                <div class="col-3">
+                    <label for="filtroEstado" class="form-label">Estado</label>
+                    <select name="" id="filtroEstado" class="form-select" [(ngModel)]="filtroEstado" (change)="filtrarDatos()">
+                        <option value=""></option>
+                        <option value="true">Activa</option>
+                        <option value="false">Desactivada</option>
+                    </select>
+                </div>
+    
+            </div>
+            <div class="row">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Localidad</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (estacion of listaFiltrada; track $index) {
+                            <tr>
+                                <td>{{estacion.nombre}}</td>
+                                <td>{{estacion.ciudad.nombre}}</td>
+                                @if (estacion.estado) {
+                                    <td><span class="badge text-bg-primary">Activa</span></td>
+                                } @else {
+                                    <td><span class="badge text-bg-danger">Desactivada</span></td>
+                                }
+                                <td><button class="btn" data-bs-toggle="modal" data-bs-target="#ModalPutEstacion" (click)="cargarModalEstacion(estacion)">...</button></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal registro estacion -->
+    <div class="modal fade" id="ModalPostEstacion" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Registrar nueva estación</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col">
+                            <label for="">Nombre</label>
+                            <input type="text" class="form-control">
+                        </div>
+                        <div class="col">
+                            <label for="">Localidad</label>
+                            <select class="form-select" name="" id="">
+                                @for (ciudad of listaCiudades; track $index) {
+                                    <option value="">{{ciudad.nombre}}</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary">Registrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal editar estacion -->
+    <div class="modal fade" id="ModalPutEstacion" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Modificar estación</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col">
+                            <label for="">Nombre</label>
+                            <input type="text" class="form-control" [(ngModel)]="modalEstacion.nombre">
+                        </div>
+                        <div class="col">
+                            <label class="form-check-label" for="estadoEstacion">Estado</label>
+                            <input id="estadoEstacion" type="checkbox" class="form-check-input d-block" [(ngModel)]="modalEstacion.estado">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="modificarEstacion()">Editar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

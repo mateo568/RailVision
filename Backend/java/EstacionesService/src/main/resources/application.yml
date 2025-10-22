@@ -1,0 +1,17 @@
+#spring.application.name=UbicacionesService
+
+spring:
+  datasource:
+    url: jdbc:postgresql://db.ryfweaoyhvlveicmrfzt.supabase.co:5432/postgres
+    username: postgres
+    password: Railvision2025
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+server:
+  port: 8081

@@ -1,0 +1,15 @@
+.container{
+    /* background-color: red; */
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+button, .dato{
+    margin-top: 20px;
+}
+
+span{
+    color: red;
+}

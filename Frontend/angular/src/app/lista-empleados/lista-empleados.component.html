@@ -1,0 +1,99 @@
+<div class="mb-3">
+    <div class="row">
+        <div class="col"></div>
+        <div id="crearEmpleado" class="col-1">
+            <button class="btn btn-success" (click)="irPostEmpleado()">Crear</button>
+        </div>
+        <hr>
+    </div>
+    <div class="row">
+        @for(nombre of listaNombres; track $index) {
+            <div class="col-3">
+                <div class="card">
+                    <div class="card-header">
+                        <b>{{nombre}}</b>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-2">
+                                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAABKVBMVEX///8AAADJ4P3679u81vmJgIz24r91bnibxPmjm6P04GbP5v9wfY2TiZPC3f/y8vLY2NghISFUYG/569JNSE7f39//9eFmX2e6z+qYkYWckEH65Wjs2WNlcYBDS1VaZXFbV1sfJCmDe4aMgG0tMjjMu57/6sYuKy9WUVjo6OgaGReyo4pBPUM1Mje1rZ9bVCZRSyJKSkqlpaXa6f62trZvb29IQjiWlpY4ODiMseF2hJW2y+XLy8tsbGzNxLQsKifc0sEhKjZ/ocygsslMYHoOEheRobaEhISknZDp1rXDu6tfWWFrZ14/OjFzaln46c5aUkZ1lL2Igndkf6EtOUgVGiE+R1KHlqqdr8Wtra2hlH0jIRy6q5GBdmSMjIxxbWNDVWw4NBibprS6WfYGAAAPKklEQVR4nO2dDVcauRrHRS3ogiKuAt57UbSIiOJeLQUEFKzFl2JbX1Zt627bvd//Q1yGPBmSSTKTjIMJPfzP6TkVhzE/8uT/5G3CxMQQ1fxeK4Zk1Unsnx8sD7M4geurPB2ht03d5ZbV9r4fPku1su6yS2m54xewp9aC7uJ7K/4MPkvnugE85TtEsWrbuhHcVbZLWlry1C5SaYtmNNtWs1DKwisJRQYqkJRGN8YaKmNKBnAjQml3gGhioMYXms3mwjYEaWnOB2EkVcKECd04Ti1/r9EtSSpGGcJerOIbvNWNRKnJ2mfEJ2Ekhe9gUO6PH7GGX5IC5BFGunCLVlw3GNYCrwu64Z/QDtQD3WSgJoevKAnIJ7QtVTca0gIHcEmST0QYgft81Q1nKZ4YNL1CKpIqLBVSshUoJlxCd9zXTWfpLebbVeDyJMSVaEDat2NULjlIE+4akzD2nwcoJISkqD/rLwOgVB9UhTDSMaQhHkAb9AsoJkTjjIT2pL//vBh1IYSGqHucCKliyzegmHDJDMJl1QQvTwg9N90DYcgV3SEQds2ow4VnOqkLYaTfnT/SDDhUQstN9afDoRJGNrSniqET6sabEBJCAWW64hZhqq/RIYws4fFUZ2vXayC10S0lYI2jWHJCGkpIzHii3kBXCBkpJOhrSyNAuMFbdEospZwRu7HR3eVc2kmZTrjB4cMxuLvU7Zc/VVja3RKuvplOuCUquLQSZhN23UsvpSWjCbFxXF/s7e1d3F4nhByEWtd/f9vZeV2BH4s2YCnUquoGdBDi6aO9JGjq+LbljldZ2Qznkb7BS9hs+h+P9tVgmhCGdCvJKaweZPviWoR3fdGe+j2MlX+NXt1FgBDxuifbaEJIhVO0enV5vHdbaRFT/8VW5XavbVUyQRi+RL+EpGjW+BAI0dJfMTnlVD9kf28fHx9/6P07brf7IdwXQZhHn8HWKBKSoDbbr0jI05hwTDgmHBOOCWlCWGrwTfiE3m8uIQwOK74JofNtLiF02lZ8E0LHtGQgYcEqEvS7Q8d+CcObcIfdbk+7ZhByNpq0lAApwjxnqKV53/cBW6LQh2cQ/sW5n9ZdQ5y9XqErNUCKMJz/xLmjxsWZt5ziVNT4HITh8EfOPbUtz5Q5hVEGdBKGK5y76tpywm7XK6olCi5h/hvnvnoAcRVWvm3CHNLKlDogQxjOhyEt9u6LK1RPJcJ29U/hfB7y2J4PQJYwnN9Bt9vM58PgPHrMBj5eIlMHTWj9AH9FI+Hf+aES5v/WTvh6yISvx4RjwjHhmHBMOCYcExpA+DRkwieNhLD/+Vs+PLSedxivfOvZz47naD5tXu4MhXDnchNPauiZq2GfSA+YkJCmXZjVFyPUtufE+djosAj1PVUSr70IYU3nTuGjFyDUvJe9mSXKcuGH8DNL+I24Z1b3usXExHbzoAqe8yMgQsgR1epBU/eOKFtoh95+QIRoDtGsAweQqz75IWQA8WJ3VjcUpXMUV+1ACGF7m/ZdiZSgB6e4sGaJtdIwLLGZ8iw+EiwF36oTcpohTJHqN1FScdR0PioDcghhgU3/w6O0sn4bIgsIQ7GsbiSHoCEqr65xejQwqjfiNAVC8Czpk2oVcoIUlg+NyfVYNX9dU7YKoVOq/yl1p77COECNkOOksOHEgLMUnAr5SYnCKjTk2BZK31HJWs+rwjDMrel/koTVdkjdToVGqmtixl3QNw21pRHZKsQb20yswsHc20dpQjZGwWY6RlbhYAJVdiDMxuhVyFgjRcITU3KzGUyM2rMX5uVCLHxWjVTKYHcK2RNQxnVnBjpQQGQA7Z2XxsaopSNpRHENmjW2Z2TPEXu0RWEbNLgRIg2Wa34kXRgZG7V3zpo28GVlu02oKE79zgrctDdcJgx2GazlwfZQwW5Mh4vmL1/b72iNAGAPcfAAd2uPE6p0Hsznd55GDJBekvr4wcno4PuL2NhtuskQIre4Fy9+JyA/U3iX5BqM6WmC0naI0tUePNlMPJmeD1/uOJ5iH5EQ7Ws55NTHH3vHn/NYl5s7n9jHDnSf6qUilhCcpHJ9fV0RnbLwKxC6awQJb1ekyFZuR5ZwJTl1UROT9fV0MZVcGWXCZLJ9+yTGuz3uWexoE/ZPimhfXLPu0rq+QEd/jDwhgpxqf1i5vaq0nkJPrcrV7cqH9pR9PsYvQIgxk+x/fyVCscaEJmpMOCY0X2PCX4ZQcjfmKBLC7L7ktoXkHrrcrG1ersKHZcjuH2rD9Wbt8xJpoXyAtw1LL5Um8YxG9qDcNHbOO75drp7Tg8GK5OP5ySn6HIXaebW8bBJofKH5/Yg70C1KnVSTPOZ+nef+0XcTOJvl8323rxuVyBfJC5f3F2tvv2o7oGa7fO41Q9HTlUekJqeuvG/SOv/6wnOp8eUD3sk0/NK5bj5Jtj0OcLXVOTp4qZhdLh95lerk/bu7wU8uWRFnQkt3796feNy3dlQeel0uV90j8+T93c3hjKV3gxeFe6OTt4OL3vXfdXhz58FZqw6x67NdFR583MkB4cxAf9q/5acNMkn8SbwPCHPCE78T1eHUZFPQ9HKrmbNG+k2OrAqk9/Y1vLRBJon3xLug8nOT6dOzzOo6/48eBW+wTV50dhbrp+nJaDQ6ORl9RC/9JMo6czO4lOmEk0nihnzTT/Ta4/z09PT8/HTjS32RxxjwNz8vsF9Qud6rOQQHgtfJws4c3tvX02mDTBL3h9R74NVpWxbmY2ZwJ5sxwG6s80yv3NqXNAlnKbqGfndHFRfXSIhOG2SS+Em/AUx4cX6a1Pz8fONsMecoR1BngDXp5LBat+puktEp+vXJDLfEluy0QSUJx/Un6OXTaVbz06f1B6osrUCaI3WsXu6x1+5Yur44XkM4hyVIG2ySYH2GA4ggG49UTQYwpiQjNNPgVR4O0zq66L2jzDOHdNqgksSh82Lw3/q8ANEK2NM1okzPjlQiRcTSYjxLDXRZx1loMm10jkVJAgRJsCEE7EOmY4NiPfMh2sEzsGsNd75eJa6iK2/YchNp48fgv+ILV8VVCIyNQQrJBgP4xYuvR/gFQo8tOJk2sO6ZCJ2x+0FnHoAW41kQiHhveujBI0ABEa7mFZ1IG0g/eRcdwi+9qrCPOG37qu+NOF/xHTISeBYhtA5O85qh0kaITRJI0GBjMoQ92Y7j8ykwe0NFTKYCLYm9RpJQymeIaszg2/kbb9RUAd285o4ZKXAYZX2GRaz5AcTneqxJA05GofU/ePNZVc0wQls96/1FSch5bKk+HkHBW9Ny0nw9pcEyaa+5O+HwWVqnGcFn7tP9e0ky4h6O+pARp/qGCmE0w0bgDZ0oCtRP9+SV0FIzdtDIEELbV0/8+JuaH+Vj1BL8vfsBHxWfne7c3FyXfmnQaO/Zz1QiTmFgqrwkAFX4oMTXq0QIGkgYN1R89vksdakp1hNghFSRoz5TiViFtKjYQcWt8FStCu2hfujh3eGho/1hvj4j9ZuTu8PDdzh/O6PGsxJh2KbYEsFIVxUBJ+2hPqPSHK2S6ELmjp6IkKPU7BT+mpLNoEo8E5XcQSi67Iz9UL0QoRI7KoDgMzn1KrRnMxgVKMCC4Cpu9vUgxGNvFa+BIFU0UpBzagz3O3hVmHFcu8q/pUeYQuNXCVPosKX9ANodcKS67a8cp+kFSZ28WNhBdEdMo3crdN3ASX34DEJsrEHKy/X4bH9NEIQJO0h6jOvoh47bINsdEbxGfuUG1uHrPgl7jOnTeiz22IBZK0BI2YAp9MI6uniy8RiL1U/dx6CuYQpRIz/zBtNrp34B++UeTKjiOaqEswrtjzDqnH1l5Zr6wU3lh4kwv6aeK0SCZhaZ638dzRz+Ikile7gRQmdRvluDpmeURhWuor3H21e4cq1EZGZZaUK0SvHguxkySnMJFa3arSGiLp/8k2G1Z1kpR1Fn3rOUUb2/CyEyU+l0EUcLFYvBEeJRFSV+M4+mhZoWBioM9Vuy6SKOrE5h+sIXIS9IB6mUo/vFUwEjEEo/Qxw8IZ4spsSZZLYHXyIJ1jMMIISMWEh1s90U9LrZDoUnICwNm0gITjOLhH5gnYZvubS4c6kGEOY4hMzYTJA2aXHnww0gRKUrASGM7xnCBx6SQw9m1iGEXxYIYUmLMVNU0//8i69/+r9dN5IQW2kECKFfypgpIvzj33z912RC8MhXQPgK/chMIWDC33gKlBD1aZR7VWJCmLuZnaWshvkIX4wQRk/PGh7ShKjoRZsQzQgzZvpyhHFrcOF/hM8SojrbtQnhCzj1EU5MLPzPc2OCgqBXWrAJoVfj7Hu/JOHEm+D47O1SRzYhrIo428HIEjqtVGimo0sIVjpnE8KEsNOtgfC3//D0m8mEaASemB0IZVzHLELUufeQp5yJhDBfWiMIUc903fFJcLfKOrQYRM87aEKw0iWCEL7+mTZT7jjZqTMTCRkrnZ2FSW+HmUoMLrhDC3+EAeZ7sNINghC+hZ3pma57AHJ9xg/hwttCLDhCGODPEYQCM52cFK0+Iq3xAdUJ+yszgU15YwOZJYVeYicso43HjEiPjWhQhPv8EPIrFHoJihCli3XO1VGxhJPCuseHqL6WKEIwU9VbmUkIySJFEYKZqi5vGUnIs1KxmY4kYZ21UttMVQehL0PovV5LX77KsVJspmrrW9GgvNSD8Cz2RalYIY6VYjNlhvmu+hJ7fAHCtDUAEGx74Ytnpb7M1AqGXHrYhNBBUXCIU56VinqmLgLHWhv6rH5Osf3gjW4RByHMCnO2sYluhNpzbuhRuq5KyLVSH2YKhMOf81Ym5FupupmaS4jesMUQbqGgG33CdIdrpdhMO9JbTowlhF5pliGEJTbpnqmphM6FNcZMJR6KM5xQYKXqZjoEQv6OIVXCRQ9C6X1JgRK67fpSbYdo+szZK7WEPkfpJzpcCdFfkd8kLFpn90EIVlrjENbUzNSNENuZNCE8O8rdHalIKLRSZTN1IcQP6X2XJsSnkfE6jWqEYitVNlMx4STeSqVw/gA+RSHGznwB4RuXKTFCb8BKX3EIYYmtLnsrIJx3ahpv7WzJA06UQ1irmRgt1K7W6zEp4VMeCllWsBD8IHsr9Nl2HC9nBisBSkdIkN9FPSrKqgDilDhKUv2Cmu1RQ1T/gpr4aAVq1s9JZ2WJA+cMke8jlRaqrkcGmqHiftX1sbz/A/A/yVCkVjMMAAAAAElFTkSuQmCC" alt="">
+                            </div>
+                            <div class="col-2"></div>
+                            <div class="col">
+                                <div class="row">
+                                    Posicion: Ejemplo
+                                </div>
+                                <div class="row">
+                                    Edad: 30
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col">
+                                <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal">Detalles</button>
+                                <button class="btn btn-warning">Editar</button>
+                            </div>
+                            <!-- <div class="col-1">
+                            </div> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+      <!-- Modal -->
+    <div class="modal fade modal-lg" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Detalles empleado</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col">
+                            <p>Email: abc&#64;gmail.com</p>
+                        </div>
+                        <div class="col">
+                            <p>Antiguedad: 2 años</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <p>Telefono: 351-2322908</p>
+                        </div>
+                        <div class="col">
+                            <p>Obra social: OSDE</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <p>Hijos: SI</p>
+                        </div>
+                        <div class="col">
+                            <p>CBU: 0123456789012345678922</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <p>Direccion: Velez Sarfield 0212</p>
+                        </div>
+                        <div class="col">
+                            <p>CUIL: 20-12345678-5</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <p>Apartamento: -</p>
+                        </div>
+                        <div class="col">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

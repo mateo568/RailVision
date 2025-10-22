@@ -1,0 +1,15 @@
+#form{
+    margin-top: 30px;
+    height: 725px;
+} 
+
+
+input{
+    margin-top: 2px;
+    margin-bottom: 20px;
+}
+
+.boton{
+    margin-top: 20px;
+    width: 100%;
+}

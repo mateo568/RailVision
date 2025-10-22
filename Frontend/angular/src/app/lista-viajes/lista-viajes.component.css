@@ -1,0 +1,13 @@
+#divVolver{
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+}
+
+#botonVolver{
+    width: 100px;
+}
+
+table{
+    margin-top: 15px;
+}

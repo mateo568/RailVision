@@ -1,0 +1,31 @@
+ <!-- Top navbar -->
+<nav class="navbar navbar-dark bg-dark shadow justify-content-between fixed-top">
+    <button class="btn btn-outline-light" (click)="Sidebar()">☰</button>
+    
+    <div class="dropdown">
+        <button class="btn btn-outline-light  mb-0 dropdown-toggle" type="button" id="perfilMenu" data-bs-toggle="dropdown" aria-expanded="false">
+            Perfil
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="perfilMenu">
+            <li><a class="dropdown-item" href="#">Ver perfil</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#">Cerrar sesión</a></li>
+        </ul>
+    </div>
+    <!-- <span class="navbar-brand mb-0 h1">Mi App</span> -->
+</nav>
+
+<div class="sidebar bg-dark text-white" 
+[ngClass]="{ 'sidebar-expanded': expand, 'sidebar-collapsed': !expand }">
+    <h4 class="text-center" >RailVision</h4>
+    <ul class="list-unstyled text-center">
+        <li><button class="nav-link text-white" (click)="navegar('/menu/viajes')">Viajes</button></li>
+        <li><button class="nav-link text-white" (click)="navegar('/menu/trenes')">Trenes</button></li>
+        <li><button class="nav-link text-white" (click)="navegar('/menu/empleados')">Empleados</button></li>
+        <li><button class="nav-link text-white" (click)="navegar('/menu/estaciones')">Estaciones</button></li>
+    </ul>
+</div>
+
+<section>
+    <router-outlet></router-outlet>
+</section>

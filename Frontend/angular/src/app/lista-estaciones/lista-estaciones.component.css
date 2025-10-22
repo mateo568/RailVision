@@ -1,0 +1,19 @@
+#map{
+    height: 88vh;
+    width: 88vh;
+    margin-left: 20px;
+}
+
+#opciones{
+    margin-bottom: 20px;
+}
+
+#crear{
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+}
+
+#estadoEstacion{
+    transform: scale(1.5);
+}

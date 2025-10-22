@@ -1,0 +1,83 @@
+version: "3.9"
+## Tener en cuenta que cada microservicio tiene su propio Dockerfile en su respectiva carpeta.
+## Se podria agregar un docker file por cada microservicio, inclusive (ejemplo creacion de trenes con docker file y asi)
+services:
+  # ---------------------------
+  # BACKEND PYTHON
+  # ---------------------------
+  python-api:
+    build:
+      context: ./Backend/python
+      dockerfile: Dockerfile
+    container_name: railvision-python
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./Backend/python/RailVision/.env
+    volumes:
+      - ./Backend/python/RailVision:/app
+    depends_on:
+      - db
+    networks:
+      - railvision-network
+
+  # ---------------------------
+  # BACKEND JAVA
+  # ---------------------------
+  java-api:
+    build:
+      context: ./Backend/java
+      dockerfile: Dockerfile
+    container_name: railvision-java
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    networks:
+      - railvision-network
+
+  # ---------------------------
+  # FRONTEND ANGULAR
+  # ---------------------------
+  frontend:
+    build:
+      context: ./Frontend/angular
+      dockerfile: Dockerfile
+    container_name: railvision-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - python-api
+      - java-api
+    networks:
+      - railvision-network
+
+  # ---------------------------
+  # BASE DE DATOS LOCAL POSTGRES
+  # ---------------------------
+  db:
+    image: postgres:15
+    container_name: railvision-db
+    restart: always
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - railvision-network
+
+# ---------------------------
+# RED COMPARTIDA 
+# ---------------------------
+networks:
+  railvision-network:
+
+# ---------------------------
+# VOLUMENES PERSISTENTES (para cambios en la base de datos, se deja listo para futuras pruebas)
+# ---------------------------
+volumes:
+  db_data:
