@@ -48,13 +48,7 @@ public class CiudadControllerTest {
     }
 
     @Test
-    void verificarExistencia() {
-        assertThat(mockMvc).isNotNull();
-        assertThat(service).isNotNull();
-    }
-
-    @Test
-    void consultarEstaciones() throws Exception{
+    void consultarCiudades() throws Exception{
 
         when(service.consultarCiudades()).thenReturn(ciudades);
 
