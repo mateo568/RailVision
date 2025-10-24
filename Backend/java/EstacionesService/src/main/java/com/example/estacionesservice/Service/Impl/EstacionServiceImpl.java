@@ -6,6 +6,7 @@ import com.example.estacionesservice.Entity.Estacion;
 import com.example.estacionesservice.Repository.EstacionRepository;
 import com.example.estacionesservice.Service.EstacionService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,7 @@ public class EstacionServiceImpl implements EstacionService {
     }
 
     @Override
+    @Transactional
     public Estacion crearEstacion(String nombre, Ciudad ciudad) {
         Estacion estacion = Estacion.builder().nombre(nombre).estado(true)
                 .fechaCreacion(LocalDateTime.now()).ciudad(ciudad).build();
@@ -31,7 +33,7 @@ public class EstacionServiceImpl implements EstacionService {
         Optional<Estacion> estacionExistente = repository.findByCiudad(ciudad);
 
         if (estacionExistente.isPresent()) {
-            throw new IllegalArgumentException("Ya existe una estacion en esta ubicacion");
+            throw new IllegalStateException("Ya existe una estacion en esta ubicacion");
         }
 
         return repository.save(estacion);

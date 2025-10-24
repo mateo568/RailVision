@@ -104,15 +104,15 @@ public class EstacionControllerTest {
 
         when(ciudadService.consultarCiudad(estacionPostDto.getCiudad())).thenReturn(ciudad);
         when(service.crearEstacion(estacionPostDto.getNombre(),ciudad))
-                .thenThrow(new IllegalArgumentException("Ya existe una estacion en esta ubicacion"));
+                .thenThrow(new IllegalStateException("Ya existe una estacion en esta ubicacion"));
 
-        assertThrows(ServletException.class, () -> mockMvc.perform(post("/railvision/estaciones")
-                                .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(estacionPostDto))));
+//        assertThrows(ServletException.class, () -> mockMvc.perform(post("/railvision/estaciones")
+//                                .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(estacionPostDto))));
 
-//        mockMvc.perform(post("/railvision/estaciones").contentType(MediaType.APPLICATION_JSON)
-//                .content(objectMapper.writeValueAsString(estacionPostDto))).andDo(print()).andExpect(status().isInternalServerError())
-//                .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(IllegalArgumentException.class)
-//                                .hasMessage("Ya existe una estacion en esta ubicacion"));
+        mockMvc.perform(post("/railvision/estaciones").contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(estacionPostDto))).andDo(print()).andExpect(status().isBadRequest())
+                .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(IllegalStateException.class)
+                        .hasMessage("Ya existe una estacion en esta ubicacion"));
 
     }
 
