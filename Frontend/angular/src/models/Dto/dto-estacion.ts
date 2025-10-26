@@ -3,3 +3,8 @@ export interface DtoPutEstacion {
     nombre: string,
     estado: boolean
 }
+
+export interface DtoPostEstacion {
+    nombre: string,
+    ciudad: number
+}
