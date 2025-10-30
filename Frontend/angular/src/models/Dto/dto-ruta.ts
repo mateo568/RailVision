@@ -10,3 +10,13 @@ export interface DtoPostRuta {
     estacionDestino: number;
     distanciaKm: null;
 }
+
+export interface DtoListadoRutas {
+    id: number;
+    nombre: string;
+    ciudadOrigen: string;
+    ciudadDestino: string;
+    estadoEstacionOrigen: boolean;
+    estadoEstacionDestino: boolean;
+    estado: string;
+}

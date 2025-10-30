@@ -7,6 +7,7 @@ import { ListaEmpleadosComponent } from './lista-empleados/lista-empleados.compo
 import { FormEmpleadosComponent } from './form-empleados/form-empleados.component';
 import { NavegacionComponent } from './navegacion/navegacion.component';
 import { ListaEstacionesComponent } from './lista-estaciones/lista-estaciones.component';
+import { ListaRutasComponent } from './lista-rutas/lista-rutas.component';
 
 export const routes: Routes = [
     
@@ -45,6 +46,10 @@ export const routes: Routes = [
             {
                 path: "empleados/post",
                 component: FormEmpleadosComponent
+            },
+            {
+                path: "rutas",
+                component: ListaRutasComponent
             },
             {
                 path: "estaciones",
