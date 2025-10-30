@@ -6,6 +6,7 @@ import com.example.rutasservice.Entity.Ruta;
 import com.example.rutasservice.Repository.RutaRepository;
 import com.example.rutasservice.Service.RutaService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,20 +37,21 @@ public class RutaServiceImpl implements RutaService {
     @Override
     public Ruta modificarRuta(Integer rutaId, String estado) {
         Ruta ruta = repository.findById(rutaId).orElseThrow(
-                () -> new EntityNotFoundException("Ruta no encontrada"));
+                () -> new EntityNotFoundException("No se encontro la ruta a modificar"));
 
         ruta.setEstado(estado);
         return repository.save(ruta);
     }
 
     @Override
+    @Transactional
     public List<Ruta> modificarRutas(List<RutasPutDto> listaRutas) {
 
         List<Ruta> listaRutasActualizada = new ArrayList<>();
 
         for (RutasPutDto ruta : listaRutas) {
             Ruta rutaModificada = repository.findById(ruta.getRutaId()).orElseThrow(
-                    () -> new EntityNotFoundException("No se encontro la ruta a modificar"));
+                    () -> new EntityNotFoundException("No se encontro la ruta ('"+ ruta.getNombre() + "') para modificarla"));
 
             rutaModificada.setNombre(ruta.getNombre());
             rutaModificada.setEstado(ruta.getEstado());

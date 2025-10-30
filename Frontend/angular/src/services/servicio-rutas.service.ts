@@ -21,4 +21,8 @@ export class ServicioRutasService {
     return this.client.put<Ruta[]>(`${this.URL_DATABASE_RUTAS}`, dtoRutas)
   }
 
+  putEstadoRuta(id: number, estado: string): Observable<Ruta> {
+    return this.client.put<Ruta>(`${this.URL_DATABASE_RUTAS}/${id}`, estado, {headers: { 'Content-Type': 'text/plain' }})
+  }
+
 }
