@@ -25,14 +25,29 @@
                         </h2>
                         <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show">
                             <div class="accordion-body">
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item">15:30 - 16:15  ---  Cordoba - Santa Maria  ---  BXL-7000</li>
-                                    <li class="list-group-item">15:40 - 17:00  ---  Cordoba - Colonia caroya  ---  BST-1000</li>
-                                    <li class="list-group-item">15:55 - 17:20  ---  Rio Cuarto - Vicuña Mackena  ---  BRR-2000</li>
-                                    <li class="list-group-item">15:55 - 17:20  ---  Rio Cuarto - Vicuña Mackena  ---  BRR-2000</li>
-                                    <li class="list-group-item">15:55 - 17:20  ---  Rio Cuarto - Vicuña Mackena  ---  BRR-2000</li>
-                                    <li class="list-group-item">15:55 - 17:20  ---  Rio Cuarto - Vicuña Mackena  ---  BRR-2000</li>
-                                </ul>                
+                                <button class="btn btn-secondary">A</button>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Hora salida</th>
+                                            <th scope="col">Ruta</th>
+                                            <th scope="col">Tren</th>
+                                            <th scope="col">Visualizar</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (viaje of listadoViajesCurso; track $index) {
+                                            <tr>
+                                                <td>{{viaje.fechaSalida | date:'HH:mm:ss'}}</td>
+                                                <td>{{viaje.ruta}}</td>
+                                                <td>{{viaje.trenId}}</td>
+                                                <td><button class="btn visualizar" (click)="trazarViaje(viaje.ruta, viaje.estado)">
+                                                    <i class="bi bi-eye-fill"></i>
+                                                </button></td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -44,14 +59,28 @@
                         </h2>
                         <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse show">
                         <div class="accordion-body">
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item">15:30 - 16:15  ---  Cordoba - Santa Maria  ---  BXL-7000</li>
-                                <li class="list-group-item">15:40 - 17:00  ---  Cordoba - Colonia caroya  ---  BST-1000</li>
-                                <li class="list-group-item">15:55 - 17:20  ---  Rio Cuarto - Vicuña Mackena  ---  BRR-2000</li>
-                                <li class="list-group-item">15:55 - 17:20  ---  Rio Cuarto - Vicuña Mackena  ---  BRR-2000</li>
-                                <li class="list-group-item">15:55 - 17:20  ---  Rio Cuarto - Vicuña Mackena  ---  BRR-2000</li>
-                                <li class="list-group-item">15:55 - 17:20  ---  Rio Cuarto - Vicuña Mackena  ---  BRR-2000</li>
-                            </ul>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Hora salida</th>
+                                        <th scope="col">Ruta</th>
+                                        <th scope="col">Tren</th>
+                                        <th scope="col">Visualizar</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (viaje of listadoViajeProgramado; track $index) {
+                                        <tr>
+                                            <td>{{viaje.fechaSalida | date:'HH:mm:ss'}}</td>
+                                            <td>{{viaje.ruta}}</td>
+                                            <td>{{viaje.trenId}}</td>
+                                            <td><button class="btn visualizar" (click)="trazarViaje(viaje.ruta, viaje.estado)">
+                                                <i class="bi bi-eye-fill"></i>
+                                            </button></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
                         </div>
                         </div>
                     </div>

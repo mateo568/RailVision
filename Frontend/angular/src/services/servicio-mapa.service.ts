@@ -1,3 +1,4 @@
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import L, { marker } from 'leaflet';
 
@@ -7,6 +8,7 @@ import L, { marker } from 'leaflet';
 export class ServicioMapaService {
 
   private mapa: any;
+  private apiKey = "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjFiMjRhOGY1MzcxODRmYTY5M2FlZGNjZTk1Zjg3NTAwIiwiaCI6Im11cm11cjY0In0=";
 
   private redIcon = new L.Icon({
     iconUrl: '/assets/leaflet/marker-icon-red.png',
@@ -18,7 +20,7 @@ export class ServicioMapaService {
     shadowSize: [41, 41]
   });
 
-  constructor() { }
+  constructor(private client: HttpClient) { }
 
   iniciarMapa(){
     this.mapa = L.map('map', {minZoom: 7, maxZoom: 10, 
@@ -72,4 +74,37 @@ export class ServicioMapaService {
     return this.mapa;
   }
 
+  calcularRuta(start: [number, number], end: [number, number], mapa: L.Map): void {
+    const url = 'https://api.openrouteservice.org/v2/directions/driving-car/geojson';
+
+    const headers = new HttpHeaders({
+      'Authorization': this.apiKey,
+      'Content-Type': 'application/json'
+    });
+
+    const body = {
+      coordinates: [start, end],
+    };
+
+    this.client.post<any>(url, body, { headers }).subscribe({
+      next: (response) => {
+        console.log('Ruta ORS:', response);
+        this.dibujarRuta(response, mapa);
+      },
+      error: (err) => {
+        console.error('Error al obtener ruta:', err);
+      }
+    });
+  }
+
+  private dibujarRuta(geojson: any, mapa: L.Map): void {
+    const ruta = L.geoJSON(geojson, {
+      style: {
+        color: 'green',
+        weight: 4
+      }
+    }).addTo(mapa);
+
+    mapa.fitBounds(ruta.getBounds());
+  }
 }

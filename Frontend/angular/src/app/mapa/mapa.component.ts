@@ -1,9 +1,17 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import * as L from 'leaflet';
-import { concatMap, delay, from } from 'rxjs';
+import { concatMap, delay, forkJoin, from, Subscription } from 'rxjs';
+import { Viaje } from '../../models/Entity/viaje';
+import { Ruta } from '../../models/Entity/ruta';
+import { ServicioViajesService } from '../../services/servicio-viajes.service';
+import { ServicioRutasService } from '../../services/servicio-rutas.service';
+import { DtoListaMapaViaje } from '../../models/Dto/dto-viaje';
+import { ServicioMapaService } from '../../services/servicio-mapa.service';
+import { Estacion } from '../../models/Entity/estacion';
+import { ServicioEstacionService } from '../../services/servicio-estacion.service';
 
 @Component({
   selector: 'app-mapa',
@@ -12,19 +20,29 @@ import { concatMap, delay, from } from 'rxjs';
   templateUrl: './mapa.component.html',
   styleUrl: './mapa.component.css'
 })
-export class MapaComponent implements OnInit{  
-  private mapa: any;
-  private icono: L.Marker<any> | undefined;
-  private apiKey = "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjFiMjRhOGY1MzcxODRmYTY5M2FlZGNjZTk1Zjg3NTAwIiwiaCI6Im11cm11cjY0In0=";
+export class MapaComponent implements OnInit, OnDestroy{  
+  private subscripciones: Subscription[] = [];
 
-  private http = inject(HttpClient);
+  listaViajes: Viaje[] = [];
+  listaRutas: Ruta[] = [];
+  listaEstaciones: Estacion[] = [];
+
+  listadoViajesCurso: DtoListaMapaViaje[] = [];
+  listadoViajeProgramado: DtoListaMapaViaje[] = [];
+
+  private mapa: any;
+  private icono: any;
+
+  servicioMapa = inject(ServicioMapaService)
+  servicioViaje = inject(ServicioViajesService)
+  servicioRuta = inject(ServicioRutasService)
+  servicioEstacion = inject(ServicioEstacionService)
   router = inject(Router);
 
-
-
   ngOnInit(): void {
-    this.fixLeafletIconPaths();
-    this.iniciarMapa();
+    this.mapa = this.servicioMapa.iniciarMapa();
+    this.cargarDatos();
+
     // this.calcularRuta([-64.188938, -31.419429], [-63.240833, -32.407500]);
     // this.calcularRuta([-64.349869, -33.130684], [-63.240833, -32.407500]);
     // this.calcularRuta([-64.350349, -30.420956], [-64.499394, -31.420083]);
@@ -43,110 +61,90 @@ export class MapaComponent implements OnInit{
   //       this.delayCall(start, end, 2000)
   //     )
   //  ).subscribe();
+
+        // private delayCall(start: [number, number], end: [number, number], ms: number) {
+        //   return from([null]).pipe(
+        //     delay(ms),
+        //     concatMap(() => {
+        //       this.calcularRuta(start, end);
+        //       return from([true]); // devolver algo para que concatMap funcione
+        //     })
+        //   );
+        // }
+    
   }
 
-  private iniciarMapa(){
-
-    this.mapa = L.map('map', {minZoom: 7, maxZoom: 10, maxBounds: [
-    [-36, -67], // suroeste
-    [-29, -61]  // noreste
-    ],
-    maxBoundsViscosity: 1.0}).setView([-31.4167, -64.1833], 7);
-
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.mapa);
-
-
-    // Marcador en el centro de Córdoba (Plaza San Martín)
-    L.marker([-31.419429, -64.188938]).addTo(this.mapa)
-    .bindPopup('Centro de Córdoba')
-    .openPopup();
-
-    L.marker([-31.420083, -64.499394]).addTo(this.mapa)
-    .bindPopup('Villa Carlos Paz')
-    .openPopup();
-
-    L.marker([-32.407500, -63.240833]).addTo(this.mapa)
-    .bindPopup('Villa María')
-    .openPopup();
-
-    L.marker([-33.130684, -64.349869]).addTo(this.mapa)
-    .bindPopup('Río Cuarto')
-    .openPopup();
-
-    L.marker([-31.427960, -62.082308]).addTo(this.mapa)
-    .bindPopup('San Francisco')
-    .openPopup();
-
-    L.marker([-30.420956, -64.350349]).addTo(this.mapa)
-    .bindPopup('Deán Funes')
-    .openPopup();
-
-    // Otro punto dentro de la ciudad (Nueva Córdoba)
-    // L.marker([-31.429475, -64.181796]).addTo(this.mapa)
-    // .bindPopup('Otro punto en Córdoba (Nueva Córdoba)')
-    // .openPopup();
+  private cargarDatos() {
+    this.subscripciones.push(
+      forkJoin({
+        rutas: this.servicioRuta.getRutas(),
+        viajes: this.servicioViaje.getViajes(),
+        estaciones: this.servicioEstacion.getEstaciones()
+      }).subscribe(({rutas, viajes, estaciones}) =>{
+        this.listaRutas = rutas;
+        this.listaViajes = viajes;
+        this.listaEstaciones = estaciones;
+        this.cargarListados();
+      })
+    )
   }
 
-  private fixLeafletIconPaths() {
-    delete (L.Icon.Default.prototype as any)._getIconUrl;
+  private cargarListados() {
+    this.listadoViajeProgramado = [];
+    this.listadoViajesCurso = [];
+    this.listaViajes.filter(viaje => { return viaje.estado !== "finalizado" })
 
-    L.Icon.Default.mergeOptions({
-      iconRetinaUrl: '/assets/leaflet/marker-icon-2x.png',
-      iconUrl: '/assets/leaflet/marker-icon.png',
-      shadowUrl: '/assets/leaflet/marker-shadow.png',
-    });
-  }
+    this.listaViajes.forEach( viaje => {
+      const Ruta = this.listaRutas.find(ruta => ruta.id === viaje.rutaId)?.nombre! 
 
-  private delayCall(start: [number, number], end: [number, number], ms: number) {
-  return from([null]).pipe(
-    delay(ms),
-    concatMap(() => {
-      this.calcularRuta(start, end);
-      return from([true]); // devolver algo para que concatMap funcione
-    })
-  );
-}
-
-  calcularRuta(start: [number, number], end: [number, number]): void {
-    const url = 'https://api.openrouteservice.org/v2/directions/driving-car/geojson';
-
-    const headers = new HttpHeaders({
-      'Authorization': this.apiKey,
-      'Content-Type': 'application/json'
-    });
-
-    const body = {
-      coordinates: [start, end],
-    };
-
-    this.http.post<any>(url, body, { headers }).subscribe({
-      next: (response) => {
-        console.log('Ruta ORS:', response);
-        this.dibujarRuta(response);
-      },
-      error: (err) => {
-        console.error('Error al obtener ruta:', err);
+      var item: DtoListaMapaViaje = {
+        id: viaje.id,
+        trenId: viaje.trenId,
+        ruta: Ruta.replace(/^Ruta\s*/i, ""),
+        fechaSalida: viaje.fechaSalida,
+        fechaLlegada: viaje.fechaLlegada,
+        estado: viaje.estado,
       }
+
+      if (viaje.estado === "en curso") { this.listadoViajesCurso.push(item) }
+      if (viaje.estado === "programado"){ this.listadoViajeProgramado.push(item) }
+
     });
   }
 
-  dibujarRuta(geojson: any): void {
-  const ruta = L.geoJSON(geojson, {
-    style: {
-      color: 'green',
-      weight: 4
-    }
-  }).addTo(this.mapa);
+  trazarViaje(ruta: string, estado: string) {
+    console.log("Metodo llamado")
+    const datosRuta = this.listaRutas.find(r => r.nombre === `Ruta ${ruta}`);
+    if (!datosRuta) return;
 
-  this.mapa.fitBounds(ruta.getBounds());
+    const estacionOrigen = this.listaEstaciones.find(e => e.id === datosRuta.estacionOrigen);
+    const estacionDestino = this.listaEstaciones.find(e => e.id === datosRuta.estacionDestino);
+
+    if (!estacionOrigen || !estacionDestino) return;
+
+    const latitudOrigen = Number(estacionOrigen.ciudad.latitud);
+    const longitudOrigen = Number(estacionOrigen.ciudad.longitud);
+    const latitudDestino = Number(estacionDestino.ciudad.latitud);
+    const longitudDestino = Number(estacionDestino.ciudad.longitud);
+
+    this.icono = this.servicioMapa.cargarIcono(estacionOrigen.ciudad.latitud, estacionOrigen.ciudad.longitud, estacionOrigen.nombre)
+    this.icono.addTo(this.mapa);
+    
+    this.icono = this.servicioMapa.cargarIcono(estacionDestino.ciudad.latitud, estacionDestino.ciudad.longitud, estacionDestino.nombre)
+    this.icono.addTo(this.mapa) 
+
+    this.servicioMapa.calcularRuta([longitudOrigen,latitudOrigen],[longitudDestino,latitudDestino],this.mapa)
   }
-  
-  irPostMapa(){
+
+  irPostMapa() {
     this.router.navigate(["menu/viajes/post"]);
   }
 
-  irListaViajes(){
+  irListaViajes() {
     this.router.navigate(["menu/viajes/lista"]);
   }
 
+  ngOnDestroy(): void {
+    this.subscripciones.forEach(sub => sub.unsubscribe());
+  }
 }
