@@ -6,6 +6,7 @@
       <list>
         <option value="$PROJECT_DIR$/Backend/java/EstacionesService/pom.xml" />
         <option value="$PROJECT_DIR$/Backend/java/RutasService/pom.xml" />
+        <option value="$PROJECT_DIR$/Backend/java/ViajesService/pom.xml" />
       </list>
     </option>
   </component>

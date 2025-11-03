@@ -15,57 +15,45 @@
         </div>
     </div>
 
-    <!-- <table class="table table-bordered">
-        <thead>
-            <tr>
-            <th scope="col">Ruta</th>
-            <th scope="col">Horaio</th>
-            <th scope="col">Tren</th>
-            <th scope="col">Detalles</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr class="table-success">
-                <td colspan="4">EN CURSO</td>
-            </tr>
-            <tr>
-                <td>Cordoba - Santa Maria</td>
-                <td>15:40 - 17:00</td>
-                <td>BXL-7000</td>
-            </tr>
-
-            <tr class="table-primary">
-                <td colspan="4">PROGRAMADO</td>
-            </tr>
-            <tr>
-                <td>Cordoba - Colonia caroya</td>
-                <td>16:30 - 17:20</td>
-                <td>BST-1000</td>
-            </tr>
-
-            <tr class="table-light">
-                <td colspan="4">FINALIZADO</td>
-            </tr>
-            <tr>
-                <td>Rio Cuarto - Vicuña Mackena</td>
-                <td>15:30 - 16:15</td>
-                <td>BRR-2000</td>
-            </tr>
-        </tbody>
-    </table> -->
-
     <table class="table table-bordered">
         <thead>
             <tr>
             <th scope="col">Ruta</th>
-            <th scope="col">Horaio</th>
+            <th scope="col">Fecha salida</th>
+            <th scope="col">Fecha llegada</th>
             <th scope="col">Tren</th>
             <th scope="col">Estado</th>
-            <th scope="col">Detalles</th>
+            <th scope="col">Acciones</th>
             </tr>
         </thead>
         <tbody>
-            <tr>
+            @for (viaje of listadoViajes; track $index) {
+                <tr>
+                    <td>{{viaje.ruta}}</td>
+                    <td>{{viaje.fechaSalida | date:'dd/MM/yyyy - HH:mm:ss'}}</td>
+                    @if (viaje.fechaLlegada) { <td>{{viaje.fechaLlegada | date:'dd/MM/yyyy - HH:mm:ss'}}</td> }
+                    @else { <td></td> }
+                    <td>{{viaje.trenId}}</td>
+                    @switch (viaje.estado) {
+                        @case ("en curso") {<td><span class="badge text-bg-success">En curso</span></td>}
+                        @case ("programado") {<td><span class="badge text-bg-primary">Programado</span></td>}
+                        @case ("finalizado") {<td><span class="badge text-bg-secondary">Finalizado</span></td>}
+                    }
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <button class="dropdown-item" type="button">Detalles...</button>      
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+            }
+            <!-- <tr>
                 <td>Cordoba - Santa Maria</td>
                 <td>15:40 - 17:00</td>
                 <td>BXL-7000</td>
@@ -102,7 +90,7 @@
                 <td>15:30 - 16:15</td>
                 <td>BRR-2000</td>
                 <td class="table-light">FINALIZADO</td>
-            </tr>
+            </tr> -->
         </tbody>
     </table>
 </div>
