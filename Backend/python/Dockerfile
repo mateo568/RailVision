@@ -8,6 +8,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copiar código fuente
 COPY ./RailVision/. .
+COPY ./RailVision/.env ./.env
 
 EXPOSE 8000
 

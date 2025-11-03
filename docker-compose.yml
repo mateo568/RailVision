@@ -1,10 +1,7 @@
-version: "3.9"
+## version: "3.9"
 ## Tener en cuenta que cada microservicio tiene su propio Dockerfile en su respectiva carpeta.
 ## Se podria agregar un docker file por cada microservicio, inclusive (ejemplo creacion de trenes con docker file y asi)
 services:
-  # ---------------------------
-  # BACKEND PYTHON
-  # ---------------------------
   python-api:
     build:
       context: ./Backend/python
@@ -16,8 +13,8 @@ services:
       - ./Backend/python/RailVision/.env
     volumes:
       - ./Backend/python/RailVision:/app
-    depends_on:
-      - db
+    # depends_on:
+    #   - db
     networks:
       - railvision-network
 
@@ -31,8 +28,8 @@ services:
     container_name: railvision-java
     ports:
       - "8080:8080"
-    depends_on:
-      - db
+    # depends_on:
+    #   - db
     networks:
       - railvision-network
 
@@ -52,32 +49,29 @@ services:
     networks:
       - railvision-network
 
-  # ---------------------------
-  # BASE DE DATOS LOCAL POSTGRES
-  # ---------------------------
-  db:
-    image: postgres:15
-    container_name: railvision-db
-    restart: always
-    environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5432:5432"
-    volumes:
-      - db_data:/var/lib/postgresql/data
-    networks:
-      - railvision-network
+#   # -------------------------
+#   # BASE DE DATOS LOCAL (solo para pruebas)
+#   # -------------------------
+#   db:
+#     image: postgres:15
+#     container_name: railvision-db
+#     restart: always
+#     environment:
+#       POSTGRES_DB: postgres
+#       POSTGRES_USER: postgres
+#       POSTGRES_PASSWORD: postgres
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - db_data:/var/lib/postgresql/data
+#     networks:
+#       - railvision-network
+#     # 🚫 desactívalo temporalmente si usas Supabase
+#     # para evitar conflicto con el puerto 5432
 
-# ---------------------------
-# RED COMPARTIDA 
-# ---------------------------
 networks:
   railvision-network:
+    driver: bridge
 
-# ---------------------------
-# VOLUMENES PERSISTENTES (para cambios en la base de datos, se deja listo para futuras pruebas)
-# ---------------------------
-volumes:
-  db_data:
+# volumes:
+#   db_data:
