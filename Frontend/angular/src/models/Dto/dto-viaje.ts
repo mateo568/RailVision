@@ -18,3 +18,19 @@ export interface DtoListaMapaViaje {
     trenId: number;
     estado: string;
 }
+
+export interface DtoPostViaje {
+    trenId: number;
+    rutaId: number;
+    usuarioId: number;
+    fechaSalida: string;
+    fechaLlegada: string;
+    carga: number;
+    listaCargamento: DtoPostCargamento[];
+}
+
+export interface DtoPostCargamento{
+    detalle: string;
+    tipo: string;
+    peso: number;
+}

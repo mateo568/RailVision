@@ -9,19 +9,21 @@
             <form [formGroup]="nuevoViaje" (submit)="submit()">
                 <div class="row">
                     <div class="col">
-                        <label for="">Estacion partida</label>
-                        <select name="" id="" formControlName="estacionIda" class="form-select">
+                        <label for="">Estacion origen</label>
+                        <select name="" id="" formControlName="estacionOrigen" class="form-select" (change)="filtrarEstaciones()">
                             <option value="" selected>Seleccionar...</option>
-                            <option value="">Cordoba</option>
-                            <option value="">Santa Maria</option>
+                            @for (estacion of listaEstacionesOrigen; track $index) {
+                                <option [value]="estacion.id">{{estacion.ciudad.nombre}}</option>
+                            }
                         </select>
                     </div>
                     <div class="col">
-                        <label for="">Estacion llegada</label>
-                        <select name="" id="" formControlName="estacionVuelta" class="form-select">
+                        <label for="">Estacion destino</label>
+                        <select name="" id="" formControlName="estacionDestino" class="form-select" (change)="filtrarEstaciones()">
                             <option value="" selected>Seleccionar...</option>
-                            <option value="">Rio Cuarto</option>
-                            <option value="">San Francisco</option>
+                            @for (estacion of listaEstacionesDestino; track $index) {
+                                <option [value]="estacion.id">{{estacion.ciudad.nombre}}</option>
+                            }
                         </select>
                     </div>
                 </div>
@@ -30,8 +32,8 @@
                         <label for="">Tren</label>
                         <select name="" id="" formControlName="tren" class="form-select">
                             <option value="" selected>Seleccionar...</option>
-                            <option value="">MC-1000</option>
-                            <option value="">SV-5000</option>
+                            <option value="1">MC-1000</option>
+                            <option value="2">SV-5000</option>
                         </select>
                     </div>
                     <div class="col">
@@ -45,8 +47,8 @@
                         <input type="time" class="form-control" formControlName="horarioSalida">
                     </div>
                     <div class="col-6">
-                        <label for="">Hora llegada</label>
-                        <input type="time" class="form-control" formControlName="horarioLlegada">
+                        <label for="">Hora llegada (aprox.)</label>
+                        <input type="time" class="form-control" formControlName="horarioLlegada" readonly>
                     </div>
                 </div>
 
@@ -54,40 +56,38 @@
                     <div class="col">
                         <div class="card">
                             <div class="card-header">
-                                Cargamento (Peso total: 0/20t - Vagones totales 0/6)
+                                Cargamento
+                                <!-- (Peso total: 0/20t) -->
                             </div>
                             <div class="card-body">
-                                @for(carga of arrayCargas.controls; track $index){
+                                <div *ngFor="let carga of arrayCargas.controls; let i = index" [formGroupName]="i">
                                     <div class="row">
-                                        <div class="col-5">
-                                            <label for="">Tipo</label>
-                                            <select name="" id="" class="form-select" formControlName="tipo">
-                                                <option value="" selected>Seleccionar...</option>
-                                                <option value="">Mineria</option>
-                                                <option value="">Agricultura</option>
-                                                <option value="">General</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-5">
+                                        <div class="col-10">
                                             <label for="">Detalle</label>
                                             <input type="text" class="form-control" formControlName="detalle">
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-5">
-                                            <label for="">Cantidad vagones</label>
-                                            <input type="number" class="form-control" formControlName="cantVagones">
+                                            <label for="">Tipo</label>
+                                            <select name="" id="" class="form-select" formControlName="tipo">
+                                                <option value="" selected>Seleccionar...</option>
+                                                <option value="mineria">Mineria</option>
+                                                <option value="agricultura">Agricultura</option>
+                                                <option value="general">General</option>
+                                                <option value="otros">Otros</option>
+                                            </select>
                                         </div>
                                         <div class="col-5">
                                             <label for="">Peso (t)</label>
                                             <input type="number" class="form-control" formControlName="peso">
                                         </div>
                                         <div class="col">
-                                            <button type="button" class="btn btn-danger" (click)="eliminarCarga($index)">X</button>
+                                            <button type="button" class="btn btn-danger" (click)="eliminarCarga(i)">X</button>
                                         </div>
                                     </div>
                                     <hr>
-                                }
+                                </div>
 
                                 <div class="row">
                                     <div class="col"></div>

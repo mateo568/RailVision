@@ -46,7 +46,7 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
   }
 
   cargarListado() {
-    const estados = ["en curso", "programado", "finalizado"];
+    const estados = ["en curso", "programado", "finalizado", "cancelado"];
     this.listadoViajes = [];
 
     this.listaViajes.forEach( viaje => {
@@ -69,7 +69,14 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
 
     this.listadoViajes.sort((a,b) => estados.indexOf(a.estado) - estados.indexOf(b.estado))
   }
-  
+
+  cancelarViaje(id: number) {
+    const sub = this.servicioViaje.deleteViaje(id).subscribe(() =>{
+      alert("Viaje cancelado")
+      this.cargarDatos()
+    })
+  }
+
   irMenuViajes() {
     this.router.navigate(["menu/viajes"]);
   }

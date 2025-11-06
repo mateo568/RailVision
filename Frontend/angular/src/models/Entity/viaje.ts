@@ -1,3 +1,5 @@
+import { Cargamento } from "./cargamento";
+
 export interface Viaje {
     id: number;
     trenId: number;
@@ -8,4 +10,5 @@ export interface Viaje {
     carga: number;
     estado: string;
     fechaCreacion: string;
+    cargamentos: Cargamento[];
 }

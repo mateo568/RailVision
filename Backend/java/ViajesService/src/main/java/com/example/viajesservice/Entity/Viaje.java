@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Builder
@@ -42,4 +44,8 @@ public class Viaje {
 
     @Column(name = "fecha_creacion")
     private LocalDateTime fechaCreacion;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "viaje_id")
+    private List<Cargamento> cargamentos = new ArrayList<>();
 }
