@@ -6,7 +6,7 @@ spring:
   datasource:
     url: jdbc:postgresql://db.ryfweaoyhvlveicmrfzt.supabase.co:5432/postgres
     username: postgres
-    password: Railvision2025
+    password: Railvision2025-123
 
   jpa:
     hibernate:

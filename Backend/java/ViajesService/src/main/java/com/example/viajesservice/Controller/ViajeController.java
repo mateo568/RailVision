@@ -1,13 +1,11 @@
 package com.example.viajesservice.Controller;
 
+import com.example.viajesservice.Dtos.Viaje.ViajePostDto;
 import com.example.viajesservice.Entity.Viaje;
 import com.example.viajesservice.Service.ViajeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,5 +20,14 @@ public class ViajeController {
     @GetMapping
     public ResponseEntity<List<Viaje>> consultarRutas() { return ResponseEntity.ok(viajeService.consultarViajes()); }
 
+    @PostMapping
+    public ResponseEntity<Viaje> crearViaje(@RequestBody ViajePostDto nuevoViaje) {
+        return ResponseEntity.ok(viajeService.crearViaje(nuevoViaje));
+    }
 
+    @DeleteMapping("/{viajeId}")
+    public ResponseEntity<Void> cancelarViaje(@PathVariable Integer viajeId) {
+        viajeService.eliminarViaje(viajeId);
+        return ResponseEntity.noContent().build();
+    }
 }

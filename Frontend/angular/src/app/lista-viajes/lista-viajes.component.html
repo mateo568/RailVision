@@ -38,6 +38,7 @@
                         @case ("en curso") {<td><span class="badge text-bg-success">En curso</span></td>}
                         @case ("programado") {<td><span class="badge text-bg-primary">Programado</span></td>}
                         @case ("finalizado") {<td><span class="badge text-bg-secondary">Finalizado</span></td>}
+                        @case ("cancelado") {<td><span class="badge text-bg-danger">Cancelado</span></td>}
                     }
                     <td>
                         <div class="dropdown">
@@ -46,51 +47,16 @@
                             </button>
                             <ul class="dropdown-menu">
                                 <li>
-                                    <button class="dropdown-item" type="button">Detalles...</button>      
+                                    <button class="dropdown-item" type="button">Detalles...</button>   
+                                    @if(viaje.estado == "programado") {
+                                        <button class="dropdown-item" type="button" (click)="cancelarViaje(viaje.id)">Cancelar</button>
+                                    }   
                                 </li>
                             </ul>
                         </div>
                     </td>
                 </tr>
             }
-            <!-- <tr>
-                <td>Cordoba - Santa Maria</td>
-                <td>15:40 - 17:00</td>
-                <td>BXL-7000</td>
-                <td class="table-success">EN CURSO</td>
-            </tr>
-            <tr>
-                <td>Cordoba - Santa Maria</td>
-                <td>15:40 - 17:00</td>
-                <td>BXL-7000</td>
-                <td class="table-success">EN CURSO</td>
-            </tr>
-
-            <tr>
-                <td>Cordoba - Colonia caroya</td>
-                <td>16:30 - 17:20</td>
-                <td>BST-1000</td>
-                <td class="table-primary">PROGRAMADO</td>
-            </tr>
-            <tr>
-                <td>Cordoba - Colonia caroya</td>
-                <td>16:30 - 17:20</td>
-                <td>BST-1000</td>
-                <td class="table-primary">PROGRAMADO</td>
-            </tr>
-
-            <tr>
-                <td>Rio Cuarto - Vicuña Mackena</td>
-                <td>15:30 - 16:15</td>
-                <td>BRR-2000</td>
-                <td class="table-light">FINALIZADO</td>
-            </tr>
-            <tr>
-                <td>Rio Cuarto - Vicuña Mackena</td>
-                <td>15:30 - 16:15</td>
-                <td>BRR-2000</td>
-                <td class="table-light">FINALIZADO</td>
-            </tr> -->
         </tbody>
     </table>
 </div>
