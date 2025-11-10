@@ -1,4 +1,4 @@
-from routers import trenes, usuarios
+from routers import trenes, usuarios, auth
 from fastapi import FastAPI, HTTPException
 # from pydantic import BaseModel
 from db_conection import get_connection
@@ -23,3 +23,5 @@ def root():
 
 app.include_router(trenes.router)
 app.include_router(usuarios.router)
+
+app.include_router(auth.router)

@@ -1,6 +1,8 @@
 from fastapi import APIRouter, HTTPException
 from models.usuario import Usuario
 from db_conection import get_connection
+from passlib.context import CryptContext
+
 
 router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
 
@@ -41,6 +43,12 @@ def add_usuario(usuario: Usuario):
     if not conn:
         raise HTTPException(status_code=500, detail="No se pudo conectar a la base de datos")
 
+    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+    #no admite contraseñas de mas de 72 bytes, tambien hay que limitar en el front la cantidad de caracteres
+    password_input = usuario.password_hash[:72]
+    hashed_password = pwd_context.hash(password_input)
+
     try:
         cursor = conn.cursor()
         query = """
@@ -48,13 +56,23 @@ def add_usuario(usuario: Usuario):
             VALUES (%s, %s, %s, %s, %s, %s, NOW())
             RETURNING usuario_id;
         """
-        cursor.execute(query, (usuario.nombre, usuario.apellido, usuario.email,
-                               usuario.password_hash, usuario.rol, usuario.estado))
+
+        cursor.execute(query, (
+            usuario.nombre,
+            usuario.apellido,
+            usuario.email,
+            hashed_password,
+            usuario.rol,
+            usuario.estado
+        ))
+
         new_id = cursor.fetchone()[0]
         conn.commit()
         cursor.close()
         conn.close()
+
         return {"status": "success", "usuario_id": new_id}
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
