@@ -1,26 +1,45 @@
-import { Component, inject } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { ServicioAuthService } from '../../services/servicio-auth.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  
-  router = inject(Router);
-  
-    nuevoLogin = new FormGroup({
-      usuario: new FormControl('',[Validators.required]),
-      contra: new FormControl('',[Validators.required]),
-    })
+  loginForm!: FormGroup;
+  submitted = false;
 
-  login(){
-    if (this.nuevoLogin.valid){
-      this.router.navigate(["menu"]);
-    }
+  constructor(private fb: FormBuilder, private authService: ServicioAuthService, private router: Router) {
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required]
+    });
+  }
+
+  onSubmit(): void {
+    this.submitted = true;
+    if (this.loginForm.invalid) return;
+
+    const email = this.loginForm.get('email')?.value;
+    const password = this.loginForm.get('password')?.value;
+
+    this.authService.login(email, password).subscribe({
+      next: (res) => {
+        localStorage.setItem('token', res.access_token);
+        Swal.fire('Bienvenido', 'Inicio de sesión exitoso', 'success');
+        this.router.navigate(['/menu']);
+      },
+      error: (err) => {
+        console.error(err);
+        Swal.fire('Error', err.error.detail || 'Credenciales inválidas', 'error');
+      }
+    });
   }
 }

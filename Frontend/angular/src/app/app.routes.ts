@@ -54,6 +54,11 @@ export const routes: Routes = [
             {
                 path: "estaciones",
                 component: ListaEstacionesComponent
+            },
+            {
+                path: 'empleados/editar/:id',
+                loadComponent: () => import('./form-empleados/form-empleados.component')
+                    .then(m => m.FormEmpleadosComponent)
             }
         ]
     },
