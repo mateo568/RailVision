@@ -1,6 +1,5 @@
-package com.example.viajesservice.Entity;
+package com.example.viajesservice.Dtos.Cargamento;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,15 +11,8 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "cargamentos")
-public class Cargamento {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class CargamentoPutDto {
     private Integer id;
-
-    @Column(name = "viaje_id")
-    private Integer viajeId;
 
     private String detalle;
 

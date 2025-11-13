@@ -4,9 +4,15 @@
 
 spring:
   datasource:
-    url: jdbc:postgresql://db.ryfweaoyhvlveicmrfzt.supabase.co:5432/postgres
-    username: postgres
+    url: jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:5432/postgres
+    username: postgres.ryfweaoyhvlveicmrfzt
     password: Railvision2025-123
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 1
+      idle-timeout: 10000
+      max-lifetime: 30000
+      connection-timeout: 20000
 
   jpa:
     hibernate:
