@@ -1,17 +1,14 @@
-#spring.application.name=RutasService
-
 spring:
   datasource:
-    url: jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:5432/postgres
-    username: postgres.ryfweaoyhvlveicmrfzt
-    password: Railvision2025-123
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASS}
     hikari:
       maximum-pool-size: 5
       minimum-idle: 1
       idle-timeout: 10000
       max-lifetime: 30000
       connection-timeout: 20000
-
   jpa:
     hibernate:
       ddl-auto: update
@@ -20,4 +17,4 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
 server:
-  port: 8082
+  port: 8081
