@@ -5,6 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { ServicioUsuariosService } from '../../services/servicio-usuarios.service';
 import { Usuario } from '../../models/Entity/usuario';
 import Swal from 'sweetalert2'; // 👈 para los mensajes visuales
+import { AbstractControl } from '@angular/forms';
 
 @Component({
   selector: 'app-form-empleados',
@@ -33,7 +34,7 @@ export class FormEmpleadosComponent implements OnInit {
       nombre: ['', [Validators.required, Validators.minLength(2)]],
       apellido: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
-      password_hash: ['', [Validators.required, Validators.minLength(4)]],
+      password: ['', [Validators.required, Validators.minLength(4)]],
       rol: ['', [Validators.required]],
       estado: [true]
     });
@@ -49,9 +50,11 @@ export class FormEmpleadosComponent implements OnInit {
 
   // 🔹 Cargar usuario para edición
   cargarUsuario(id: number): void {
-    this.usuarioService.getUsuarios().subscribe({
+    this.usuarioService.getUsuarioById(id).subscribe({
       next: (usuario) => {
         this.usuarioForm.patchValue(usuario);
+        // 👇 no cargues el password (por seguridad)
+        this.usuarioForm.get('password')?.reset();
       },
       error: (err) => {
         console.error('❌ Error al cargar usuario:', err);
@@ -61,7 +64,7 @@ export class FormEmpleadosComponent implements OnInit {
   }
 
   // 🔹 Acceso rápido a los controles del form
-  get f() {
+  get f(): { [key: string]: AbstractControl } {
     return this.usuarioForm.controls;
   }
 
@@ -71,15 +74,13 @@ export class FormEmpleadosComponent implements OnInit {
     return control.invalid && (control.dirty || control.touched || this.submitted);
   }
 
-  // 🔹 Enviar formulario (crear o editar)
   onSubmit(): void {
     this.submitted = true;
     if (this.usuarioForm.invalid) return;
 
-    const usuario: Usuario = this.usuarioForm.value;
+    const usuario = this.usuarioForm.value;
 
     if (this.editMode) {
-      // ✏️ Modo edición
       this.usuarioService.updateUsuario(this.usuarioId, usuario).subscribe({
         next: () => {
           Swal.fire({
@@ -111,12 +112,11 @@ export class FormEmpleadosComponent implements OnInit {
         },
         error: (err) => {
           console.error('❌ Error al crear usuario:', err);
-          Swal.fire('Error', 'No se pudo crear el usuario', 'error');
+          Swal.fire('Error', err.error.detail || 'No se pudo crear el usuario', 'error');
         }
       });
     }
   }
-
   volver(): void {
     this.router.navigate(['/menu/empleados']);
   }

@@ -2,7 +2,8 @@ python-dotenv
 fastapi
 uvicorn
 psycopg2-binary
-passlib[bcrypt]
+passlib[bcrypt]==1.7.4
+bcrypt==4.0.1
 python-jose[cryptography]
 python-multipart
 pydantic[email]
