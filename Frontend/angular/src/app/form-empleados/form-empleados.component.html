@@ -33,8 +33,13 @@
   <!-- Contraseña -->
   <div class="mb-3">
     <label>Contraseña</label>
-    <input type="password" class="form-control" formControlName="password_hash" placeholder="********" />
-    <div *ngIf="isInvalid('password_hash')" class="text-danger small">
+    <input type="password"
+          class="form-control"
+          formControlName="password"
+          placeholder="Contraseña"
+          minlength="4"
+          maxlength="50" />
+    <div *ngIf="f['password'].invalid && (f['password'].dirty || submitted)" class="text-danger small">
       La contraseña debe tener al menos 4 caracteres.
     </div>
   </div>

@@ -6,6 +6,6 @@ class Usuario(BaseModel):
     nombre: str
     apellido: str
     email: str
-    password_hash: str
+    password: str
     rol: str
     estado: bool

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Form
 from models.usuario import Usuario
 from db_conection import get_connection
 from passlib.context import CryptContext
@@ -34,20 +34,50 @@ def get_usuarios():
     return {"usuarios": usuarios}
 
 
+@router.get("/{usuario_id}")
+def get_usuario(usuario_id: int):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT usuario_id, nombre, apellido, email, rol, estado FROM usuarios WHERE usuario_id = %s", (usuario_id,))
+    user = cursor.fetchone()
+    cursor.close()
+    conn.close()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    return {
+        "usuario_id": user[0],
+        "nombre": user[1],
+        "apellido": user[2],
+        "email": user[3],
+        "rol": user[4],
+        "estado": user[5],
+    }
+
 # ------------------------------
 # Crear nuevo usuario
 # ------------------------------
 @router.post("/add")
-def add_usuario(usuario: Usuario):
+def add_usuario(
+    nombre: str = Form(...),
+    apellido: str = Form(...),
+    email: str = Form(...),
+    password: str = Form(...),
+    rol: str = Form(...),
+    estado: bool = Form(...)
+):
     conn = get_connection()
     if not conn:
         raise HTTPException(status_code=500, detail="No se pudo conectar a la base de datos")
 
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-    #no admite contraseñas de mas de 72 bytes, tambien hay que limitar en el front la cantidad de caracteres
-    password_input = usuario.password_hash[:72]
-    hashed_password = pwd_context.hash(password_input)
+    if not password or len(password.strip()) == 0:
+        raise HTTPException(status_code=400, detail="La contraseña no puede estar vacía")
+
+    password_input = password[:72]
+    password_hash = pwd_context.hash(password_input)
 
     try:
         cursor = conn.cursor()
@@ -58,12 +88,12 @@ def add_usuario(usuario: Usuario):
         """
 
         cursor.execute(query, (
-            usuario.nombre,
-            usuario.apellido,
-            usuario.email,
-            hashed_password,
-            usuario.rol,
-            usuario.estado
+            nombre,
+            apellido,
+            email,
+            password_hash,
+            rol,
+            estado
         ))
 
         new_id = cursor.fetchone()[0]
