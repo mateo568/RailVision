@@ -1,32 +1,54 @@
- <!-- Top navbar -->
 <nav class="navbar navbar-dark bg-dark shadow justify-content-between fixed-top">
-    <button class="btn btn-outline-light" (click)="Sidebar()">☰</button>
-    
-    <div class="dropdown">
-        <button class="btn btn-outline-light  mb-0 dropdown-toggle" type="button" id="perfilMenu" data-bs-toggle="dropdown" aria-expanded="false">
-            Perfil
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="perfilMenu">
-            <li><a class="dropdown-item" href="#">Ver perfil</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Cerrar sesión</a></li>
-        </ul>
-    </div>
-    <!-- <span class="navbar-brand mb-0 h1">Mi App</span> -->
+  <button class="btn btn-outline-light" (click)="Sidebar()">☰</button>
+
+  <div class="dropdown">
+    <button class="btn btn-outline-light mb-0 dropdown-toggle" type="button" id="perfilMenu"
+      data-bs-toggle="dropdown" aria-expanded="false">
+      Perfil
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="perfilMenu">
+      <li><a class="dropdown-item" href="#">Ver perfil</a></li>
+      <li><hr class="dropdown-divider"></li>
+      <li><a class="dropdown-item" (click)="logout()">Cerrar sesión</a></li>
+    </ul>
+  </div>
 </nav>
 
-<div class="sidebar bg-dark text-white" 
-[ngClass]="{ 'sidebar-expanded': expand, 'sidebar-collapsed': !expand }">
-    <h4 class="text-center" >RailVision</h4>
-    <ul class="list-unstyled text-center">
-        <li><button class="nav-link text-white" (click)="navegar('/menu/viajes')">Viajes</button></li>
-        <li><button class="nav-link text-white" (click)="navegar('/menu/trenes')">Trenes</button></li>
-        <li><button class="nav-link text-white" (click)="navegar('/menu/empleados')">Empleados</button></li>
-        <li><button class="nav-link text-white" (click)="navegar('/menu/rutas')">Rutas</button></li>    
-        <li><button class="nav-link text-white" (click)="navegar('/menu/estaciones')">Estaciones</button></li>
-    </ul>
+<!-- Navegacion dinamica, falta otorgar o denegar permisos -->
+<div class="sidebar bg-dark text-white" [ngClass]="{ 'sidebar-expanded': expand, 'sidebar-collapsed': !expand }">
+  <h4 class="text-center">RailVision</h4>
+  <ul class="list-unstyled text-center">
+
+    <!-- Todos pueden ver la lista de viajes -->
+    <li>
+    <button class="nav-link text-white" (click)="navegar('/menu/viajes')">Viajes</button>
+    </li>
+
+    <!-- Solo admin y operador pueden crear nuevos viajes -->
+
+    <!-- Admin y operador -->
+    <li *ngIf="authRoles.esAdmin() || authRoles.esOperador()">
+      <button class="nav-link text-white" (click)="navegar('/menu/trenes')">Trenes</button>
+    </li>
+
+    <!-- Solo Admin -->
+    <li *ngIf="authRoles.esAdmin()">
+      <button class="nav-link text-white" (click)="navegar('/menu/empleados')">Empleados</button>
+    </li>
+
+    <!-- Admin y operador -->
+    <li *ngIf="authRoles.esAdmin() || authRoles.esOperador()">
+      <button class="nav-link text-white" (click)="navegar('/menu/rutas')">Rutas</button>
+    </li>
+
+    <!-- Solo Admin -->
+    <li *ngIf="authRoles.esAdmin()">
+      <button class="nav-link text-white" (click)="navegar('/menu/estaciones')">Estaciones</button>
+    </li>
+
+  </ul>
 </div>
 
 <section>
-    <router-outlet></router-outlet>
+  <router-outlet></router-outlet>
 </section>

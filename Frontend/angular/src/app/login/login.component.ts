@@ -33,6 +33,7 @@ export class LoginComponent {
     this.authService.login(email, password).subscribe({
       next: (res) => {
         localStorage.setItem('token', res.access_token);
+        localStorage.setItem('rol', res.rol); //Se guarda el rol de usuario
         Swal.fire('Bienvenido', 'Inicio de sesión exitoso', 'success');
         this.router.navigate(['/menu']);
       },
