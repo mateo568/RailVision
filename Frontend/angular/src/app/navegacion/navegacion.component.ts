@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { Router, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { AuthRolesService } from '../../services/servicio-auth-roles.service';
 
 @Component({
   selector: 'app-navegacion',
@@ -12,6 +13,7 @@ import { Router, RouterLinkActive, RouterOutlet } from '@angular/router';
 export class NavegacionComponent {
   router = inject(Router);
   
+  authRoles = inject(AuthRolesService);
   expand = true;
 
   Sidebar(){
@@ -21,4 +23,10 @@ export class NavegacionComponent {
   navegar(link: string){
     this.router.navigate([link])
   }
+
+  logout() {
+    this.authRoles.logout();
+    this.router.navigate(['/login']);
+  }
+  
 }
