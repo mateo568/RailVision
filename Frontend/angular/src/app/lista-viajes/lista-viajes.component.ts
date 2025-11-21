@@ -6,12 +6,14 @@ import { Viaje } from '../../models/Entity/viaje';
 import { ServicioViajesService } from '../../services/servicio-viajes.service';
 import { Ruta } from '../../models/Entity/ruta';
 import { ServicioRutasService } from '../../services/servicio-rutas.service';
-import { DtoListaViaje } from '../../models/Dto/dto-viaje';
+import { DtoListaViaje, DtoPutCargamento, DtoPutViaje } from '../../models/Dto/dto-viaje';
+import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-lista-viajes',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './lista-viajes.component.html',
   styleUrl: './lista-viajes.component.css'
 })
@@ -22,6 +24,30 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
   listaRutas: Ruta[] = [];
 
   listadoViajes: DtoListaViaje[] = [];
+
+  detallesViaje: DtoListaViaje = { id: 0, trenId: 0, ruta: '', usuarioId: 0, fechaSalida: '', fechaLlegada: '',
+                                  carga: 0, estado: '', fechaCreacion: '', detalleCarga: [] };
+  viajeModificable: boolean = false;
+  modificar: boolean = false;
+  fechaSalidaActualizada: string = "";
+  fehcaLlegadaActualizada: string = "";
+
+  formViaje = new FormGroup({
+    fecha: new FormControl("",[Validators.required]),
+    horarioSalida: new FormControl("",[Validators.required]),
+    horarioLlegada: new FormControl("",[Validators.required]),
+    cargasActuales: new FormArray([]),
+    cargasNuevas: new FormArray([])
+  })
+  duracionViaje: number = 0;
+
+  get arrayCargasActuales(){
+    return this.formViaje.get("cargasActuales") as FormArray;
+  }
+
+  get arrayCargasNuevas(){
+    return this.formViaje.get("cargasNuevas") as FormArray;
+  }
 
   servicioViaje = inject(ServicioViajesService)
   servicioRuta = inject(ServicioRutasService)
@@ -62,6 +88,7 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
         carga: viaje.carga,
         estado: viaje.estado,
         fechaCreacion: viaje.fechaCreacion,
+        detalleCarga: viaje.cargamentos
       }
 
       this.listadoViajes.push(item)
@@ -70,6 +97,166 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
     this.listadoViajes.sort((a,b) => estados.indexOf(a.estado) - estados.indexOf(b.estado))
   }
 
+  cargarDetallesViaje(viaje: DtoListaViaje) {
+    this.detallesViaje = viaje;
+
+    if (this.detallesViaje.estado == "programado") { this.viajeModificable = true }
+    else { this.viajeModificable = false }
+
+    this.modificar = false;
+    
+    this.formViaje.get("fecha")?.setValue(this.detallesViaje.fechaSalida.split("T")[0]);    
+    this.formViaje.get("horarioSalida")?.setValue(this.detallesViaje.fechaSalida.substring(11,16));
+    this.formViaje.get("horarioLlegada")?.setValue(this.detallesViaje.fechaLlegada.substring(11,16));
+    this.cargarDuracionViaje();
+
+    this.arrayCargasActuales.clear();
+    this.arrayCargasNuevas.clear();
+    this.detallesViaje.detalleCarga.forEach( carga => {
+      const cargaActual: FormGroup = new FormGroup({
+        id: new FormControl(carga.id),
+        detalle: new FormControl(carga.detalle,[Validators.required]),
+        tipo: new FormControl(carga.tipo,[Validators.required]),
+        peso: new FormControl(carga.peso,[Validators.required]),
+        estado: new FormControl(carga.estado)
+      })
+
+      this.arrayCargasActuales.push(cargaActual);
+    });
+  }
+
+  cargarDuracionViaje() {
+    const [horaS, minutoS] = (this.formViaje.get("horarioSalida")?.value ?? "00:00").split(':').map(Number);
+    const [horaL, minutoL] = (this.formViaje.get("horarioLlegada")?.value ?? "00:00").split(':').map(Number);
+
+    let tiempoSalida = horaS * 60 + minutoS;
+    let tiempoLlegada = horaL * 60 + minutoL;
+
+    if (tiempoSalida > tiempoLlegada) { tiempoLlegada += 60 * 24; }
+
+    this.duracionViaje = tiempoLlegada - tiempoSalida;
+  }
+
+  habilitarModificacion() {
+    this.modificar = !this.modificar;
+  }
+
+  cambiarEstadoCarga(index: number, event: Event) {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.arrayCargasActuales.at(index).get('estado')!.setValue( checked ? 'activo' : 'inactivo' );
+  }
+
+  agregarCargaNueva() {
+    const nuevaCarga: FormGroup = new FormGroup({
+      detalle: new FormControl('',[Validators.required]),
+      tipo: new FormControl('',[Validators.required]),
+      peso: new FormControl(0,[Validators.required]),
+      estado: new FormControl("activo")
+    })
+
+    this.arrayCargasNuevas.push(nuevaCarga);
+  }
+
+  eliminarCargaNueva(index: number) {
+    this.arrayCargasNuevas.removeAt(index);
+  }
+
+  modificarHorario() {
+    const [horaS, minutoS] = (this.formViaje.get("horarioSalida")?.value ?? "00:00").split(':').map(Number);
+
+    const minutosSalida = horaS * 60 + minutoS; 
+    let minutosLlegada = minutosSalida + this.duracionViaje;
+
+    minutosLlegada = minutosLlegada % 1440
+
+    this.formViaje.get("horarioLlegada")?.
+    setValue(Math.floor(minutosLlegada / 60).toString().padStart(2, '0')+":"+(minutosLlegada % 60).toString().padStart(2, '0'))
+  }
+
+  submit() {
+    if (this.formViaje.valid){
+      this.actualizarFechas();
+  
+      const form = this.formViaje.value;
+      let listaCargamentos: DtoPutCargamento[] = [];
+      let cargaTotal: number = 0;
+      
+      this.arrayCargasActuales.controls.forEach(carga => {
+        const cargamento: DtoPutCargamento = {
+          id: carga.get("id")?.value!,
+          detalle: carga.get("detalle")?.value!,
+          tipo: carga.get("tipo")?.value!,
+          peso: carga.get("peso")?.value!,
+          estado: carga.get("estado")?.value!,
+        }
+        listaCargamentos.push(cargamento);
+        cargaTotal += carga.get("peso")?.value!
+      });
+      
+      this.arrayCargasNuevas.controls.forEach(carga => {
+        const cargamento: DtoPutCargamento = {
+          id: 0,
+          detalle: carga.get("detalle")?.value!,
+          tipo: carga.get("tipo")?.value!,
+          peso: carga.get("peso")?.value!,
+          estado: carga.get("estado")?.value!,
+        }
+        listaCargamentos.push(cargamento);
+        cargaTotal += carga.get("peso")?.value!
+      })
+      
+      let dtoViaje: DtoPutViaje = {
+        viajeId: this.detallesViaje.id,
+        fechaSalida: this.fechaSalidaActualizada,
+        fechaLlegada: this.fehcaLlegadaActualizada,
+        carga: cargaTotal,
+        listaCargamento: listaCargamentos ?? []
+      }
+      
+      const sub = this.servicioViaje.putViaje(dtoViaje).subscribe(() => {
+        alert("Modificacion realizada")
+        console.log(dtoViaje);
+        this.cerrarModal();
+        this.cargarDatos();
+      })
+
+    }
+  }
+
+  actualizarFechas() {
+    const fecha = this.formViaje.get("fecha")?.value;
+    const horaSalida = this.formViaje.get("horarioSalida")?.value!;
+    
+    this.fechaSalidaActualizada = `${fecha}T${horaSalida}:00`;
+
+    const [h, m] = horaSalida.split(":").map(Number);
+    let minutosTotales = h * 60 + m + this.duracionViaje;
+
+    const diaExtra = Math.floor(minutosTotales / 1440);
+    minutosTotales = minutosTotales % 1440;
+
+    const horaL = Math.floor(minutosTotales / 60).toString().padStart(2, "0");
+    const minL = (minutosTotales % 60).toString().padStart(2, "0");
+
+    let fechaLlegada = fecha;
+
+    if (diaExtra > 0) {
+      const f = new Date(`${fecha}T00:00:00`);
+      f.setDate(f.getDate() + diaExtra);
+      fechaLlegada = f.toISOString().substring(0, 10);
+    }
+
+    this.fehcaLlegadaActualizada = `${fechaLlegada}T${horaL}:${minL}:00`;
+  }
+
+  cerrarModal(){
+     const modalElement = document.getElementById('ModalDetalleViaje');
+    if (modalElement) {
+      const modal = bootstrap.Modal.getInstance(modalElement);
+      modal.hide();
+    }
+  }
+  
   cancelarViaje(id: number) {
     const sub = this.servicioViaje.deleteViaje(id).subscribe(() =>{
       alert("Viaje cancelado")

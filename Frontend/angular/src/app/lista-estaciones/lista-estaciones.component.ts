@@ -34,7 +34,7 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
   listaFiltrada: Estacion[] = [];
 
   modalEstacion: DtoPutEstacion = { id: 0, nombre: "", estado: true };
-    nuevaEstacion = new FormGroup({
+  nuevaEstacion = new FormGroup({
     nombre: new FormControl('',[Validators.required, Validators.minLength(7)]),
     ciudad: new FormControl(0,[Validators.required])
   })
@@ -46,7 +46,7 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
   servicioRuta = inject(ServicioRutasService)
 
   ngOnInit(): void {
-    this.mapa = this.servicioMapa.iniciarMapa();
+    setTimeout(() => { this.mapa = this.servicioMapa.iniciarMapa(); });
     this.cargarDatos();
   }
   
@@ -170,5 +170,6 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
 
   ngOnDestroy(): void {
     this.subscripciones.forEach(sub => sub.unsubscribe());
+    this.mapa = this.servicioMapa.eliminarMapa(this.mapa);
   }
 }

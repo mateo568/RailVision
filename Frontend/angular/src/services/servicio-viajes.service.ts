@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Viaje } from '../models/Entity/viaje';
-import { DtoPostViaje } from '../models/Dto/dto-viaje';
+import { DtoPostViaje, DtoPutViaje } from '../models/Dto/dto-viaje';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +19,10 @@ export class ServicioViajesService {
 
   postViaje(nuevoViaje: DtoPostViaje): Observable<Viaje> {
     return this.client.post<Viaje>(`${this.URL_DATABASE_VIAJES}`, nuevoViaje)
+  }
+
+  putViaje(viajeModificado: DtoPutViaje): Observable<Viaje> {
+    return this.client.put<Viaje>(`${this.URL_DATABASE_VIAJES}`, viajeModificado)
   }
 
   deleteViaje(viajeId: number) {

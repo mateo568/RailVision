@@ -1,3 +1,5 @@
+import { Cargamento } from "../Entity/cargamento";
+
 export interface DtoListaViaje {
     id: number;
     trenId: number;
@@ -8,6 +10,7 @@ export interface DtoListaViaje {
     carga: number;
     estado: string;
     fechaCreacion: string;
+    detalleCarga: Cargamento[];
 }
 
 export interface DtoListaMapaViaje {
@@ -33,4 +36,20 @@ export interface DtoPostCargamento{
     detalle: string;
     tipo: string;
     peso: number;
+}
+
+export interface DtoPutViaje {
+    viajeId: number;
+    fechaSalida: string;
+    fechaLlegada: string;
+    carga: number;
+    listaCargamento: DtoPutCargamento[];
+}
+
+export interface DtoPutCargamento {
+    id: number;
+    detalle: string;
+    tipo: string;
+    peso: number;
+    estado: string;
 }

@@ -23,10 +23,19 @@ export class ServicioMapaService {
   constructor(private client: HttpClient) { }
 
   iniciarMapa(){
+    const container = L.DomUtil.get('map');
+
+    if (container != null) {
+      while (container.firstChild) { container.removeChild(container.firstChild); }
+      if ((container as any)._leaflet_id) { delete (container as any)._leaflet_id; }
+
+      container.className = "";
+    }
+
     this.mapa = L.map('map', {minZoom: 7, maxZoom: 10, 
       maxBounds: [ [-36, -67], [-29, -61] ], maxBoundsViscosity: 1.0}).setView([-31.4167, -64.1833], 7);
     
-      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.mapa);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.mapa);
 
     this.fixLeafletIconPaths();
 
@@ -106,5 +115,22 @@ export class ServicioMapaService {
     }).addTo(mapa);
 
     mapa.fitBounds(ruta.getBounds());
+  }
+
+  eliminarMapa(mapa: L.Map | null): L.Map | null {
+    if (mapa){ 
+      mapa.off();
+      mapa.remove(); 
+    }
+
+    const container = L.DomUtil.get('map');
+    if (container) {
+      while (container.firstChild) { container.removeChild(container.firstChild); }
+      delete (container as any)._leaflet_id;
+      
+      container.className = "";
+    }
+
+    return null;
   }
 }
