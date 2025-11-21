@@ -101,7 +101,8 @@ public class ViajeServiceImpl implements ViajeService {
         }
 
         cargamentoRepository.saveAll(cargamentoModificado);
-        viajeModificado.setCargamentos(cargamentoModificado);
+        viajeModificado.getCargamentos().clear();
+        viajeModificado.getCargamentos().addAll(cargamentoModificado);
 
         repository.save(viajeModificado);
 

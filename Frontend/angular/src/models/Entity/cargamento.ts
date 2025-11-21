@@ -4,4 +4,5 @@ export interface Cargamento {
     detalle: string;
     tipo: string;
     peso: number;
+    estado: string;
 }

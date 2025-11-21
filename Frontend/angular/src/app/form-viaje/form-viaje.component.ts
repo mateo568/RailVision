@@ -52,7 +52,7 @@ export class FormViajeComponent implements OnInit, OnDestroy{
   }
 
   ngOnInit(): void {
-    this.mapa = this.servicioMapa.iniciarMapa();
+    setTimeout(() => { this.mapa = this.servicioMapa.iniciarMapa(); });
     this.cargarDatos();
 
     this.nuevoViaje.get("horarioSalida")?.valueChanges.subscribe(() => {
@@ -210,5 +210,6 @@ export class FormViajeComponent implements OnInit, OnDestroy{
   
   ngOnDestroy(): void {
     this.subscripciones.forEach(sub => sub.unsubscribe());
+    this.mapa = this.servicioMapa.eliminarMapa(this.mapa);
   }
 }

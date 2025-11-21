@@ -40,38 +40,8 @@ export class MapaComponent implements OnInit, OnDestroy{
   router = inject(Router);
 
   ngOnInit(): void {
-    this.mapa = this.servicioMapa.iniciarMapa();
+    setTimeout(() => { this.mapa = this.servicioMapa.iniciarMapa(); });
     this.cargarDatos();
-
-    // this.calcularRuta([-64.188938, -31.419429], [-63.240833, -32.407500]);
-    // this.calcularRuta([-64.349869, -33.130684], [-63.240833, -32.407500]);
-    // this.calcularRuta([-64.350349, -30.420956], [-64.499394, -31.420083]);
-    // this.calcularRuta([-64.188938, -31.419429], [-62.082308, -31.427960]);
-
-  //   const rutas: [number, number][][] = [
-  //   [[-64.188938, -31.419429], [-63.240833, -32.407500]], // Córdoba → Villa María
-  //   [[-64.349869, -33.130684], [-63.240833, -32.407500]], // Río Cuarto → Villa María
-  //   [[-64.350349, -30.420956], [-64.499394, -31.420083]], // Deán Funes → Carlos Paz
-  //   [[-64.188938, -31.419429], [-62.082308, -31.427960]], // Córdoba → San Francisco
-  //   ];
-
-  //   from(rutas).pipe(
-  //     concatMap(([start, end]) =>
-  //       // llamamos a calcularRuta con 1.5s de delay entre cada ruta
-  //       this.delayCall(start, end, 2000)
-  //     )
-  //  ).subscribe();
-
-        // private delayCall(start: [number, number], end: [number, number], ms: number) {
-        //   return from([null]).pipe(
-        //     delay(ms),
-        //     concatMap(() => {
-        //       this.calcularRuta(start, end);
-        //       return from([true]); // devolver algo para que concatMap funcione
-        //     })
-        //   );
-        // }
-    
   }
 
   private cargarDatos() {
@@ -146,5 +116,6 @@ export class MapaComponent implements OnInit, OnDestroy{
 
   ngOnDestroy(): void {
     this.subscripciones.forEach(sub => sub.unsubscribe());
+    this.mapa = this.servicioMapa.eliminarMapa(this.mapa);
   }
 }

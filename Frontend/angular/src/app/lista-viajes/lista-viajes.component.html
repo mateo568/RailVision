@@ -47,7 +47,8 @@
                             </button>
                             <ul class="dropdown-menu">
                                 <li>
-                                    <button class="dropdown-item" type="button">Detalles...</button>   
+                                    <button class="dropdown-item" type="button" data-bs-toggle="modal" 
+                                    data-bs-target="#ModalDetalleViaje" (click)="cargarDetallesViaje(viaje)">Detalles</button>   
                                     @if(viaje.estado == "programado") {
                                         <button class="dropdown-item" type="button" (click)="cancelarViaje(viaje.id)">Cancelar</button>
                                     }   
@@ -59,4 +60,151 @@
             }
         </tbody>
     </table>
+
+    <!-- Modal detalle viaje -->
+    <div class="modal fade modal-lg" id="ModalDetalleViaje" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                @if (!modificar) {
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Detalles viaje</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        @if (detallesViaje.detalleCarga.length != 0) {
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Detalle</th>
+                                        <th scope="col">Tipo</th>
+                                        <th scope="col">Peso (t.)</th>
+                                        <th scope="col">Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (carga of detallesViaje.detalleCarga; track $index) {
+                                        <tr>
+                                            <td>{{carga.detalle}}</td>
+                                            <td>{{carga.tipo}}</td>
+                                            <td>{{carga.peso}}</td>
+                                            @switch (carga.estado){
+                                                @case ("activo") { <td><span class="badge text-bg-primary">Activo</span></td> }
+                                                @case ("inactivo") { <td><span class="badge text-bg-danger">Inactivo</span></td> }
+                                            }
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        @else {
+                            <h5>Este viaje no cuenta con cargamento</h5>
+                        }
+                    </div>
+                    @if (viajeModificable) {
+                        <div class="modal-footer">
+                            <button class="btn btn-warning" type="button" (click)="habilitarModificacion()">Modificar</button>
+                        </div>
+                    }
+                }
+                @else {
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Modificar viaje</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form [formGroup]="formViaje" (submit)="submit()">
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="">Fecha</label>
+                                    <input type="date" class="form-control" formControlName="fecha">
+                                </div>
+                                <div class="col">
+                                    <label for="">Horario Salida</label>
+                                    <input type="time" class="form-control" formControlName="horarioSalida" (change)="modificarHorario()">
+                                </div>
+                                <div class="col">
+                                    <label for="">Horario Llegada</label>
+                                    <input type="time" class="form-control" formControlName="horarioLlegada" readonly>
+                                </div>
+                            </div>
+                            <hr>
+
+                            <h5>Cargamento actual</h5>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Detalle</th>
+                                        <th scope="col">Tipo</th>
+                                        <th scope="col">Peso (t.)</th>
+                                        <th scope="col">Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody formArrayName="cargasActuales">
+                                    <tr *ngFor="let carga of arrayCargasActuales.controls; let i = index" [formGroupName]="i">
+                                        <td> <input class="form-control" type="text" formControlName="detalle"> </td>
+                                        <td>
+                                            <select name="" id="" class="form-select" formControlName="tipo">
+                                                <option value="" selected>Seleccionar...</option>
+                                                <option value="mineria">Mineria</option>
+                                                <option value="agricultura">Agricultura</option>
+                                                <option value="general">General</option>
+                                                <option value="otros">Otros</option>
+                                            </select> 
+                                        </td>
+                                        <td> <input class="form-control" type="number" formControlName="peso"> </td>
+                                        <td> 
+                                            <input class="btn-check" type="checkbox" id="checkEstado{{i}}"
+                                            [checked]="carga.get('estado')!.value === 'activo'"
+                                            (change)="cambiarEstadoCarga(i, $event)"> 
+                                            <label class="btn" [ngClass]="carga.get('estado')!.value === 'activo' ? 'btn-primary' : 'btn-danger'" 
+                                            for="checkEstado{{i}}">{{carga.get('estado')!.value}}</label>
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+                                
+                                <tr> <td colspan="4"> <hr> </td> </tr>
+
+                                
+                                <tr>
+                                    <td colspan="4">
+                                        <div class="row">
+                                            <div class="col-3">
+                                                <h5>Cargamento nuevo</h5>
+                                            </div>
+                                            <div class="col">
+                                                <button class="btn btn-outline-primary" type="button" (click)="agregarCargaNueva()">Agregar</button>   
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                
+
+                                <tbody formArrayName="cargasNuevas">
+                                    <tr *ngFor="let carga of arrayCargasNuevas.controls; let e = index" [formGroupName]="e">
+                                        <td> <input type="text" class="form-control" formControlName="detalle"> </td>
+                                        <td>
+                                            <select name="" id="" class="form-select" formControlName="tipo">
+                                                <option value="" selected>Seleccionar...</option>
+                                                <option value="mineria">Mineria</option>
+                                                <option value="agricultura">Agricultura</option>
+                                                <option value="general">General</option>
+                                                <option value="otros">Otros</option>
+                                            </select> 
+                                        </td>
+                                        <td> <input type="number" class="form-control" formControlName="peso"> </td>
+                                        <td> <button class="btn btn-danger" type="button" (click)="eliminarCargaNueva(e)">X</button> </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" (click)="habilitarModificacion()">Cancelar</button>
+                            <button class="btn btn-primary" type="submit">Confirmar</button>
+                        </div>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
 </div>
