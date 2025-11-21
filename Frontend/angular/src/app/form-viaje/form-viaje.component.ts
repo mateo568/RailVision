@@ -11,6 +11,8 @@ import { ServicioRutasService } from '../../services/servicio-rutas.service';
 import { Estacion } from '../../models/Entity/estacion';
 import { DtoPostCargamento, DtoPostViaje } from '../../models/Dto/dto-viaje';
 import { Ruta } from '../../models/Entity/ruta';
+import { Tren } from '../../models/Entity/tren';
+import { ServicioTrenesService } from '../../services/servicio-trenes.service';
 
 @Component({
   selector: 'app-form-viaje',
@@ -24,17 +26,22 @@ export class FormViajeComponent implements OnInit, OnDestroy{
   
   listaRutas: Ruta[] = [];
   listaEstaciones: Estacion[] = [];
+  listaTrenes: Tren[] = [];
 
   listaEstacionesOrigen: Estacion[] = []
   listaEstacionesDestino: Estacion[] = []
   rutaViaje: Ruta | undefined;
 
   private mapa: any;
+  private icono: any;
+  private cronometro: any;
+
 
   private servicioMapa = inject(ServicioMapaService)
   private servicioViaje = inject(ServicioViajesService)
   private servicioEstacion = inject(ServicioEstacionService)
-  private servicioRuta =inject(ServicioRutasService)
+  private servicioRuta = inject(ServicioRutasService)
+  private servicioTren = inject(ServicioTrenesService)
   private router = inject(Router)
 
   nuevoViaje = new FormGroup({
@@ -66,12 +73,14 @@ export class FormViajeComponent implements OnInit, OnDestroy{
     this.subscripciones.push(
       forkJoin({
         estaciones: this.servicioEstacion.getEstaciones(),
-        rutas: this.servicioRuta.getRutas()
-      }).subscribe(({estaciones, rutas}) =>{
+        rutas: this.servicioRuta.getRutas(),
+        trenes: this.servicioTren.getTrenes()
+      }).subscribe(({estaciones, rutas, trenes}) =>{
         this.listaEstaciones = estaciones
         this.listaEstacionesOrigen = this.listaEstaciones.filter(e => e.estado === true);
         this.listaEstacionesDestino = this.listaEstaciones.filter(e => e.estado === true);
         this.listaRutas = rutas;
+        this.listaTrenes = trenes;
       })
     )
   }
@@ -94,7 +103,31 @@ export class FormViajeComponent implements OnInit, OnDestroy{
     if (estacionOrigen && estacionDestino) {
       this.rutaViaje = this.listaRutas.find( r => r.estacionOrigen === Number(estacionOrigen) && r.estacionDestino === Number(estacionDestino))
       if (this.nuevoViaje.get("horarioSalida")?.value) this.calcularTiempoLlegada();
+
+      clearTimeout(this.cronometro)
+      this.cronometro = setTimeout(() => { this.graficarRuta(Number(estacionOrigen),Number(estacionDestino)) }, 2000)
     }
+  }
+
+  graficarRuta(estacionOrigen: number, estacionDestino: number) {
+    this.mapa = this.servicioMapa.limpiarIconos();
+    this.servicioMapa.borrarRuta(this.mapa);
+
+    var iconoOrigen = this.listaEstaciones.find(e => e.id === estacionOrigen)
+    var iconoDestino = this.listaEstaciones.find(e => e.id === estacionDestino)
+    
+    this.icono = this.servicioMapa.cargarIcono(iconoOrigen?.ciudad.latitud!, iconoOrigen?.ciudad.longitud!, iconoOrigen?.nombre!)
+    this.icono.addTo(this.mapa);
+
+    this.icono = this.servicioMapa.cargarIcono(iconoDestino?.ciudad.latitud!, iconoDestino?.ciudad.longitud!, iconoDestino?.nombre!)
+    this.icono.addTo(this.mapa);
+
+    const latitudOrigen = Number(iconoOrigen?.ciudad.latitud);
+    const longitudOrigen = Number(iconoOrigen?.ciudad.longitud);
+    const latitudDestino = Number(iconoDestino?.ciudad.latitud);
+    const longitudDestino = Number(iconoDestino?.ciudad.longitud);
+
+    this.servicioMapa.calcularRuta([longitudOrigen,latitudOrigen],[longitudDestino,latitudDestino],this.mapa);
   }
 
   agregarCarga(){

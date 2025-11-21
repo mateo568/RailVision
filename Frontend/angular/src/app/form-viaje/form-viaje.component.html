@@ -32,8 +32,9 @@
                         <label for="">Tren</label>
                         <select name="" id="" formControlName="tren" class="form-select">
                             <option value="" selected>Seleccionar...</option>
-                            <option value="1">MC-1000</option>
-                            <option value="2">SV-5000</option>
+                            @for (tren of listaTrenes; track $index) {
+                                <option [value]="tren.tren_id">{{tren.codigo}}</option>
+                            }
                         </select>
                     </div>
                     <div class="col">

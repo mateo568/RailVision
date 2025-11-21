@@ -9,6 +9,7 @@ export class ServicioMapaService {
 
   private mapa: any;
   private apiKey = "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjFiMjRhOGY1MzcxODRmYTY5M2FlZGNjZTk1Zjg3NTAwIiwiaCI6Im11cm11cjY0In0=";
+  private ruta: L.GeoJSON | null = null;
 
   private redIcon = new L.Icon({
     iconUrl: '/assets/leaflet/marker-icon-red.png',
@@ -107,14 +108,21 @@ export class ServicioMapaService {
   }
 
   private dibujarRuta(geojson: any, mapa: L.Map): void {
-    const ruta = L.geoJSON(geojson, {
+    this.ruta = L.geoJSON(geojson, {
       style: {
         color: 'green',
         weight: 4
       }
     }).addTo(mapa);
 
-    mapa.fitBounds(ruta.getBounds());
+    mapa.fitBounds(this.ruta.getBounds());
+  }
+
+  borrarRuta(mapa: L.Map): void {
+    if (this.ruta) {
+      mapa.removeLayer(this.ruta);
+      this.ruta = null;
+    }
   }
 
   eliminarMapa(mapa: L.Map | null): L.Map | null {
