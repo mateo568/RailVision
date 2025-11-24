@@ -14,20 +14,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# ----------------------
-# Utilidades
-# ----------------------
 
-# def verify_password(plain_password, hashed_password):
-#     return pwd_context.verify(plain_password, hashed_password)
-
-# def create_access_token(data: dict, expires_delta: timedelta | None = None):
-#     to_encode = data.copy()
-#     expire = datetime.utcnow() + (expires_delta or timedelta(minutes=15))
-#     to_encode.update({"exp": expire})
-#     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-
-## TEST LOGIN SIN HASH ##
 @router.post("/login")
 def login(email: str = Form(...), password: str = Form(...)):
     conn = get_connection()
@@ -46,10 +33,10 @@ def login(email: str = Form(...), password: str = Form(...)):
     if not user:
         raise HTTPException(status_code=401, detail="Usuario no encontrado")
 
-    usuario_id, email_db, password_db, rol, estado = user
+    usuario_id, email_db, password_hash_db, rol, estado = user
 
-    # sin hash para validar
-    if password != password_db:
+    # ✅ Verificar el hash con passlib
+    if not pwd_context.verify(password, password_hash_db):
         raise HTTPException(status_code=401, detail="Credenciales inválidas")
 
     if not estado:
@@ -61,7 +48,6 @@ def login(email: str = Form(...), password: str = Form(...)):
         "email": email_db,
         "rol": rol
     }
-
 # ----------------------
 # Endpoint de login
 # ----------------------
