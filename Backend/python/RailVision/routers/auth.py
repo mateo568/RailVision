@@ -35,7 +35,6 @@ def login(email: str = Form(...), password: str = Form(...)):
 
     usuario_id, email_db, password_hash_db, rol, estado = user
 
-    # ✅ Verificar el hash con passlib
     if not pwd_context.verify(password, password_hash_db):
         raise HTTPException(status_code=401, detail="Credenciales inválidas")
 
