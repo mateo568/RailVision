@@ -11,6 +11,8 @@ export class ServicioMapaService {
   private apiKey = "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjFiMjRhOGY1MzcxODRmYTY5M2FlZGNjZTk1Zjg3NTAwIiwiaCI6Im11cm11cjY0In0=";
   private ruta: L.GeoJSON | null = null;
 
+  public distanciaRuta: number = 0;
+
   private redIcon = new L.Icon({
     iconUrl: '/assets/leaflet/marker-icon-red.png',
     iconRetinaUrl: '/assets/leaflet/marker-icon-2x-red.png',
@@ -99,6 +101,10 @@ export class ServicioMapaService {
     this.client.post<any>(url, body, { headers }).subscribe({
       next: (response) => {
         console.log('Ruta ORS:', response);
+
+        const distance = response?.features?.[0]?.properties?.summary?.distance / 1000;
+        this.distanciaRuta = distance ?? null;
+
         this.dibujarRuta(response, mapa);
       },
       error: (err) => {

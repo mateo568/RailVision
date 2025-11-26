@@ -4,14 +4,38 @@
         <div id="divVolver" class="col-1">
             <button id="botonVolver" class="btn btn-secondary" (click)="irMenuViajes()">Volver</button>
         </div>
-        <div class="col-1">
-            <label for="">Tren</label>
-            <select class="form-select" aria-label="Default select example">
-                <option selected>Seleccionar...</option>
-                <option value="1">BXL-7000</option>
-                <option value="2">BST-1000</option>
-                <option value="3">BRR-2000</option>
+        <div class="col-2">
+            <label for="">Ruta</label>
+            <select class="form-select" [(ngModel)]="filtroRuta" (change)="filtrar()">
+                <option value=""></option>
+                @for (ruta of listaRutas; track $index) {
+                    <option [value]="filtroNombresRuta(ruta.nombre)">{{filtroNombresRuta(ruta.nombre)}}</option>
+                }
             </select>
+        </div>
+        <div class="col-2">
+            <label for="">Tren</label>
+            <select class="form-select" [(ngModel)]="filtroTren" (change)="filtrar()">
+                <option value=""></option>
+                @for (tren of listaTrenes; track $index) {
+                    <option [value]="tren.tren_id">{{tren.codigo}}</option>
+                }
+            </select>
+        </div>
+        <div class="col-2">
+            <label for="">Estado</label>
+            <select class="form-select" [(ngModel)]="filtroEstado" (change)="filtrar()">
+                <option value=""></option>
+                <option value="en curso">En curso</option>
+                <option value="programado">Programado</option>
+                <option value="finalizado">Finalizado</option>
+                <option value="cancelado">Cancelado</option>
+            </select>
+        </div>
+        <div id="divLimpiar" class="col-1">
+            <button id="botonLimpiar" class="btn btn-secondary" (click)="limpiarFiltro()">
+                <i class="bi bi-trash"></i>
+            </button>
         </div>
     </div>
 
@@ -27,13 +51,13 @@
             </tr>
         </thead>
         <tbody>
-            @for (viaje of listadoViajes; track $index) {
+            @for (viaje of listaFiltrada; track $index) {
                 <tr>
                     <td>{{viaje.ruta}}</td>
                     <td>{{viaje.fechaSalida | date:'dd/MM/yyyy - HH:mm:ss'}}</td>
                     @if (viaje.fechaLlegada) { <td>{{viaje.fechaLlegada | date:'dd/MM/yyyy - HH:mm:ss'}}</td> }
                     @else { <td></td> }
-                    <td>{{viaje.trenId}}</td>
+                    <td>{{viaje.tren?.codigo}}</td>
                     @switch (viaje.estado) {
                         @case ("en curso") {<td><span class="badge text-bg-success">En curso</span></td>}
                         @case ("programado") {<td><span class="badge text-bg-primary">Programado</span></td>}

@@ -35,4 +35,10 @@ public class RutaController {
     public ResponseEntity<List<Ruta>> modificarEstadoRutas(@RequestBody List<RutasPutDto> rutasModificadas){
         return ResponseEntity.ok(rutaService.modificarRutas(rutasModificadas));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarRuta(@PathVariable Integer id) {
+        rutaService.eliminarRuta(id);
+        return ResponseEntity.noContent().build();
+    }
 }

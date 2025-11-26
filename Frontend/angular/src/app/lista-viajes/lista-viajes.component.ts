@@ -7,13 +7,15 @@ import { ServicioViajesService } from '../../services/servicio-viajes.service';
 import { Ruta } from '../../models/Entity/ruta';
 import { ServicioRutasService } from '../../services/servicio-rutas.service';
 import { DtoListaViaje, DtoPutCargamento, DtoPutViaje } from '../../models/Dto/dto-viaje';
-import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ServicioTrenesService } from '../../services/servicio-trenes.service';
+import { Tren } from '../../models/Entity/tren';
 declare var bootstrap: any;
 
 @Component({
   selector: 'app-lista-viajes',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './lista-viajes.component.html',
   styleUrl: './lista-viajes.component.css'
 })
@@ -22,10 +24,16 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
 
   listaViajes: Viaje[] = [];
   listaRutas: Ruta[] = [];
+  listaTrenes: Tren[] = [];
 
   listadoViajes: DtoListaViaje[] = [];
+  listaFiltrada: DtoListaViaje[] = [];
+  filtroRuta: string = "";
+  filtroTren: string = "";
+  filtroEstado: string = "";
 
-  detallesViaje: DtoListaViaje = { id: 0, trenId: 0, ruta: '', usuarioId: 0, fechaSalida: '', fechaLlegada: '',
+
+  detallesViaje: DtoListaViaje = { id: 0, tren: undefined, ruta: '', usuarioId: 0, fechaSalida: '', fechaLlegada: '',
                                   carga: 0, estado: '', fechaCreacion: '', detalleCarga: [] };
   viajeModificable: boolean = false;
   modificar: boolean = false;
@@ -51,6 +59,7 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
 
   servicioViaje = inject(ServicioViajesService)
   servicioRuta = inject(ServicioRutasService)
+  servicioTrenes = inject(ServicioTrenesService)
   router = inject(Router);
 
   ngOnInit(): void {
@@ -62,10 +71,12 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
     this.subscripciones.push(
       forkJoin({
         rutas: this.servicioRuta.getRutas(),
-        viajes: this.servicioViaje.getViajes()
-      }).subscribe(({rutas, viajes}) =>{
+        viajes: this.servicioViaje.getViajes(),
+        trenes: this.servicioTrenes.getTrenes()
+      }).subscribe(({rutas, viajes, trenes}) =>{
         this.listaRutas = rutas;
         this.listaViajes = viajes;
+        this.listaTrenes = trenes;
         this.cargarListado();
       })
     )
@@ -76,11 +87,12 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
     this.listadoViajes = [];
 
     this.listaViajes.forEach( viaje => {
-      const Ruta = this.listaRutas.find(ruta => ruta.id === viaje.rutaId)?.nombre! 
+      const Ruta = this.listaRutas.find(ruta => ruta.id === viaje.rutaId)?.nombre!
+      const Tren = this.listaTrenes.find(tren => tren.tren_id === viaje.trenId)
 
       var item: DtoListaViaje = {
         id: viaje.id,
-        trenId: viaje.trenId,
+        tren: Tren,
         ruta: Ruta.replace(/^Ruta\s*/i, ""),
         usuarioId: viaje.usuarioId,
         fechaSalida: viaje.fechaSalida,
@@ -95,6 +107,41 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
     });
 
     this.listadoViajes.sort((a,b) => estados.indexOf(a.estado) - estados.indexOf(b.estado))
+    this.filtrar()
+  }
+
+  filtroNombresRuta(nombre: string): string {
+    return nombre.replace(/^Ruta\s*/i, "")
+  }
+
+  filtrar() {
+    this.listaFiltrada = this.listadoViajes;
+
+    if (this.filtroRuta) {
+      this.listaFiltrada = this.listaFiltrada.filter( viaje =>{
+        return viaje.ruta === this.filtroRuta;
+      })
+    }
+
+    if (this.filtroTren) {
+      console.log(this.filtroTren)
+      this.listaFiltrada = this.listaFiltrada.filter( viaje =>{
+        return viaje.tren?.tren_id.toString() === this.filtroTren;
+      })
+    }
+
+    if (this.filtroEstado) {
+      this.listaFiltrada = this.listaFiltrada.filter( viaje =>{
+        return viaje.estado === this.filtroEstado;
+      })
+    }
+  }
+
+  limpiarFiltro() {
+    this.filtroRuta = "";
+    this.filtroTren = "";
+    this.filtroEstado = "";
+    this.filtrar();
   }
 
   cargarDetallesViaje(viaje: DtoListaViaje) {
@@ -217,6 +264,9 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
         alert("Modificacion realizada")
         console.log(dtoViaje);
         this.cerrarModal();
+        this.filtroRuta = "";
+        this.filtroTren = "";
+        this.filtroEstado = "";
         this.cargarDatos();
       })
 
@@ -260,6 +310,7 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
   cancelarViaje(id: number) {
     const sub = this.servicioViaje.deleteViaje(id).subscribe(() =>{
       alert("Viaje cancelado")
+
       this.cargarDatos()
     })
   }
