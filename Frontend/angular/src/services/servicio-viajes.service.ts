@@ -17,6 +17,10 @@ export class ServicioViajesService {
     return this.client.get<Viaje[]>(`${this.URL_DATABASE_VIAJES}`)
   }
 
+  getViajesExistentes(rutasId: number[]): Observable<Boolean> {
+    return this.client.get<Boolean>(`${this.URL_DATABASE_VIAJES}/viajesExistentes`,  { params: {rutasId: rutasId.join(',')} })
+  }
+
   postViaje(nuevoViaje: DtoPostViaje): Observable<Viaje> {
     return this.client.post<Viaje>(`${this.URL_DATABASE_VIAJES}`, nuevoViaje)
   }

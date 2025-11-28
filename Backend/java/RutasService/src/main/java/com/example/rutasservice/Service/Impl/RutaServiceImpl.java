@@ -1,5 +1,6 @@
 package com.example.rutasservice.Service.Impl;
 
+import com.example.rutasservice.Dtos.RutaDeleteDto;
 import com.example.rutasservice.Dtos.RutaPostDto;
 import com.example.rutasservice.Dtos.RutasPutDto;
 import com.example.rutasservice.Entity.Ruta;
@@ -31,7 +32,7 @@ public class RutaServiceImpl implements RutaService {
                 .nombre(datosRuta.getNombre()).estacionOrigen(datosRuta.getEstacionOrigen())
                 .estacionDestino(datosRuta.getEstacionDestino())
                 .distanciaKm(datosRuta.getDistanciaKm()).estado("activo")
-                .fechaCreacion(LocalDateTime.now())
+                .fechaCreacion(LocalDateTime.now()).bajaLogica(false)
                 .build());
     }
 
@@ -69,5 +70,23 @@ public class RutaServiceImpl implements RutaService {
                 () -> new EntityNotFoundException("No se encontro la ruta a eliminar"));
 
         repository.delete(ruta);
+    }
+
+    @Override
+    @Transactional
+    public void eliminarRutas(RutaDeleteDto rutas) {
+        List<Ruta> listaRutas = new ArrayList<>();
+        for (Integer id : rutas.getRutasId()) {
+            Ruta ruta = rutas.getEstado() ? repository.findByIdAndBajaLogica(id, false).orElseThrow(
+                    () -> new EntityNotFoundException("No se encontro la ruta a eliminar"))
+                    : repository.findById(id).orElseThrow(
+                    () -> new EntityNotFoundException("No se encontro la ruta a eliminar"));
+
+                ruta.setBajaLogica(rutas.getEstado());
+                ruta.setFechaDestruccion(rutas.getEstado() ? LocalDateTime.now() : null);
+
+                listaRutas.add(ruta);
+        }
+        repository.saveAll(listaRutas);
     }
 }

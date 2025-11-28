@@ -1,6 +1,6 @@
 #map{
     height: 88vh;
-    width: 88vh;
+    width: 75vh;
     margin-left: 20px;
 }
 
@@ -12,8 +12,4 @@
     display: flex;
     flex-direction: column;
     justify-content: end;
-}
-
-#estadoEstacion{
-    transform: scale(1.5);
 }

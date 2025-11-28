@@ -6,4 +6,6 @@ export interface Ruta {
     distanciaKm: number;
     estado: string;
     fechaCreacion: string;
+    bajaLogica: boolean;
+    fechaDestruccion: string | null;
 }

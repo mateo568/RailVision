@@ -19,7 +19,12 @@ public class ViajeController {
     ViajeService viajeService;
 
     @GetMapping
-    public ResponseEntity<List<Viaje>> consultarRutas() { return ResponseEntity.ok(viajeService.consultarViajes()); }
+    public ResponseEntity<List<Viaje>> consultarViajes() { return ResponseEntity.ok(viajeService.consultarViajes()); }
+
+    @GetMapping("/viajesExistentes")
+    public ResponseEntity<Boolean> consultarViajesExistentes(@RequestParam List<Integer> rutasId) {
+        return ResponseEntity.ok(viajeService.consultarViajeProgramado(rutasId));
+    }
 
     @PostMapping
     public ResponseEntity<Viaje> crearViaje(@RequestBody ViajePostDto nuevoViaje) {

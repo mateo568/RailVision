@@ -36,4 +36,10 @@ public class Ruta {
 
     @Column(name = "fecha_creacion")
     private LocalDateTime fechaCreacion;
+
+    @Column(name = "baja_logica")
+    private Boolean bajaLogica;
+
+    @Column(name = "fecha_destruccion")
+    private LocalDateTime fechaDestruccion;
 }

@@ -6,4 +6,6 @@ export interface Estacion {
   estado: boolean;
   fechaCreacion: string; // ISO string
   ciudad: Ciudad;
+  bajaLogica: boolean;
+  fechaDestruccion: string;
 }
