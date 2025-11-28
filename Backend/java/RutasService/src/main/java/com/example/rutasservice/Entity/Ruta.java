@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 public class Ruta {
 
     @Id
+    @Column(name = "ruta_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 

@@ -11,4 +11,5 @@ public interface RutaService {
     Ruta crearRuta(RutaPostDto nuevaRuta);
     Ruta modificarRuta(Integer rutaId, String estado);
     List<Ruta> modificarRutas(List<RutasPutDto> estacionId);
+    void eliminarRuta(Integer rutaId);
 }

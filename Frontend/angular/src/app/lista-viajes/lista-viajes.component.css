@@ -1,4 +1,4 @@
-#divVolver{
+#divVolver, #divLimpiar{
     display: flex;
     flex-direction: column;
     justify-content: end;
@@ -6,6 +6,10 @@
 
 #botonVolver{
     width: 100px;
+}
+
+#botonLimpiar{
+    width: 50px;
 }
 
 table{

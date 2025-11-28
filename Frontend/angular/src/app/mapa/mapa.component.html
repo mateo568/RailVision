@@ -1,11 +1,11 @@
 <div class="mb-5 "> 
     <div class="row">
-        <div class="col">
+        <div class="col-5">
             <div class="mapa">
                 <div id="map"></div>
             </div>
         </div>
-        <div class="col">
+        <div class="col-7">
             <div class="row">
                 <div class="col-2">
                     <button id="botonLista" class="btn btn-secondary" (click)="irListaViajes()">Historial</button>
@@ -25,11 +25,10 @@
                         </h2>
                         <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show">
                             <div class="accordion-body">
-                                <button class="btn btn-secondary">A</button>
                                 <table class="table">
                                     <thead>
                                         <tr>
-                                            <th scope="col">Hora salida</th>
+                                            <th scope="col">Hora llegada</th>
                                             <th scope="col">Ruta</th>
                                             <th scope="col">Tren</th>
                                             <th scope="col">Visualizar</th>
@@ -38,9 +37,9 @@
                                     <tbody>
                                         @for (viaje of listadoViajesCurso; track $index) {
                                             <tr>
-                                                <td>{{viaje.fechaSalida | date:'HH:mm:ss'}}</td>
+                                                <td>{{viaje.fechaLlegada| date:'HH:mm:ss'}}</td>
                                                 <td>{{viaje.ruta}}</td>
-                                                <td>{{viaje.trenId}}</td>
+                                                <td>{{viaje.tren}}</td>
                                                 <td><button class="btn visualizar" (click)="trazarViaje(viaje.ruta, viaje.estado)">
                                                     <i class="bi bi-eye-fill"></i>
                                                 </button></td>
@@ -73,7 +72,7 @@
                                         <tr>
                                             <td>{{viaje.fechaSalida | date:'HH:mm:ss'}}</td>
                                             <td>{{viaje.ruta}}</td>
-                                            <td>{{viaje.trenId}}</td>
+                                            <td>{{viaje.tren}}</td>
                                             <td><button class="btn visualizar" (click)="trazarViaje(viaje.ruta, viaje.estado)">
                                                 <i class="bi bi-eye-fill"></i>
                                             </button></td>

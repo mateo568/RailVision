@@ -8,7 +8,7 @@ export interface DtoPostRuta {
     nombre: string;
     estacionOrigen: number;
     estacionDestino: number;
-    distanciaKm: null;
+    distanciaKm: number;
 }
 
 export interface DtoListadoRutas {

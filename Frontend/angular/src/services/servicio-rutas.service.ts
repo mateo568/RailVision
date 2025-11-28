@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Ruta } from '../models/Entity/ruta';
-import { DtoPutRuta } from '../models/Dto/dto-ruta';
+import { DtoPostRuta, DtoPutRuta } from '../models/Dto/dto-ruta';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +17,10 @@ export class ServicioRutasService {
     return this.client.get<Ruta[]>(`${this.URL_DATABASE_RUTAS}`)
   }
 
+  postRuta(dtoRuta: DtoPostRuta): Observable<Ruta>{
+    return this.client.post<Ruta>(`${this.URL_DATABASE_RUTAS}`, dtoRuta)
+  }
+
   putRutas(dtoRutas: DtoPutRuta[]): Observable<Ruta[]> {
     return this.client.put<Ruta[]>(`${this.URL_DATABASE_RUTAS}`, dtoRutas)
   }
@@ -25,4 +29,7 @@ export class ServicioRutasService {
     return this.client.put<Ruta>(`${this.URL_DATABASE_RUTAS}/${id}`, estado, {headers: { 'Content-Type': 'text/plain' }})
   }
 
+  deleteRuta(rutaId: number) {
+    return this.client.delete(`${this.URL_DATABASE_RUTAS}/${rutaId}`)
+  }
 }

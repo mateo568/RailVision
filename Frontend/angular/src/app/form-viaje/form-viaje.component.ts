@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { AbstractControl, FormArray, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import * as L from 'leaflet';
-import { forkJoin, Subscription } from 'rxjs';
+import { firstValueFrom, forkJoin, Subscription } from 'rxjs';
 import { ServicioMapaService } from '../../services/servicio-mapa.service';
 import { ServicioViajesService } from '../../services/servicio-viajes.service';
 import { ServicioEstacionService } from '../../services/servicio-estacion.service';
@@ -13,11 +13,12 @@ import { DtoPostCargamento, DtoPostViaje } from '../../models/Dto/dto-viaje';
 import { Ruta } from '../../models/Entity/ruta';
 import { Tren } from '../../models/Entity/tren';
 import { ServicioTrenesService } from '../../services/servicio-trenes.service';
+import { DtoPostRuta } from '../../models/Dto/dto-ruta';
 
 @Component({
   selector: 'app-form-viaje',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './form-viaje.component.html',
   styleUrl: './form-viaje.component.css'
 })
@@ -31,11 +32,14 @@ export class FormViajeComponent implements OnInit, OnDestroy{
   listaEstacionesOrigen: Estacion[] = []
   listaEstacionesDestino: Estacion[] = []
   rutaViaje: Ruta | undefined;
+  rutaInexistente: boolean = false;
 
   private mapa: any;
   private icono: any;
   private cronometro: any;
 
+  cargaMaxima: number = 0;
+  cargaActual: number = 0;
 
   private servicioMapa = inject(ServicioMapaService)
   private servicioViaje = inject(ServicioViajesService)
@@ -52,7 +56,7 @@ export class FormViajeComponent implements OnInit, OnDestroy{
     horarioSalida: new FormControl('',[Validators.required]),
     horarioLlegada: new FormControl('',[Validators.required]),
     cargas: new FormArray([])
-  }, {validators: this.validarHoraSalida });
+  }, {validators: [this.validarHoraSalida, this.validarCargaViaje.bind(this)] });
 
   get arrayCargas(){
     return this.nuevoViaje.get("cargas") as FormArray;
@@ -88,6 +92,7 @@ export class FormViajeComponent implements OnInit, OnDestroy{
   filtrarEstaciones() {
     this.listaEstacionesOrigen = this.listaEstaciones;
     this.listaEstacionesDestino = this.listaEstaciones;
+    this.rutaInexistente = false;
 
     let estacionOrigen = this.nuevoViaje.get("estacionOrigen")?.value
     let estacionDestino = this.nuevoViaje.get("estacionDestino")?.value
@@ -101,11 +106,24 @@ export class FormViajeComponent implements OnInit, OnDestroy{
     }
 
     if (estacionOrigen && estacionDestino) {
-      this.rutaViaje = this.listaRutas.find( r => r.estacionOrigen === Number(estacionOrigen) && r.estacionDestino === Number(estacionDestino))
+      this.definirRuta(estacionOrigen, estacionDestino)
       if (this.nuevoViaje.get("horarioSalida")?.value) this.calcularTiempoLlegada();
 
       clearTimeout(this.cronometro)
       this.cronometro = setTimeout(() => { this.graficarRuta(Number(estacionOrigen),Number(estacionDestino)) }, 2000)
+    }
+  }
+
+  definirRuta(estacionOrigen: number, estacionDestino: number) {
+    this.rutaViaje = this.listaRutas.find( r => r.estacionOrigen === Number(estacionOrigen) && r.estacionDestino === Number(estacionDestino))
+    console.log("Ruta: ", this.rutaViaje)
+    console.log("Ruta no existente: ", this.rutaInexistente)
+
+    if (!this.rutaViaje) {
+      this.rutaViaje = this.listaRutas.find( r => r.estacionOrigen === Number(estacionDestino) && r.estacionDestino === Number(estacionOrigen))
+      this.rutaInexistente = true;
+      console.log("Ruta: ", this.rutaViaje)
+      console.log("Ruta no existente: ", this.rutaInexistente)
     }
   }
 
@@ -128,19 +146,42 @@ export class FormViajeComponent implements OnInit, OnDestroy{
     const longitudDestino = Number(iconoDestino?.ciudad.longitud);
 
     this.servicioMapa.calcularRuta([longitudOrigen,latitudOrigen],[longitudDestino,latitudDestino],this.mapa);
+    if (!this.rutaViaje) {
+      setTimeout(() => { 
+        this.rutaViaje = { id: 0, nombre: "", estacionOrigen: estacionOrigen, estacionDestino: estacionDestino, 
+          distanciaKm: Number(this.servicioMapa.distanciaRuta.toFixed(2)), estado: "", fechaCreacion: "" }
+        this.rutaInexistente = true;
+        this.calcularTiempoLlegada();
+        console.log("Ruta: ", this.rutaViaje)
+        console.log("Ruta no existente: ", this.rutaInexistente)
+       }, 2000)
+    }
+  }
+
+  calcularPeso() {
+    this.cargaActual = this.arrayCargas.value.reduce((total: number, c: { tipo: string; detalle: string; peso: number }) => total + c.peso,0);
+    this.nuevoViaje.updateValueAndValidity();
+  }
+
+  definirLimitePeso() {
+    const trenId = this.nuevoViaje.get("tren")?.value;
+    if (trenId) { this.cargaMaxima = this.listaTrenes.find(tren => tren.tren_id === Number(trenId))?.capacidad_toneladas! }
+    else {this.cargaMaxima = 0}
+    this.nuevoViaje.updateValueAndValidity();
   }
 
   agregarCarga(){
     const nuevaCarga: FormGroup = new FormGroup({
       tipo: new FormControl('',[Validators.required]),
       detalle: new FormControl('',[Validators.required]),
-      peso: new FormControl(0,[Validators.required]),
+      peso: new FormControl(0,[Validators.required, Validators.min(1), Validators.pattern(/^\d+(\.\d{0,2})?$/)]),
     })
     this.arrayCargas.push(nuevaCarga);
   }
 
   eliminarCarga(index: number){
     this.arrayCargas.removeAt(index);
+    this.calcularPeso();
   }
 
   validarHoraSalida(formGroup: AbstractControl): ValidationErrors | null {
@@ -155,9 +196,16 @@ export class FormViajeComponent implements OnInit, OnDestroy{
     return null;
   }
 
+  validarCargaViaje(formGroup: AbstractControl): ValidationErrors | null {
+    if (this.cargaActual > this.cargaMaxima) return {sobrepeso: true}
+
+    return null;
+  }
+
   calcularTiempoLlegada() {
     if (this.rutaViaje){
       const tiempoRecorrido = this.rutaViaje?.distanciaKm! / 60;
+
       const horarioSalida = this.nuevoViaje.get("horarioSalida")?.value;
   
       const horasRecorridas = Math.floor(tiempoRecorrido);
@@ -200,43 +248,99 @@ export class FormViajeComponent implements OnInit, OnDestroy{
     return `${año}-${mes}-${dia}T${hora}:${minutos}:${segundos}`;
   }
 
-  submit(){
-    if (this.nuevoViaje.valid){
-      const form = this.nuevoViaje.value;
-      
-      const fechaSalida = `${form.fecha}T${form.horarioSalida}:00`;
-      const fechaLlegada = this.ajustarFechas(form.fecha!);
-      
-      const carga = this.arrayCargas.value.reduce((total: number, c: { tipo: string; detalle: string; peso: number }) => total + c.peso,0);
-      
-      const rutaId = this.rutaViaje ? this.rutaViaje.id : 100
+  async submit(){
+    if (!this.nuevoViaje.valid){
+      alert("Datos invalidos");
+      return;
+    }
 
-      // BUSCAR RUTA - Servicio ruta
-      // Si no exste la ruta crearla
-      // Usar el id de la ruta
+    const form = this.nuevoViaje.value;
+    
+    const fechaSalida = `${form.fecha}T${form.horarioSalida}:00`;
+    const fechaLlegada = this.ajustarFechas(form.fecha!);
+    
+    var dtoNuevaRuta = null;
+    var rutaId: number | undefined = undefined;
+    ///const rutaId = this.rutaViaje ? this.rutaViaje.id : 100
+    
+    let dtoBase: Omit<DtoPostViaje, "rutaId"> = {
+      trenId: Number(form.tren!),
+      usuarioId: 1,
+      fechaSalida: fechaSalida,
+      fechaLlegada: fechaLlegada,
+      carga: this.cargaActual,
+      listaCargamento: form.cargas ?? []
+    }
 
-      let dtoViaje: DtoPostViaje = {
-        trenId: Number(form.tren!),
-        rutaId: rutaId,
-        usuarioId: 1,
-        fechaSalida: fechaSalida,
-        fechaLlegada: fechaLlegada,
-        carga: carga,
-        listaCargamento: form.cargas ?? []
+    console.log(dtoBase);
+
+    try {
+      // CREAR RUTA - Si no exste la ruta crearla
+      if (this.rutaInexistente) {
+        dtoNuevaRuta = this.crearNuevaRuta(this.rutaViaje!) 
+
+        const rutaCreada = await firstValueFrom(this.servicioRuta.postRuta(dtoNuevaRuta!));
+        rutaId = rutaCreada.id;
+        console.log("Ruta creada => ",rutaCreada);
+
+      } else {
+        rutaId = this.rutaViaje?.id
       }
 
+      let dtoViaje: DtoPostViaje = {
+        ...dtoBase,
+        rutaId: rutaId!
+      }
       
-      const sub = this.servicioViaje.postViaje(dtoViaje).subscribe(() => {
-        alert("Viaje creado")
-        console.log(dtoViaje)
-      })
+      console.log("Usando rutaId => ", rutaId);  
+      const sub = await firstValueFrom(this.servicioViaje.postViaje(dtoViaje))
+      
+      alert("Viaje creado")
+      console.log(dtoViaje)
+      this.irMenuViajes()
+    } 
+    catch {
+      try {
+        if (this.rutaInexistente && rutaId){
+          const subDeleteRuta = await firstValueFrom(this.servicioRuta.deleteRuta(rutaId!))
+          console.log("Ruta borrada")
+        }
+      } 
+      catch {
+        console.log("Fallo en borrar el viaje")
+      }
 
-      this.subscripciones.push(sub);
-
-    } else { alert("Datos invalidos"); }
-
+      alert("Falla al crear el viaje")
+    }
   }
   
+  crearNuevaRuta(ruta: Ruta): DtoPostRuta {
+    const estacionOrigen = this.listaEstaciones.find(estacion => estacion.id === ruta.estacionOrigen)?.nombre;
+    const estacionDestino = this.listaEstaciones.find(estacion => estacion.id === ruta.estacionDestino)?.nombre;
+
+    var nuevaRuta: DtoPostRuta = {
+      nombre: "",
+      estacionOrigen: 0,
+      estacionDestino: 0,
+      distanciaKm: 0,
+    }
+    
+    if (ruta.id === 0) {
+      nuevaRuta.nombre = `Ruta ${estacionOrigen} - ${estacionDestino}`;
+      nuevaRuta.estacionOrigen = ruta.estacionOrigen;
+      nuevaRuta.estacionDestino = ruta.estacionDestino;
+      nuevaRuta.distanciaKm = ruta.distanciaKm;
+    } 
+    else {
+      nuevaRuta.nombre = `Ruta ${estacionDestino} - ${estacionOrigen}`;
+      nuevaRuta.estacionOrigen = ruta.estacionDestino;
+      nuevaRuta.estacionDestino = ruta.estacionOrigen;
+      nuevaRuta.distanciaKm = ruta.distanciaKm;
+    }
+
+    return nuevaRuta;
+  }
+
   irMenuViajes(){
     this.router.navigate(["menu/viajes"]);
   }

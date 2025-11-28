@@ -25,11 +25,12 @@ public class RutaServiceImpl implements RutaService {
     public List<Ruta> consultarRutas() { return repository.findAll(); }
 
     @Override
+    @Transactional
     public Ruta crearRuta(RutaPostDto datosRuta) {
         return repository.save(Ruta.builder()
                 .nombre(datosRuta.getNombre()).estacionOrigen(datosRuta.getEstacionOrigen())
                 .estacionDestino(datosRuta.getEstacionDestino())
-                .distanciaKm(datosRuta.getDistanciaKm()).estado("Activa")
+                .distanciaKm(datosRuta.getDistanciaKm()).estado("activo")
                 .fechaCreacion(LocalDateTime.now())
                 .build());
     }
@@ -59,5 +60,14 @@ public class RutaServiceImpl implements RutaService {
         }
 
         return listaRutasActualizada;
+    }
+
+    @Override
+    @Transactional
+    public void eliminarRuta(Integer rutaId) {
+        Ruta ruta = repository.findById(rutaId).orElseThrow(
+                () -> new EntityNotFoundException("No se encontro la ruta a eliminar"));
+
+        repository.delete(ruta);
     }
 }

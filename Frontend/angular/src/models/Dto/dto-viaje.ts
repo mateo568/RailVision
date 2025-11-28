@@ -1,8 +1,9 @@
 import { Cargamento } from "../Entity/cargamento";
+import { Tren } from "../Entity/tren";
 
 export interface DtoListaViaje {
     id: number;
-    trenId: number;
+    tren: Tren | undefined;
     ruta: string;
     usuarioId: number;
     fechaSalida: string;
@@ -18,7 +19,7 @@ export interface DtoListaMapaViaje {
     ruta: string;
     fechaSalida: string;
     fechaLlegada: string;
-    trenId: number;
+    tren: string;
     estado: string;
 }
 
