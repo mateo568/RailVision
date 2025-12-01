@@ -9,6 +9,8 @@ import java.util.List;
 public interface ViajeService {
     List<Viaje> consultarViajes();
 
+    boolean consultarViajeProgramado(List<Integer> rutasId);
+
     Viaje crearViaje(ViajePostDto nuevoViaje);
 
     Viaje modificarViaje(ViajePutDto viajeModifcado);

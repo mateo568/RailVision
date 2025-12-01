@@ -1,6 +1,6 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ServicioMapaService } from '../../services/servicio-mapa.service';
-import { Observable, Subscription } from 'rxjs';
+import { firstValueFrom, forkJoin, Observable, Subscription } from 'rxjs';
 import { Estacion } from '../../models/Entity/estacion';
 import { ServicioEstacionService } from '../../services/servicio-estacion.service';
 import { CommonModule } from '@angular/common';
@@ -9,7 +9,9 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators, É
 import { DtoPostEstacion, DtoPutEstacion } from '../../models/Dto/dto-estacion';
 import { Ruta } from '../../models/Entity/ruta';
 import { ServicioRutasService } from '../../services/servicio-rutas.service';
-import { DtoPutRuta } from '../../models/Dto/dto-ruta';
+import { DtoDeleteRuta, DtoPutRuta } from '../../models/Dto/dto-ruta';
+import { ServicioViajesService } from '../../services/servicio-viajes.service';
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-lista-estaciones',
@@ -23,9 +25,6 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
   private mapa: any;
   private marcador: any;
   
-  estaciones!: Observable<Estacion[]>
-  ciudades!: Observable<Ciudad[]>
-  rutas!: Observable<Ruta[]>
   private subscripciones: Subscription[] = [];
 
   listaCiudades: Ciudad[] = [];
@@ -35,7 +34,7 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
 
   modalEstacion: DtoPutEstacion = { id: 0, nombre: "", estado: true };
   nuevaEstacion = new FormGroup({
-    nombre: new FormControl('',[Validators.required, Validators.minLength(7)]),
+    nombre: new FormControl('',[Validators.required, Validators.minLength(7), Validators.maxLength(30)]),
     ciudad: new FormControl(0,[Validators.required])
   })
   
@@ -44,6 +43,7 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
   servicioMapa = inject(ServicioMapaService)
   servicioEstacion = inject(ServicioEstacionService)
   servicioRuta = inject(ServicioRutasService)
+  servicioViaje = inject(ServicioViajesService)
 
   ngOnInit(): void {
     setTimeout(() => { this.mapa = this.servicioMapa.iniciarMapa(); });
@@ -51,29 +51,30 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
   }
   
   cargarDatos(){
-    this.ciudades = this.servicioEstacion.getCiudades();
     this.subscripciones.push(
-      this.ciudades.subscribe(ciudades => {
-        this.listaCiudades = ciudades;
-      })
-    )
-    
-    this.estaciones = this.servicioEstacion.getEstaciones();
-    this.subscripciones.push(
-      this.estaciones.subscribe(estaciones => {
-        this.listaEstaciones = estaciones;
-        this.listaFiltrada = this.listaEstaciones;
-        this.cargarIconosEstacion();
-      })
-    )
-
-    this.rutas = this.servicioRuta.getRutas();
-    this.subscripciones.push(
-      this.rutas.subscribe(rutas => {
+      forkJoin({
+        rutas: this.servicioRuta.getRutas(),
+        estaciones: this.servicioEstacion.getEstaciones(),
+        ciudades: this.servicioEstacion.getCiudades()
+      }).subscribe(({rutas, estaciones, ciudades}) => {
         this.listaRutas = rutas;
-      })
-    )
+        this.listaCiudades = ciudades;
+        this.listaEstaciones = estaciones;
+        this.listaFiltrada = this.listaEstaciones.filter(estacion => estacion.bajaLogica === false);
+        // this.filtrarCiudadesDisponibles();
+        this.cargarIconosEstacion();
+      }))
+
   }
+
+  // filtrarCiudadesDisponibles() {
+  //   this.listaCiudades = this.listaCiudades.filter(ciudad =>{
+  //     const estacionActiva = this.listaEstaciones.find(estacion => estacion.ciudad.id === ciudad.id 
+  //       && estacion.bajaLogica === false);
+
+  //     return !estacionActiva;
+  //   });
+  // }
 
   cargarIconosEstacion(){
     this.listaFiltrada.forEach(estacion => {
@@ -87,6 +88,10 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
     this.modalEstacion.id = estacion.id;
     this.modalEstacion.nombre = estacion.nombre;
     this.modalEstacion.estado = estacion.estado;
+  }
+
+  nombrarEstado(): string{
+    return this.modalEstacion.estado ? "Activa" : "Inactiva"
   }
 
   filtrarDatos() {
@@ -103,7 +108,7 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
   }
 
   crearEstacion(){
-    if (this.nuevaEstacion.valid){ 
+    if (this.nuevaEstacion.valid) { 
       const form = this.nuevaEstacion.value ;
     
       const estacion: DtoPostEstacion = {
@@ -113,13 +118,15 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
 
       console.log("Datos correctos: " + estacion.nombre + ", " + estacion.ciudad)
 
-      // const sub = this.servicioEstacion.postEstacion(estacion).subscribe(() =>{
-      //   this.mapa = this.servicioMapa.limpiarIconos();
-      //   this.cargarDatos();
-      //   this.filtroEstado = "";
-      // })
+      const sub = this.servicioEstacion.postEstacion(estacion).subscribe(() =>{
+        this.mapa = this.servicioMapa.limpiarIconos();
+        this.filtroEstado = "";
+        alert("Estacion creada exitosamente")
+        this.cerrarModal('ModalPostEstacion')
+        this.cargarDatos();
+      })
   
-      // this.subscripciones.push(sub);
+      this.subscripciones.push(sub);
     } else { console.log("falta completar") }
   }
 
@@ -166,6 +173,54 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
     })
 
     this.subscripciones.push(sub);
+  }
+
+  async eliminarEstacion() {
+    // Se buscan las rutas relacionadas a la estacion
+    const idRutas = this.listaRutas.filter(ruta => ruta.estacionOrigen === this.modalEstacion.id 
+    || ruta.estacionDestino === this.modalEstacion.id).map(r => r.id)
+
+    var dtoRutas: DtoDeleteRuta = {rutasId: idRutas, estado: true }
+    var dtoRollback: DtoDeleteRuta = {rutasId: idRutas, estado: false }
+
+    try {
+
+      // Si existen rutas consultar si existen viajes programados o en curso
+      if ( idRutas.length > 0) {
+
+        // Si existen viajes relacionados a la estacion cancelar la eliminacion
+        const viajesExistentes = await firstValueFrom(this.servicioViaje.getViajesExistentes(idRutas))
+        if (viajesExistentes) {
+          alert("Esta estacion tiene viajes programados o en curso. No se puede eliminar")
+          return;
+        }
+
+        // "Eliminar" rutas relacionadas a la estacion
+        await firstValueFrom(this.servicioRuta.deleteRutas(dtoRutas));
+      } 
+
+      // Se elimina la estacion y se vuelve a cargar la pagina con las estaciones actualizadas
+      await firstValueFrom(this.servicioEstacion.deleteEstacion(this.modalEstacion.id));
+      alert("Se ha borrado exitosamente la estaciÃ³n")
+      this.cerrarModal('ModalDeleteEstacion');
+      this.mapa = this.servicioMapa.limpiarIconos();
+      this.cargarDatos();
+    } 
+    catch (error) {
+      if (idRutas.length > 0) {
+        await firstValueFrom(this.servicioRuta.deleteRutas(dtoRollback));
+      }
+      alert("Error, no se pudo borrar la estacion")
+      console.log(error)
+    }
+  }
+
+  cerrarModal(nombre: string){
+    const modalElement = document.getElementById(nombre);
+    if (modalElement) {
+      const modal = bootstrap.Modal.getInstance(modalElement);
+      modal.hide();
+    }
   }
 
   ngOnDestroy(): void {

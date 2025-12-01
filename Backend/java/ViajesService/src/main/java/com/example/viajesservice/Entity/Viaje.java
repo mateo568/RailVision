@@ -19,6 +19,7 @@ import java.util.List;
 public class Viaje {
 
     @Id
+    @Column(name = "viaje_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 

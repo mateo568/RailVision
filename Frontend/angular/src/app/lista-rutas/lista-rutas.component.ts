@@ -1,5 +1,5 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { Observable, Subscription } from 'rxjs';
+import { forkJoin, Observable, Subscription } from 'rxjs';
 import { Ruta } from '../../models/Entity/ruta';
 import { ServicioRutasService } from '../../services/servicio-rutas.service';
 import { Estacion } from '../../models/Entity/estacion';
@@ -17,9 +17,6 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './lista-rutas.component.css'
 })
 export class ListaRutasComponent implements OnInit, OnDestroy{
-  rutas!: Observable<Ruta[]>  // Respuesta obtenida del endpoint de la API de consultar rutas
-  estaciones!: Observable<Estacion[]>
-  ciudades!: Observable<Ciudad[]>
   private subscripciones: Subscription[] = [];
 
   listaRutas: Ruta[] = [];  // Datos del observable "rutas" estructurado en base a la entidad de rutas de la base de datos
@@ -42,20 +39,15 @@ export class ListaRutasComponent implements OnInit, OnDestroy{
   }
 
   cargarDatos(){
-    this.rutas = this.servicioRuta.getRutas();
     this.subscripciones.push(
-      this.rutas.subscribe(rutas => {
+      forkJoin({
+        rutas: this.servicioRuta.getRutas(),
+        estaciones: this.servicioEstacion.getEstaciones()
+      }).subscribe(({rutas, estaciones}) => {
         this.listaRutas = rutas;
-      })
-    )
-
-    this.estaciones = this.servicioEstacion.getEstaciones();
-    this.subscripciones.push(
-      this.estaciones.subscribe(estaciones => {
         this.listaEstaciones = estaciones;
         this.cargarListadoRutas();
-      })
-    )
+      }))
   }
 
   cargarListadoRutas(){
@@ -64,26 +56,27 @@ export class ListaRutasComponent implements OnInit, OnDestroy{
     this.listadoRutas = [];
 
     this.listaRutas.forEach( ruta => {
-
-      var estacionOrigen: Estacion | undefined;
-      var estacionDestino: Estacion | undefined;
-
-      estacionOrigen = this.listaEstaciones.find(estacion => estacion.id === ruta.estacionOrigen)
-      estacionDestino = this.listaEstaciones.find(estacion => estacion.id === ruta.estacionDestino)
-
-      var item: DtoListadoRutas = {
-        id: ruta.id,
-        nombre: ruta.nombre,
-        ciudadOrigen: estacionOrigen?.ciudad.nombre!,
-        ciudadDestino: estacionDestino?.ciudad.nombre!,
-        estadoEstacionOrigen: estacionOrigen?.estado!,
-        estadoEstacionDestino: estacionDestino?.estado!,
-        estado: ruta.estado
-      };
-      
-      this.listaCiudadesOrigen.push(estacionOrigen?.ciudad.nombre!)
-      this.listaCiudadesDestino.push(estacionDestino?.ciudad.nombre!)
-      this.listadoRutas.push(item);
+      if(!ruta.bajaLogica) {
+        var estacionOrigen: Estacion | undefined;
+        var estacionDestino: Estacion | undefined;
+  
+        estacionOrigen = this.listaEstaciones.find(estacion => estacion.id === ruta.estacionOrigen)
+        estacionDestino = this.listaEstaciones.find(estacion => estacion.id === ruta.estacionDestino)
+  
+        var item: DtoListadoRutas = {
+          id: ruta.id,
+          nombre: ruta.nombre,
+          ciudadOrigen: estacionOrigen?.ciudad.nombre!,
+          ciudadDestino: estacionDestino?.ciudad.nombre!,
+          estadoEstacionOrigen: estacionOrigen?.estado!,
+          estadoEstacionDestino: estacionDestino?.estado!,
+          estado: ruta.estado
+        };
+        
+        this.listaCiudadesOrigen.push(estacionOrigen?.ciudad.nombre!)
+        this.listaCiudadesDestino.push(estacionDestino?.ciudad.nombre!)
+        this.listadoRutas.push(item);
+      }
     });
 
     this.listaCiudadesOrigen = Array.from(new Set(this.listaCiudadesOrigen));

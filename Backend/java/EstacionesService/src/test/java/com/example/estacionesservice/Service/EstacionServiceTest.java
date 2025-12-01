@@ -65,7 +65,7 @@ public class EstacionServiceTest {
 
     @Test
     public void crearEstacion() {
-        when(repository.findByCiudad(ciudad)).thenReturn(Optional.empty());
+        when(repository.findByCiudadAndBajaLogica(ciudad, false)).thenReturn(Optional.empty());
         when(repository.save(any(Estacion.class))).thenReturn(estaciones.get(0));
 
         Estacion estacion = service.crearEstacion("Prueba 1", ciudad);
@@ -77,7 +77,7 @@ public class EstacionServiceTest {
 
     @Test
     public void crearEstacionInvalida() {
-        when(repository.findByCiudad(any(Ciudad.class))).thenReturn(Optional.of(estaciones.get(0)));
+        when(repository.findByCiudadAndBajaLogica(any(Ciudad.class),false)).thenReturn(Optional.of(estaciones.get(0)));
 
         IllegalStateException exception = assertThrows(IllegalStateException.class, () -> service.crearEstacion("Prueba 1", ciudad));
 

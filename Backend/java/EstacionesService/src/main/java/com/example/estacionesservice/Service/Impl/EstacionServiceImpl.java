@@ -28,9 +28,10 @@ public class EstacionServiceImpl implements EstacionService {
     @Transactional
     public Estacion crearEstacion(String nombre, Ciudad ciudad) {
         Estacion estacion = Estacion.builder().nombre(nombre).estado(true)
-                .fechaCreacion(LocalDateTime.now()).ciudad(ciudad).build();
+                .fechaCreacion(LocalDateTime.now()).ciudad(ciudad)
+                .bajaLogica(false).build();
 
-        Optional<Estacion> estacionExistente = repository.findByCiudad(ciudad);
+        Optional<Estacion> estacionExistente = repository.findByCiudadAndBajaLogica(ciudad, false);
 
         if (estacionExistente.isPresent()) {
             throw new IllegalStateException("Ya existe una estacion en esta ubicacion");
@@ -46,6 +47,18 @@ public class EstacionServiceImpl implements EstacionService {
         estacion.setNombre(datos.getNombre());
         estacion.setEstado(datos.getEstado());
         return repository.save(estacion);
+    }
+
+    @Override
+    @Transactional
+    public void eliminarEstacion(Integer id) {
+        Estacion estacion = repository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("No se encontro la estacion a eliminar"));
+
+        estacion.setBajaLogica(true);
+        estacion.setFechaDestruccion(LocalDateTime.now());
+
+        repository.save(estacion);
     }
 
 }

@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 public class Estacion {
 
     @Id
+    @Column(name = "estacion_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
@@ -26,7 +27,13 @@ public class Estacion {
     @Column(name = "fecha_creacion")
     private LocalDateTime fechaCreacion;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "ciudad_id", unique = true)
     private Ciudad ciudad;
+
+    @Column(name = "baja_logica")
+    private Boolean bajaLogica;
+
+    @Column(name = "fecha_destruccion")
+    private LocalDateTime fechaDestruccion;
 }

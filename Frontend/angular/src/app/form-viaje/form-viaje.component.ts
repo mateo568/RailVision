@@ -81,8 +81,8 @@ export class FormViajeComponent implements OnInit, OnDestroy{
         trenes: this.servicioTren.getTrenes()
       }).subscribe(({estaciones, rutas, trenes}) =>{
         this.listaEstaciones = estaciones
-        this.listaEstacionesOrigen = this.listaEstaciones.filter(e => e.estado === true);
-        this.listaEstacionesDestino = this.listaEstaciones.filter(e => e.estado === true);
+        this.listaEstacionesOrigen = this.listaEstaciones.filter(e => e.estado === true && e.bajaLogica === false);
+        this.listaEstacionesDestino = this.listaEstaciones.filter(e => e.estado === true && e.bajaLogica === false);
         this.listaRutas = rutas;
         this.listaTrenes = trenes;
       })
@@ -149,7 +149,8 @@ export class FormViajeComponent implements OnInit, OnDestroy{
     if (!this.rutaViaje) {
       setTimeout(() => { 
         this.rutaViaje = { id: 0, nombre: "", estacionOrigen: estacionOrigen, estacionDestino: estacionDestino, 
-          distanciaKm: Number(this.servicioMapa.distanciaRuta.toFixed(2)), estado: "", fechaCreacion: "" }
+          distanciaKm: Number(this.servicioMapa.distanciaRuta.toFixed(2)), estado: "", fechaCreacion: "", 
+          bajaLogica: false, fechaDestruccion: null }
         this.rutaInexistente = true;
         this.calcularTiempoLlegada();
         console.log("Ruta: ", this.rutaViaje)

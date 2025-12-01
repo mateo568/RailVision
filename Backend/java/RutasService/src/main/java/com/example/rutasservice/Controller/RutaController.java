@@ -1,5 +1,6 @@
 package com.example.rutasservice.Controller;
 
+import com.example.rutasservice.Dtos.RutaDeleteDto;
 import com.example.rutasservice.Dtos.RutaPostDto;
 import com.example.rutasservice.Dtos.RutasPutDto;
 import com.example.rutasservice.Entity.Ruta;
@@ -34,6 +35,12 @@ public class RutaController {
     @PutMapping()
     public ResponseEntity<List<Ruta>> modificarEstadoRutas(@RequestBody List<RutasPutDto> rutasModificadas){
         return ResponseEntity.ok(rutaService.modificarRutas(rutasModificadas));
+    }
+
+    @PutMapping("/eliminar")
+    public ResponseEntity<Void> eliminarRutas(@RequestBody RutaDeleteDto rutas){
+        rutaService.eliminarRutas(rutas);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")

@@ -20,3 +20,8 @@ export interface DtoListadoRutas {
     estadoEstacionDestino: boolean;
     estado: string;
 }
+
+export interface DtoDeleteRuta {
+    rutasId: number[];
+    estado: boolean;
+}

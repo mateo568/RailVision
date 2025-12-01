@@ -34,4 +34,8 @@ export class ServicioEstacionService {
     }
     return this.client.put<Estacion>(`${this.URL_DATABASE_ESTACION}/${estacion.id}`, datos);
   }
+
+  deleteEstacion(estacionId: number) {
+    return this.client.delete(`${this.URL_DATABASE_ESTACION}/${estacionId}`)
+  }
 }

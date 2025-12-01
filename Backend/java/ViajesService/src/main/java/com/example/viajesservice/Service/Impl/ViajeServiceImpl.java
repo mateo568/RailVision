@@ -31,6 +31,14 @@ public class ViajeServiceImpl implements ViajeService {
     public List<Viaje> consultarViajes() { return repository.findAll(); }
 
     @Override
+    public boolean consultarViajeProgramado(List<Integer> rutasId) {
+        boolean viajesProgramados = repository.existsByRutaIdInAndEstado(rutasId, "programado");
+        boolean viajesEnCurso = repository.existsByRutaIdInAndEstado(rutasId, "en curso");
+
+        return viajesEnCurso || viajesProgramados;
+    }
+
+    @Override
     @Transactional
     public Viaje crearViaje(ViajePostDto nuevoViaje) {
 
