@@ -1,10 +1,7 @@
 package com.example.viajesservice.Entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -15,10 +12,12 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity(name = "viajes")
 public class Viaje {
 
     @Id
+    @EqualsAndHashCode.Include
     @Column(name = "viaje_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

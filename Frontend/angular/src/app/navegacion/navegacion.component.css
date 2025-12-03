@@ -1,3 +1,7 @@
+.navbar {
+  background: #232D4F;
+}
+
 /* Sidebar base */
 .sidebar {
   position: fixed;
@@ -6,6 +10,7 @@
   height: 100%;
   overflow-y: auto;
   transition: all 0.3s ease;
+  background: #232D4F;
   z-index: 1050;
 }
 
@@ -27,12 +32,13 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
   z-index: 1040;
 }
 
 section{
   padding-top: 70px;
+  background-color: gainsboro;
   padding-left: 100px;
   padding-right: 10px;
+  min-height: 100vh;
 }

@@ -1,6 +1,7 @@
 package com.example.rutasservice.Controller;
 
 import com.example.rutasservice.Dtos.RutaDeleteDto;
+import com.example.rutasservice.Dtos.RutaGetEstadoDto;
 import com.example.rutasservice.Dtos.RutaPostDto;
 import com.example.rutasservice.Dtos.RutasPutDto;
 import com.example.rutasservice.Entity.Ruta;
@@ -21,6 +22,11 @@ public class RutaController {
 
     @GetMapping
     public ResponseEntity<List<Ruta>> consultarRutas() { return ResponseEntity.ok(rutaService.consultarRutas()); }
+
+    @GetMapping("/estado")
+    public ResponseEntity<List<RutaGetEstadoDto>> consultarEstadoRutas() {
+        return ResponseEntity.ok(rutaService.consultarEstadoRutas());
+    }
 
     @PostMapping
     public ResponseEntity<Ruta> crearRuta(@RequestBody RutaPostDto rutaNueva) {

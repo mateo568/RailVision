@@ -83,8 +83,8 @@ export class MapaComponent implements OnInit, OnDestroy{
         estado: viaje.estado,
       }
 
-      if (viaje.estado === "en curso" && this.listadoViajesCurso.length < 4) { this.listadoViajesCurso.push(item) }
-      if (viaje.estado === "programado" && this.listadoViajeProgramado.length < 4){ this.listadoViajeProgramado.push(item) }
+      if (viaje.estado === "en curso" && this.listadoViajesCurso.length < 3) { this.listadoViajesCurso.push(item) }
+      if (viaje.estado === "programado" && this.listadoViajeProgramado.length < 3){ this.listadoViajeProgramado.push(item) }
     });
 
     this.listadoViajesCurso.sort((a,b) => new Date(a.fechaLlegada.replace(" ", "T")).getTime() - new Date(b.fechaLlegada.replace(" ", "T")).getTime())

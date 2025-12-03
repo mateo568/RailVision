@@ -39,51 +39,53 @@
         </div>
     </div>
 
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-            <th scope="col">Ruta</th>
-            <th scope="col">Fecha salida</th>
-            <th scope="col">Fecha llegada</th>
-            <th scope="col">Tren</th>
-            <th scope="col">Estado</th>
-            <th scope="col">Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            @for (viaje of listaFiltrada; track $index) {
+    <div class="tabla">
+        <table class="table table-bordered">
+            <thead>
                 <tr>
-                    <td>{{viaje.ruta}}</td>
-                    <td>{{viaje.fechaSalida | date:'dd/MM/yyyy - HH:mm:ss'}}</td>
-                    @if (viaje.fechaLlegada) { <td>{{viaje.fechaLlegada | date:'dd/MM/yyyy - HH:mm:ss'}}</td> }
-                    @else { <td></td> }
-                    <td>{{viaje.tren?.codigo}}</td>
-                    @switch (viaje.estado) {
-                        @case ("en curso") {<td><span class="badge text-bg-success">En curso</span></td>}
-                        @case ("programado") {<td><span class="badge text-bg-primary">Programado</span></td>}
-                        @case ("finalizado") {<td><span class="badge text-bg-secondary">Finalizado</span></td>}
-                        @case ("cancelado") {<td><span class="badge text-bg-danger">Cancelado</span></td>}
-                    }
-                    <td>
-                        <div class="dropdown">
-                            <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-three-dots-vertical"></i>
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <button class="dropdown-item" type="button" data-bs-toggle="modal" 
-                                    data-bs-target="#ModalDetalleViaje" (click)="cargarDetallesViaje(viaje)">Detalles</button>   
-                                    @if(viaje.estado == "programado") {
-                                        <button class="dropdown-item" type="button" (click)="cancelarViaje(viaje.id)">Cancelar</button>
-                                    }   
-                                </li>
-                            </ul>
-                        </div>
-                    </td>
+                <th scope="col">Ruta</th>
+                <th scope="col">Fecha salida</th>
+                <th scope="col">Fecha llegada</th>
+                <th scope="col">Tren</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Acciones</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody class="table-group-divider">
+                @for (viaje of listaFiltrada; track $index) {
+                    <tr>
+                        <td>{{viaje.ruta}}</td>
+                        <td>{{viaje.fechaSalida | date:'dd/MM/yyyy - HH:mm:ss'}}</td>
+                        @if (viaje.fechaLlegada) { <td>{{viaje.fechaLlegada | date:'dd/MM/yyyy - HH:mm:ss'}}</td> }
+                        @else { <td></td> }
+                        <td>{{viaje.tren?.codigo}}</td>
+                        @switch (viaje.estado) {
+                            @case ("en curso") {<td><span class="badge text-bg-success">En curso</span></td>}
+                            @case ("programado") {<td><span class="badge text-bg-primary">Programado</span></td>}
+                            @case ("finalizado") {<td><span class="badge text-bg-secondary">Finalizado</span></td>}
+                            @case ("cancelado") {<td><span class="badge text-bg-danger">Cancelado</span></td>}
+                        }
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <button class="dropdown-item" type="button" data-bs-toggle="modal" 
+                                        data-bs-target="#ModalDetalleViaje" (click)="cargarDetallesViaje(viaje)">Detalles</button>   
+                                        @if(viaje.estado == "programado") {
+                                            <button class="dropdown-item" type="button" (click)="cancelarViaje(viaje.id)">Cancelar</button>
+                                        }   
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 
     <!-- Modal detalle viaje -->
     <div class="modal fade modal-lg" id="ModalDetalleViaje" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

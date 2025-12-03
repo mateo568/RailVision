@@ -20,7 +20,7 @@
                 </div>
     
             </div>
-            <div class="row">
+            <div class="row tabla">
                 <table class="table table-bordered">
                     <thead>
                         <tr>
@@ -30,7 +30,7 @@
                         <th scope="col">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="table-group-divider">
                         @for (estacion of listaFiltrada; track $index) {
                             <tr>
                                 <td>{{estacion.nombre}}</td>

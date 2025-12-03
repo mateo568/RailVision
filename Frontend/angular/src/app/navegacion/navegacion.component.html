@@ -1,5 +1,9 @@
-<nav class="navbar navbar-dark bg-dark shadow justify-content-between fixed-top">
-  <button class="btn btn-outline-light" (click)="Sidebar()">☰</button>
+<nav class="navbar navbar-dark shadow justify-content-between fixed-top">
+  
+  <div class="d-flex align-items-center">
+    <button class="btn btn-outline-light" (click)="Sidebar()">☰</button>
+    <h4 class="text-white ms-3 m-0">RailVision</h4>
+  </div>
 
   <div class="dropdown">
     <button class="btn btn-outline-light mb-0 dropdown-toggle" type="button" id="perfilMenu"
@@ -15,8 +19,7 @@
 </nav>
 
 <!-- Navegacion dinamica, falta otorgar o denegar permisos -->
-<div class="sidebar bg-dark text-white" [ngClass]="{ 'sidebar-expanded': expand, 'sidebar-collapsed': !expand }">
-  <h4 class="text-center">RailVision</h4>
+<div class="sidebar text-white" [ngClass]="{ 'sidebar-expanded': expand, 'sidebar-collapsed': !expand }">
   <ul class="list-unstyled text-center">
 
     <!-- Todos pueden ver la lista de viajes -->

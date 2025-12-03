@@ -10,4 +10,6 @@ import java.util.Optional;
 @Repository
 public interface RutaRepository extends JpaRepository<Ruta, Integer> {
     Optional<Ruta> findByIdAndBajaLogica (Integer id, Boolean estado);
+
+    List<Ruta> findByBajaLogica (Boolean estado);
 }
