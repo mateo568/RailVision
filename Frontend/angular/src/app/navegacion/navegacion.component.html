@@ -7,8 +7,8 @@
 
   <div class="dropdown">
     <button class="btn btn-outline-light mb-0 dropdown-toggle" type="button" id="perfilMenu"
-      data-bs-toggle="dropdown" aria-expanded="false">
-      Perfil
+    data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-person-circle"></i>
     </button>
     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="perfilMenu">
       <li><a class="dropdown-item" href="#">Ver perfil</a></li>
@@ -24,32 +24,48 @@
 
     <!-- Todos pueden ver la lista de viajes -->
     <li>
-    <button class="nav-link text-white" (click)="navegar('/menu/viajes')">Viajes</button>
+      <button class="nav-link text-white" (click)="navegar('/menu/viajes')">
+        <i class="bi bi-sign-turn-slight-right"></i> Viajes
+      </button>
     </li>
 
     <!-- Solo admin y operador pueden crear nuevos viajes -->
 
     <!-- Admin y operador -->
     <li *ngIf="authRoles.esAdmin() || authRoles.esOperador()">
-      <button class="nav-link text-white" (click)="navegar('/menu/trenes')">Trenes</button>
+      <button class="nav-link text-white" (click)="navegar('/menu/trenes')">
+        <i class="bi bi-train-freight-front"></i> Trenes
+      </button>
     </li>
 
     <!-- Solo Admin -->
     <li *ngIf="authRoles.esAdmin()">
-      <button class="nav-link text-white" (click)="navegar('/menu/empleados')">Empleados</button>
+      <button class="nav-link text-white" (click)="navegar('/menu/empleados')">
+        <i class="bi bi-person-badge"></i> Empleados
+      </button>
     </li>
 
     <!-- Admin y operador -->
     <li *ngIf="authRoles.esAdmin() || authRoles.esOperador()">
-      <button class="nav-link text-white" (click)="navegar('/menu/rutas')">Rutas</button>
+      <button class="nav-link text-white" (click)="navegar('/menu/rutas')">
+        <i class="bi bi-signpost-split"></i> Rutas
+      </button>
     </li>
 
     <!-- Solo Admin -->
     <li *ngIf="authRoles.esAdmin()">
-      <button class="nav-link text-white" (click)="navegar('/menu/estaciones')">Estaciones</button>
+      <button class="nav-link text-white" (click)="navegar('/menu/estaciones')">
+        <i class="bi bi-sign-railroad"></i> Estaciones
+      </button>
     </li>
 
   </ul>
+</div>
+
+<div 
+  class="overlay" 
+  *ngIf="expand"
+  (click)="Sidebar()">
 </div>
 
 <section>

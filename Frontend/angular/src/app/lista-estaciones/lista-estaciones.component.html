@@ -7,9 +7,6 @@
         </div>
         <div class="col-7">
             <div id="opciones" class="row">
-                <div id="crear" class="col-2">
-                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#ModalPostEstacion">Crear</button>
-                </div>
                 <div class="col-3">
                     <label for="filtroEstado" class="form-label">Estado</label>
                     <select name="" id="filtroEstado" class="form-select" [(ngModel)]="filtroEstado" (change)="filtrarDatos()">
@@ -18,10 +15,16 @@
                         <option value="false">Desactivada</option>
                     </select>
                 </div>
+                <div class="col"></div>
+                <div id="crear" class="col-2">
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#ModalPostEstacion" data-bs-title="Crear estación" data-bs-placement="bottom">
+                        <i class="bi bi-plus-square"></i>
+                    </button>
+                </div>
     
             </div>
             <div class="row tabla">
-                <table class="table table-bordered">
+                <table class="table table-striped table-hover">
                     <thead>
                         <tr>
                         <th scope="col">Nombre</th>

@@ -14,7 +14,7 @@ export class NavegacionComponent {
   router = inject(Router);
   
   authRoles = inject(AuthRolesService);
-  expand = true;
+  expand = false;
 
   Sidebar(){
     this.expand = !this.expand;

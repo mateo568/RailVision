@@ -8,12 +8,18 @@
         <div class="col-7">
             <div class="row">
                 <div class="col-2">
-                    <button id="botonLista" class="btn btn-secondary" (click)="irListaViajes()">Historial</button>
-                </div>
-                <div class="col-2">
-                    <button id="botonForm" class="btn btn-success" (click)="irPostMapa()">Nuevo viaje</button>
+                    <button id="botonLista" class="btn btn-secondary" title="Lista viajes"  data-bs-toggle="tooltip" 
+                    data-bs-placement="bottom" (click)="irListaViajes()">
+                        <i class="bi bi-list-ul"></i>
+                    </button>
                 </div>
                 <div class="col"></div>
+                <div class="col-2">
+                    <button id="botonForm" class="btn btn-success" title="Crear viaje" data-bs-toggle="tooltip"
+                    data-bs-placement="bottom" (click)="irPostMapa()">
+                        <i class="bi bi-plus-square"></i>
+                    </button>
+                </div>
             </div>
             <div class="row">
                 <div class="accordion" id="accordionPanelsStayOpenExample">

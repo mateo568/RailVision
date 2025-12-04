@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit } from '@angular/core';
 import { forkJoin, Observable, Subscription } from 'rxjs';
 import { Ruta } from '../../models/Entity/ruta';
 import { ServicioRutasService } from '../../services/servicio-rutas.service';
@@ -8,6 +8,7 @@ import { ServicioEstacionService } from '../../services/servicio-estacion.servic
 import { DtoListadoRutas } from '../../models/Dto/dto-ruta';
 import { NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-lista-rutas',
@@ -18,6 +19,8 @@ import { FormsModule } from '@angular/forms';
 })
 export class ListaRutasComponent implements OnInit, OnDestroy{
   private subscripciones: Subscription[] = [];
+
+  private tooltips: any[] = [];
 
   listaRutas: Ruta[] = [];  // Datos del observable "rutas" estructurado en base a la entidad de rutas de la base de datos
   listaEstaciones: Estacion[] = [];
@@ -34,8 +37,19 @@ export class ListaRutasComponent implements OnInit, OnDestroy{
   servicioRuta = inject(ServicioRutasService)
   servicioEstacion = inject(ServicioEstacionService)
 
+  constructor(private el: ElementRef) {}
+
   ngOnInit(): void {
+    this.cargarToggles();
     this.cargarDatos();
+  }
+
+  private cargarToggles() {
+      const tooltipElements = this.el.nativeElement.querySelectorAll('[data-bs-toggle="tooltip"]');
+      tooltipElements.forEach((el: HTMLElement) => {
+      const tooltip = new bootstrap.Tooltip(el, { container: 'body', trigger: 'hover' });
+      this.tooltips.push(tooltip);
+    });
   }
 
   cargarDatos(){
@@ -126,5 +140,13 @@ export class ListaRutasComponent implements OnInit, OnDestroy{
 
   ngOnDestroy(): void {
     this.subscripciones.forEach(sub => sub.unsubscribe());
+
+    const tooltipTriggerList = this.el.nativeElement.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltipTriggerList.forEach((tooltipTriggerEl: any) => {
+      const t = bootstrap.Tooltip.getInstance(tooltipTriggerEl);
+      if (t) {
+        t.dispose();
+      }
+    });
   }
 }

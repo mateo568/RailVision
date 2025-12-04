@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit } from '@angular/core';
 import { ServicioMapaService } from '../../services/servicio-mapa.service';
 import { firstValueFrom, forkJoin, Observable, Subscription } from 'rxjs';
 import { Estacion } from '../../models/Entity/estacion';
@@ -27,6 +27,8 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
   
   private subscripciones: Subscription[] = [];
 
+  private tooltips: any[] = [];
+
   listaCiudades: Ciudad[] = [];
   listaEstaciones: Estacion[] = [];
   listaRutas: Ruta[] = [];
@@ -45,11 +47,26 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
   servicioRuta = inject(ServicioRutasService)
   servicioViaje = inject(ServicioViajesService)
 
+  constructor(private el: ElementRef) {}
+
   ngOnInit(): void {
     setTimeout(() => { this.mapa = this.servicioMapa.iniciarMapa(); });
+    this.cargarToggles();
     this.cargarDatos();
   }
   
+  private cargarToggles() {
+    const tooltipElements = this.el.nativeElement.querySelectorAll('[data-bs-title]');
+  
+    tooltipElements.forEach((el: HTMLElement) => {
+      const tooltip = new bootstrap.Tooltip(el, {
+        container: 'body', trigger: 'hover', fallbackPlacements: []    
+      });
+
+      this.tooltips.push(tooltip);
+    });
+  }
+
   cargarDatos(){
     this.subscripciones.push(
       forkJoin({
@@ -221,10 +238,14 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
       const modal = bootstrap.Modal.getInstance(modalElement);
       modal.hide();
     }
+
   }
 
   ngOnDestroy(): void {
     this.subscripciones.forEach(sub => sub.unsubscribe());
     this.mapa = this.servicioMapa.eliminarMapa(this.mapa);
+
+    this.tooltips.forEach(t => t.dispose());
+    this.tooltips = [];
   }
 }

@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ServicioUsuariosService } from '../../services/servicio-usuarios.service';
 import { Usuario } from '../../models/Entity/usuario';
 import { Router } from '@angular/router';
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-lista-empleados',
@@ -11,16 +12,28 @@ import { Router } from '@angular/router';
   templateUrl: './lista-empleados.component.html',
   styleUrls: ['./lista-empleados.component.css']
 })
-export class ListaEmpleadosComponent implements OnInit {
+export class ListaEmpleadosComponent implements OnInit, OnDestroy {
   usuarios: Usuario[] = [];
+
+  private tooltips: any[] = [];
 
   constructor(
     private usuarioService: ServicioUsuariosService,
-    private router: Router
+    private router: Router,
+    private el: ElementRef
   ) {}
 
   ngOnInit(): void {
+    this.cargarToggles();
     this.cargarUsuarios();
+  }
+
+  private cargarToggles() {
+      const tooltipElements = this.el.nativeElement.querySelectorAll('[data-bs-toggle="tooltip"]');
+      tooltipElements.forEach((el: HTMLElement) => {
+      const tooltip = new bootstrap.Tooltip(el);
+      this.tooltips.push(tooltip);
+    });
   }
 
   cargarUsuarios(): void {
@@ -45,5 +58,15 @@ export class ListaEmpleadosComponent implements OnInit {
 
   irPostEmpleado(): void {
     this.router.navigate(['/menu/empleados/post']);
+  }
+
+  ngOnDestroy(): void {
+    const tooltipTriggerList = this.el.nativeElement.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltipTriggerList.forEach((tooltipTriggerEl: any) => {
+      const t = bootstrap.Tooltip.getInstance(tooltipTriggerEl);
+      if (t) {
+        t.dispose();
+      }
+    });
   }
 }
