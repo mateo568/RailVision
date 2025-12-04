@@ -18,52 +18,72 @@
   </div>
 </nav>
 
-<!-- Navegacion dinamica, falta otorgar o denegar permisos -->
-<div class="sidebar text-white" [ngClass]="{ 'sidebar-expanded': expand, 'sidebar-collapsed': !expand }">
-  <ul class="list-unstyled text-center">
+<div class="sidebar text-white d-flex flex-column"
+     [ngClass]="{ 'sidebar-expanded': expand, 'sidebar-collapsed': !expand }">
 
-    <!-- Todos pueden ver la lista de viajes -->
+  <!-- MENU SUPERIOR -->
+  <ul class="list-unstyled flex-grow-1">
+
     <li>
       <button class="nav-link text-white" (click)="navegar('/menu/viajes')">
         <i class="bi bi-sign-turn-slight-right"></i> Viajes
       </button>
     </li>
 
-    <!-- Solo admin y operador pueden crear nuevos viajes -->
-
-    <!-- Admin y operador -->
     <li *ngIf="authRoles.esAdmin() || authRoles.esOperador()">
       <button class="nav-link text-white" (click)="navegar('/menu/trenes')">
-        <i class="bi bi-train-freight-front"></i> Trenes
+        <i class="bi bi-train-front"></i> Trenes
       </button>
     </li>
 
-    <!-- Solo Admin -->
     <li *ngIf="authRoles.esAdmin()">
       <button class="nav-link text-white" (click)="navegar('/menu/empleados')">
         <i class="bi bi-person-badge"></i> Empleados
       </button>
     </li>
 
-    <!-- Admin y operador -->
     <li *ngIf="authRoles.esAdmin() || authRoles.esOperador()">
       <button class="nav-link text-white" (click)="navegar('/menu/rutas')">
         <i class="bi bi-signpost-split"></i> Rutas
       </button>
     </li>
 
-    <!-- Solo Admin -->
     <li *ngIf="authRoles.esAdmin()">
       <button class="nav-link text-white" (click)="navegar('/menu/estaciones')">
-        <i class="bi bi-sign-railroad"></i> Estaciones
+        <i class="bi bi-signal"></i> Estaciones
       </button>
     </li>
 
   </ul>
+
+  <!-- MENU INFERIOR (LEGAL) AL FONDO -->
+  <ul class="list-unstyled mt-auto">
+
+    <hr class="text-white">
+
+    <li>
+      <a class="nav-link text-white" href="/legal/proteccion-datos" target="_blank">
+        Protección de datos
+      </a>
+    </li>
+
+    <li>
+      <a class="nav-link text-white" href="/legal/terminos" target="_blank">
+        Términos y condiciones
+      </a>
+    </li>
+
+    <li>
+      <a class="nav-link text-white" href="/legal/faq" target="_blank">
+        Preguntas frecuentes
+      </a>
+    </li>
+
+  </ul>
+
 </div>
 
-<div 
-  class="overlay" 
+<div class="overlay" 
   *ngIf="expand"
   (click)="Sidebar()">
 </div>

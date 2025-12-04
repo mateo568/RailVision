@@ -5,12 +5,15 @@
 /* Sidebar base */
 .sidebar {
   position: fixed;
-  top: 56px; /* Altura del navbar */
+  top: 56px;           /* debajo del navbar */
+  bottom: 0;           /* hasta el borde inferior */
   left: 0;
-  height: 100%;
+  width: 220px;
   overflow-y: auto;
-  transition: all 0.3s ease;
   background: #232D4F;
+
+  display: flex;
+  flex-direction: column;
   z-index: 1050;
 }
 
@@ -31,13 +34,13 @@
   top: 56px; /* Altura del navbar */
   left: 0;
   width: 100%;
-  height: 100%;
+  height: calc(100vh - 56px);
   z-index: 1040;
-  background: rgba(0, 0, 0, 0.5); /* <<< oscuridad */
+  background: rgba(0, 0, 0, 0.5);
   transition: opacity 0.3s ease;
 }
 
-section{
+section {
   padding-top: 70px;
   background-color: gainsboro;
   padding-left: 100px;
@@ -45,6 +48,7 @@ section{
   min-height: 100vh;
 }
 
+/* Botones del sidebar */
 .sidebar button.nav-link {
   width: 100%;
   text-align: left;
@@ -61,14 +65,18 @@ section{
   cursor: pointer;
 }
 
+/* Items del sidebar */
 .sidebar li {
-  height: 50px;
-  border-top: 2px solid rgba(255, 255, 255, 0.15);
-  border-bottom: 2px solid rgba(0, 0, 0, 0.4);
-  padding: 6px 0;
+  padding: 10px 0;
+  height: auto;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.sidebar li i{
+.sidebar li i {
   margin-left: 3px;
   margin-right: 10px;
+}
+
+.sidebar ul {
+  padding-left: 0;
 }

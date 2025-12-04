@@ -1,0 +1,28 @@
+.page-container {
+  max-width: 900px;
+  margin: 30px auto;
+}
+
+.card-modern {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  border: 1px solid #e8e8e8;
+}
+
+.card-modern h2 {
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.card-modern h4 {
+  margin-top: 25px;
+  font-weight: 500;
+}
+
+.card-modern p,
+.card-modern li {
+  font-size: 15px;
+  color: #555;
+}
