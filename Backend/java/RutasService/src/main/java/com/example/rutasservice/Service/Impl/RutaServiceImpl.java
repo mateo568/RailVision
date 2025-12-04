@@ -1,6 +1,7 @@
 package com.example.rutasservice.Service.Impl;
 
 import com.example.rutasservice.Dtos.RutaDeleteDto;
+import com.example.rutasservice.Dtos.RutaGetEstadoDto;
 import com.example.rutasservice.Dtos.RutaPostDto;
 import com.example.rutasservice.Dtos.RutasPutDto;
 import com.example.rutasservice.Entity.Ruta;
@@ -24,6 +25,19 @@ public class RutaServiceImpl implements RutaService {
 
     @Override
     public List<Ruta> consultarRutas() { return repository.findAll(); }
+
+    @Override
+    public List<RutaGetEstadoDto> consultarEstadoRutas() {
+        List<Ruta> rutas = repository.findByBajaLogica(false);
+        List<RutaGetEstadoDto> listaDto = new ArrayList<>();
+
+        for (Ruta r : rutas) {
+            listaDto.add(RutaGetEstadoDto.builder()
+                    .rutaId(r.getId()).estado(r.getEstado()).build());
+        }
+
+        return listaDto;
+    }
 
     @Override
     @Transactional

@@ -18,3 +18,7 @@ spring:
 
 server:
   port: 8083
+
+services:
+  rutas:
+    url: http://rutas-service:8082/railvision/rutas

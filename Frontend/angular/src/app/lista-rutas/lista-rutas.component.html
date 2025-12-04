@@ -1,4 +1,4 @@
-<div class="mb-5">
+<div class="pantalla">
     
     <div id="opciones" class="row">
         
@@ -43,7 +43,7 @@
    </div>
 
     <div class="row tabla">
-       <table class="table table-bordered">
+       <table class="table table-striped table-hover">
            <thead>
                <tr>
                     <th scope="col">Nombre</th>
@@ -54,7 +54,7 @@
                     <th scope="col">Acciones</th>
                </tr>
            </thead>
-           <tbody>
+           <tbody class="table-group-divider">
                 @for (ruta of listaFiltrada; track $index) {
                     <tr>
                         <td>{{ruta.nombre}}</td>
@@ -107,5 +107,4 @@
            </tbody>
        </table>
     </div>
-
 </div>

@@ -11,4 +11,9 @@
     flex-direction: column;
     justify-content: end;
     margin-right: 15px;
+    width: 70px;
+}
+
+.bi-circle-fill {
+    margin-left: 5px;
 }
