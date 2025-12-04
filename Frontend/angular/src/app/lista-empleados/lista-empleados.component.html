@@ -1,26 +1,106 @@
-<div class="d-flex justify-content-end mb-3">
-  <button class="btn btn-success" title="Crear empleado" data-bs-toggle="tooltip"
-  data-bs-placement="bottom" (click)="irPostEmpleado()">
-    <i class="bi bi-plus-square"></i>
+<div class="mb-3 d-flex justify-content-between align-items-center">
+  <h4>Lista de empleados</h4>
+
+  <!-- Solo admin puede crear -->
+  <button
+    *ngIf="authRoles.esAdmin()"
+    class="btn btn-success"
+    title="Crear empleado"
+    (click)="irPostEmpleado()">
+    <i class="bi bi-plus-square"></i> Crear empleado
   </button>
 </div>
 
-<div class="row">
-  <div class="col-md-4 mb-3" *ngFor="let u of usuarios">
-    <div class="card p-3 text-center">
-      <h5>{{ u.nombre }} {{ u.apellido }}</h5>
-      <p class="text-muted">{{ u.email }}</p>
-      <p><b>Rol:</b> {{ u.rol }}</p>
-      <p>
-        <b>Estado:</b>
-        <span [ngClass]="u.estado ? 'text-success' : 'text-danger'">
-          {{ u.estado ? 'Activo' : 'Inactivo' }}
-        </span>
-      </p>
-      <div class="d-flex justify-content-center gap-2">
-        <button class="btn btn-warning btn-sm" (click)="editarUsuario(u.usuario_id!)">Editar</button>
-        <button class="btn btn-danger btn-sm" (click)="eliminarUsuario(u.usuario_id!)">Eliminar</button>
-      </div>
-    </div>
-  </div>
+<div class="mb-3">
+  <label>Filtrar por rol</label>
+  <select class="form-select w-auto d-inline ms-2" [(ngModel)]="filtroRol" (change)="filtrarPorRol(filtroRol)">
+    <option value="">Todos</option>
+    <option value="admin">Admin</option>
+    <option value="operador">Operador</option>
+    <option value="cliente">Cliente</option>
+  </select>
+</div>
+
+<!-- Tabla de empleados -->
+<div class="tabla mt-3">
+  <table class="table table-bordered table-hover align-middle">
+    <thead class="table-dark text-center">
+      <tr>
+        <th>Nombre</th>
+        <th>Email</th>
+        <th>Rol</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let u of usuariosFiltrados">
+        <td class="fw-semibold">{{ u.nombre }} {{ u.apellido }}</td>
+        <td>{{ u.email }}</td>
+        <td>
+          <span
+            class="badge"
+            [ngClass]="{
+              'bg-primary': u.rol === 'admin',
+              'bg-warning text-dark': u.rol === 'operador',
+              'bg-secondary': u.rol === 'cliente'
+            }">
+            {{ u.rol | titlecase }}
+          </span>
+        </td>
+
+        <td>
+          <span
+            class="badge"
+            [ngClass]="{
+              'bg-success': u.estado,
+              'bg-danger': !u.estado
+            }">
+            {{ u.estado ? 'Activo' : 'Inactivo' }}
+          </span>
+        </td>
+
+        <td class="text-center">
+          <div class="dropdown">
+            <button
+              class="btn btn-sm btn-outline-dark dropdown-toggle"
+              type="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false">
+              <i class="bi bi-three-dots-vertical"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+
+              <!-- Admin y operador pueden editar -->
+              <li *ngIf="authRoles.esAdmin() || authRoles.esOperador()">
+                <button
+                  class="dropdown-item"
+                  (click)="editarUsuario(u.usuario_id)">
+                  <i class="bi bi-pencil-square text-warning"></i> Editar
+                </button>
+              </li>
+
+              <!-- Solo admin puede eliminar -->
+              <li *ngIf="authRoles.esAdmin()">
+                <button
+                  class="dropdown-item text-danger"
+                  (click)="eliminarUsuario(u.usuario_id)">
+                  <i class="bi bi-trash3"></i> Eliminar
+                </button>
+              </li>
+
+            </ul>
+          </div>
+        </td>
+      </tr>
+
+      <!-- Si no hay usuarios -->
+      <tr *ngIf="usuarios.length === 0">
+        <td colspan="5" class="text-center text-muted py-3">
+          No hay empleados registrados
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>

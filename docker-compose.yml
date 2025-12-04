@@ -25,48 +25,48 @@ services:
   # ---------------------------
   # BACKEND JAVA
   # ---------------------------
-  estaciones-service:
-    build:
-      context: ./Backend/java/EstacionesService
-      dockerfile: Dockerfile
-    container_name: railvision-estaciones
-    ports:
-      - "8081:8081"
-    environment:
-      DB_URL: "jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:5432/postgres?sslmode=require"
-      DB_USER: "postgres.ryfweaoyhvlveicmrfzt"
-      DB_PASS: "Railvision2025-123"
-    networks:
-      - railvision-network
+  # estaciones-service:
+  #   build:
+  #     context: ./Backend/java/EstacionesService
+  #     dockerfile: Dockerfile
+  #   container_name: railvision-estaciones
+  #   ports:
+  #     - "8081:8081"
+  #   environment:
+  #     DB_URL: "jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:5432/postgres?sslmode=require"
+  #     DB_USER: "postgres.ryfweaoyhvlveicmrfzt"
+  #     DB_PASS: "Railvision2025-123"
+  #   networks:
+  #     - railvision-network
 
-  rutas-service:
-    build:
-      context: ./Backend/java/RutasService
-      dockerfile: Dockerfile
-    container_name: railvision-rutas
-    ports:
-      - "8082:8082"
-    environment:
-      DB_URL: "jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:5432/postgres?sslmode=require"
-      DB_USER: "postgres.ryfweaoyhvlveicmrfzt"
-      DB_PASS: "Railvision2025-123"
-    networks:
-      - railvision-network
+  # rutas-service:
+  #   build:
+  #     context: ./Backend/java/RutasService
+  #     dockerfile: Dockerfile
+  #   container_name: railvision-rutas
+  #   ports:
+  #     - "8082:8082"
+  #   environment:
+  #     DB_URL: "jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:5432/postgres?sslmode=require"
+  #     DB_USER: "postgres.ryfweaoyhvlveicmrfzt"
+  #     DB_PASS: "Railvision2025-123"
+  #   networks:
+  #     - railvision-network
 
-  viajes-service:
-    build:
-      context: ./Backend/java/ViajesService
-      dockerfile: Dockerfile
-    container_name: railvision-viajes
-    ports:
-      - "8083:8083"
-    environment:
-      DB_URL: "jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:5432/postgres?sslmode=require"
-      DB_USER: "postgres.ryfweaoyhvlveicmrfzt"
-      DB_PASS: "Railvision2025-123"
+  # viajes-service:
+  #   build:
+  #     context: ./Backend/java/ViajesService
+  #     dockerfile: Dockerfile
+  #   container_name: railvision-viajes
+  #   ports:
+  #     - "8083:8083"
+  #   environment:
+  #     DB_URL: "jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:5432/postgres?sslmode=require"
+  #     DB_USER: "postgres.ryfweaoyhvlveicmrfzt"
+  #     DB_PASS: "Railvision2025-123"
 
-    networks:
-      - railvision-network
+  #   networks:
+  #     - railvision-network
 
   # ---------------------------
   # FRONTEND ANGULAR
@@ -80,9 +80,9 @@ services:
       - "4200:80"
     depends_on:
       - python-api
-      - viajes-service
-      - rutas-service
-      - estaciones-service
+      # - viajes-service
+      # - rutas-service
+      # - estaciones-service
     networks:
       - railvision-network
 
