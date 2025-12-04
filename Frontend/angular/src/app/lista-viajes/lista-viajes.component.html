@@ -2,7 +2,10 @@
 
     <div class="row">
         <div id="divVolver" class="col-1">
-            <button id="botonVolver" class="btn btn-secondary" (click)="irMenuViajes()">Volver</button>
+            <button id="botonVolver" class="btn btn-secondary" title="Volver" data-bs-toggle="tooltip" 
+            data-bs-placement="bottom" (click)="irMenuViajes()">
+                <i class="bi bi-arrow-left-square"></i>
+            </button>
         </div>
         <div class="col-2">
             <label for="">Ruta</label>
@@ -33,7 +36,8 @@
             </select>
         </div>
         <div id="divLimpiar" class="col-1">
-            <button id="botonLimpiar" class="btn btn-secondary" (click)="limpiarFiltro()">
+            <button id="botonLimpiar" class="btn btn-secondary"title="Limpiar filtros" data-bs-toggle="tooltip" 
+            data-bs-placement="bottom" (click)="limpiarFiltro()">
                 <i class="bi bi-trash"></i>
             </button>
         </div>

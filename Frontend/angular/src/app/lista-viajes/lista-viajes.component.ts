@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { forkJoin, Observable, Subscription } from 'rxjs';
 import { Viaje } from '../../models/Entity/viaje';
@@ -21,6 +21,8 @@ declare var bootstrap: any;
 })
 export class ListaViajesComponent implements OnInit, OnDestroy{
   private subscripciones: Subscription[] = [];
+
+  private tooltips: any[] = [];
 
   listaViajes: Viaje[] = [];
   listaRutas: Ruta[] = [];
@@ -62,8 +64,19 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
   servicioTrenes = inject(ServicioTrenesService)
   router = inject(Router);
 
+  constructor(private el: ElementRef) {}
+
   ngOnInit(): void {
+    this.cargarToggles();
     this.cargarDatos();
+  }
+
+  private cargarToggles() {
+      const tooltipElements = this.el.nativeElement.querySelectorAll('[data-bs-toggle="tooltip"]');
+      tooltipElements.forEach((el: HTMLElement) => {
+      const tooltip = new bootstrap.Tooltip(el, { container: 'body', trigger: 'hover' });
+      this.tooltips.push(tooltip);
+    });
   }
 
   cargarDatos() {
@@ -321,5 +334,13 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
 
   ngOnDestroy(): void {
     this.subscripciones.forEach(sub => sub.unsubscribe());
+
+    const tooltipTriggerList = this.el.nativeElement.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltipTriggerList.forEach((tooltipTriggerEl: any) => {
+      const t = bootstrap.Tooltip.getInstance(tooltipTriggerEl);
+      if (t) {
+        t.dispose();
+      }
+    });
   }
 }

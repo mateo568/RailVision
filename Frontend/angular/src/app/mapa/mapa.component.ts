@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import * as L from 'leaflet';
 import { concatMap, delay, forkJoin, from, Subscription } from 'rxjs';
 import { Viaje } from '../../models/Entity/viaje';
 import { Ruta } from '../../models/Entity/ruta';
@@ -14,6 +13,7 @@ import { Estacion } from '../../models/Entity/estacion';
 import { ServicioEstacionService } from '../../services/servicio-estacion.service';
 import { Tren } from '../../models/Entity/tren';
 import { ServicioTrenesService } from '../../services/servicio-trenes.service';
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-mapa',
@@ -24,6 +24,8 @@ import { ServicioTrenesService } from '../../services/servicio-trenes.service';
 })
 export class MapaComponent implements OnInit, OnDestroy{  
   private subscripciones: Subscription[] = [];
+
+  private tooltips: any[] = [];
 
   listaViajes: Viaje[] = [];
   listaRutas: Ruta[] = [];
@@ -43,9 +45,20 @@ export class MapaComponent implements OnInit, OnDestroy{
   servicioTrenes = inject(ServicioTrenesService)
   router = inject(Router);
 
+  constructor(private el: ElementRef) {}
+
   ngOnInit(): void {
     setTimeout(() => { this.mapa = this.servicioMapa.iniciarMapa(); });
+    this.cargarToggles();
     this.cargarDatos();
+  }
+
+  private cargarToggles() {
+      const tooltipElements = this.el.nativeElement.querySelectorAll('[data-bs-toggle="tooltip"]');
+      tooltipElements.forEach((el: HTMLElement) => {
+      const tooltip = new bootstrap.Tooltip(el);
+      this.tooltips.push(tooltip);
+    });
   }
 
   private cargarDatos() {
@@ -126,5 +139,13 @@ export class MapaComponent implements OnInit, OnDestroy{
   ngOnDestroy(): void {
     this.subscripciones.forEach(sub => sub.unsubscribe());
     this.mapa = this.servicioMapa.eliminarMapa(this.mapa);
+
+    const tooltipTriggerList = this.el.nativeElement.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltipTriggerList.forEach((tooltipTriggerEl: any) => {
+      const t = bootstrap.Tooltip.getInstance(tooltipTriggerEl);
+      if (t) {
+        t.dispose();
+      }
+    });
   }
 }

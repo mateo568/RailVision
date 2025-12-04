@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import * as L from 'leaflet';
 import { firstValueFrom, forkJoin, Subscription } from 'rxjs';
 import { ServicioMapaService } from '../../services/servicio-mapa.service';
 import { ServicioViajesService } from '../../services/servicio-viajes.service';
@@ -14,6 +13,7 @@ import { Ruta } from '../../models/Entity/ruta';
 import { Tren } from '../../models/Entity/tren';
 import { ServicioTrenesService } from '../../services/servicio-trenes.service';
 import { DtoPostRuta } from '../../models/Dto/dto-ruta';
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-form-viaje',
@@ -25,6 +25,8 @@ import { DtoPostRuta } from '../../models/Dto/dto-ruta';
 export class FormViajeComponent implements OnInit, OnDestroy{
   private subscripciones: Subscription[] = []
   
+  private tooltips: any[] = [];
+
   listaRutas: Ruta[] = [];
   listaEstaciones: Estacion[] = [];
   listaTrenes: Tren[] = [];
@@ -62,14 +64,26 @@ export class FormViajeComponent implements OnInit, OnDestroy{
     return this.nuevoViaje.get("cargas") as FormArray;
   }
 
+  constructor(private el: ElementRef) {}
+
   ngOnInit(): void {
     setTimeout(() => { this.mapa = this.servicioMapa.iniciarMapa(); });
+    this.cargarToggles();
     this.cargarDatos();
+    
 
     this.nuevoViaje.get("horarioSalida")?.valueChanges.subscribe(() => {
     if (this.rutaViaje) {
       this.calcularTiempoLlegada();
     }
+    });
+  }
+
+  private cargarToggles() {
+      const tooltipElements = this.el.nativeElement.querySelectorAll('[data-bs-toggle="tooltip"]');
+      tooltipElements.forEach((el: HTMLElement) => {
+      const tooltip = new bootstrap.Tooltip(el, { container: 'body', trigger: 'hover' });
+      this.tooltips.push(tooltip);
     });
   }
 
@@ -349,5 +363,13 @@ export class FormViajeComponent implements OnInit, OnDestroy{
   ngOnDestroy(): void {
     this.subscripciones.forEach(sub => sub.unsubscribe());
     this.mapa = this.servicioMapa.eliminarMapa(this.mapa);
+
+    const tooltipTriggerList = this.el.nativeElement.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltipTriggerList.forEach((tooltipTriggerEl: any) => {
+      const t = bootstrap.Tooltip.getInstance(tooltipTriggerEl);
+      if (t) {
+        t.dispose();
+      }
+    });
   }
 }
