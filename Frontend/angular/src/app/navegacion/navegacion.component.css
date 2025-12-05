@@ -64,6 +64,10 @@ section {
   transition: background 0.25s, padding-left 0.25s;
 }
 
+#dashboard {
+  margin-left: 10px;
+}
+
 .sidebar button.nav-link:hover,
 .sidebar a.nav-link:hover {
   background: rgba(255, 255, 255, 0.12);
