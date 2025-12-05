@@ -14,4 +14,24 @@
 
 table{
     margin-top: 15px;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.modal-body.edicion table {
+    margin-left: 15px;
+}
+
+.modal-body.edicion table tbody td,
+.modal-body.edicion table thead th {
+    width: 25%;
+    padding: 4px 6px;
+}
+
+.sin-cargas {
+  height: 100%;         /* controla el espacio que se ve */
+  text-align: center;
+  opacity: 0.6;
+  font-style: italic;
+  vertical-align: middle;
 }

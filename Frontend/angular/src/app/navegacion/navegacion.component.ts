@@ -15,12 +15,15 @@ export class NavegacionComponent {
   
   authRoles = inject(AuthRolesService);
   expand = false;
+  animar = false;
 
   Sidebar(){
+    this.animar = true;
     this.expand = !this.expand;
   }
 
   navegar(link: string){
+    this.animar = false;
     this.router.navigate([link])
   }
 

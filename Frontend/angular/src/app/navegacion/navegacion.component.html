@@ -19,7 +19,7 @@
 </nav>
 
 <div class="sidebar text-white d-flex flex-column"
-     [ngClass]="{ 'sidebar-expanded': expand, 'sidebar-collapsed': !expand }">
+     [ngClass]="{ 'sidebar-expanded': expand, 'sidebar-collapsed': !expand, 'sidebar-animate': animar }">
 
   <!-- MENU SUPERIOR -->
   <ul class="list-unstyled flex-grow-1">
@@ -50,7 +50,7 @@
 
     <li *ngIf="authRoles.esAdmin()">
       <button class="nav-link text-white" (click)="navegar('/menu/estaciones')">
-        <i class="bi bi-signal"></i> Estaciones
+        <i class="bi bi-sign-railroad"></i> Estaciones
       </button>
     </li>
 

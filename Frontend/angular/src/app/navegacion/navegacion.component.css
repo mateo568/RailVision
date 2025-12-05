@@ -11,13 +11,15 @@
   width: 220px;
   overflow-y: auto;
   background: #232D4F;
-
   display: flex;
   flex-direction: column;
   z-index: 1050;
+  transition: none;
 }
 
-
+.sidebar-animate {
+  transition: width 0.3s ease, padding 0.3s ease;
+}
 
 /* Expandido y colapsado */
 .sidebar-expanded {
@@ -45,6 +47,7 @@
 section {
   padding-top: 70px;
   background-color: gainsboro;
+  background-image: url("https://www.transparenttextures.com/patterns/arches.png");
   padding-left: 100px;
   padding-right: 10px;
   min-height: 100vh;
