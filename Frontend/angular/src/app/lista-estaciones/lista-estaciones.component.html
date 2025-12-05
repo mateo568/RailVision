@@ -25,7 +25,7 @@
             </div>
             <div class="row tabla">
                 <table class="table table-striped table-hover">
-                    <thead>
+                    <thead class="table-dark">
                         <tr>
                         <th scope="col">Nombre</th>
                         <th scope="col">Localidad</th>
@@ -119,8 +119,15 @@
                         </div>
                         <div class="col d-flex flex-column">
                             <label>Estado</label>
-                            <input id="estadoEstacion" type="checkbox" class="btn-check" [(ngModel)]="modalEstacion.estado">
-                            <label class="btn" for="estadoEstacion" [ngClass]="modalEstacion.estado ? 'btn-primary' : 'btn-danger'">{{nombrarEstado()}}</label>
+                            <label class="switch-label">
+                                <input type="checkbox" [(ngModel)]="modalEstacion.estado">
+                                <span class="track">
+                                    <span class="thumb"></span>
+                                    <span class="text">
+                                    {{ modalEstacion.estado ? 'Activo' : 'Inactivo' }}
+                                    </span>
+                                </span>
+                            </label>
                         </div>
                     </div>
                 </div>

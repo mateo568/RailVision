@@ -11,6 +11,7 @@ import { FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Va
 import { ServicioTrenesService } from '../../services/servicio-trenes.service';
 import { Tren } from '../../models/Entity/tren';
 declare var bootstrap: any;
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-lista-viajes',
@@ -88,6 +89,7 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
         trenes: this.servicioTrenes.getTrenes()
       }).subscribe(({rutas, viajes, trenes}) =>{
         this.listaRutas = rutas;
+        console.log(this.listaRutas)
         this.listaViajes = viajes;
         this.listaTrenes = trenes;
         this.cargarListado();
@@ -274,7 +276,7 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
       }
       
       const sub = this.servicioViaje.putViaje(dtoViaje).subscribe(() => {
-        alert("Modificacion realizada")
+        Swal.fire('Listo', 'Se ha modificado exitosamente el viaje', 'success');
         console.log(dtoViaje);
         this.cerrarModal();
         this.filtroRuta = "";
@@ -322,7 +324,7 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
   
   cancelarViaje(id: number) {
     const sub = this.servicioViaje.deleteViaje(id).subscribe(() =>{
-      alert("Viaje cancelado")
+      Swal.fire('Listo', 'Se ha cancelado exitosamente el viaje', 'success');
 
       this.cargarDatos()
     })

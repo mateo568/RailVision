@@ -14,6 +14,7 @@ import { Tren } from '../../models/Entity/tren';
 import { ServicioTrenesService } from '../../services/servicio-trenes.service';
 import { DtoPostRuta } from '../../models/Dto/dto-ruta';
 declare var bootstrap: any;
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-form-viaje',
@@ -265,7 +266,6 @@ export class FormViajeComponent implements OnInit, OnDestroy{
 
   async submit(){
     if (!this.nuevoViaje.valid){
-      alert("Datos invalidos");
       return;
     }
 
@@ -310,7 +310,7 @@ export class FormViajeComponent implements OnInit, OnDestroy{
       console.log("Usando rutaId => ", rutaId);  
       const sub = await firstValueFrom(this.servicioViaje.postViaje(dtoViaje))
       
-      alert("Viaje creado")
+      Swal.fire('Listo', 'Se ha creado exitosamente el viaje', 'success');
       console.log(dtoViaje)
       this.irMenuViajes()
     } 
@@ -322,10 +322,10 @@ export class FormViajeComponent implements OnInit, OnDestroy{
         }
       } 
       catch {
-        console.log("Fallo en borrar el viaje")
+        console.log("Fallo en borrar las rutas")
       }
 
-      alert("Falla al crear el viaje")
+      Swal.fire('Error', 'No se pudo crear el viaje', 'error');
     }
   }
   

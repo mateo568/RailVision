@@ -35,7 +35,7 @@ export class LoginComponent {
         localStorage.setItem('token', res.access_token);
         localStorage.setItem('rol', res.rol); //Se guarda el rol de usuario
         Swal.fire('Bienvenido', 'Inicio de sesión exitoso', 'success');
-        this.router.navigate(['/menu']);
+        this.router.navigate(['/menu/viajes']);
       },
       error: (err) => {
         console.error(err);

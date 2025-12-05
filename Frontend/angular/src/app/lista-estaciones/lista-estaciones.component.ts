@@ -12,6 +12,7 @@ import { ServicioRutasService } from '../../services/servicio-rutas.service';
 import { DtoDeleteRuta, DtoPutRuta } from '../../models/Dto/dto-ruta';
 import { ServicioViajesService } from '../../services/servicio-viajes.service';
 declare var bootstrap: any;
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-lista-estaciones',
@@ -113,11 +114,11 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
 
   filtrarDatos() {
     this.mapa = this.servicioMapa.limpiarIconos();
-    this.listaFiltrada = this.listaEstaciones;
+    this.listaFiltrada = this.listaEstaciones.filter(estacion => estacion.bajaLogica === false);
 
     if (this.filtroEstado !== null && this.filtroEstado !== ""){
       const valor = this.filtroEstado === "true";
-      this.listaFiltrada = this.listaEstaciones.filter( estacion => {
+      this.listaFiltrada = this.listaFiltrada.filter( estacion => {
         return estacion.estado == valor; 
       });
     }
@@ -138,7 +139,7 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
       const sub = this.servicioEstacion.postEstacion(estacion).subscribe(() =>{
         this.mapa = this.servicioMapa.limpiarIconos();
         this.filtroEstado = "";
-        alert("Estacion creada exitosamente")
+        Swal.fire('Listo', 'Se ha creado la nueva estación', 'success');
         this.cerrarModal('ModalPostEstacion')
         this.cargarDatos();
       })
@@ -186,6 +187,7 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
     });
 
     const sub = this.servicioRuta.putRutas(listaRutasDto).subscribe(() => {
+      Swal.fire('Listo', 'Se ha modificado exitosamente la estación', 'success');
       this.cargarDatos();
     })
 
@@ -208,7 +210,7 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
         // Si existen viajes relacionados a la estacion cancelar la eliminacion
         const viajesExistentes = await firstValueFrom(this.servicioViaje.getViajesExistentes(idRutas))
         if (viajesExistentes) {
-          alert("Esta estacion tiene viajes programados o en curso. No se puede eliminar")
+          Swal.fire('Error', 'Esta estacion tiene viajes programados o en curso. No se puede eliminar', 'error');
           return;
         }
 
@@ -218,7 +220,8 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
 
       // Se elimina la estacion y se vuelve a cargar la pagina con las estaciones actualizadas
       await firstValueFrom(this.servicioEstacion.deleteEstacion(this.modalEstacion.id));
-      alert("Se ha borrado exitosamente la estación")
+      Swal.fire('Listo', 'Se ha borrado exitosamente la estación', 'success');
+     
       this.cerrarModal('ModalDeleteEstacion');
       this.mapa = this.servicioMapa.limpiarIconos();
       this.cargarDatos();
@@ -227,7 +230,7 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
       if (idRutas.length > 0) {
         await firstValueFrom(this.servicioRuta.deleteRutas(dtoRollback));
       }
-      alert("Error, no se pudo borrar la estacion")
+      Swal.fire('Error', 'No se pudo borrar la estacion', 'error');
       console.log(error)
     }
   }
