@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Router, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthRolesService } from '../../services/servicio-auth-roles.service';
 
@@ -10,12 +10,22 @@ import { AuthRolesService } from '../../services/servicio-auth-roles.service';
   templateUrl: './navegacion.component.html',
   styleUrl: './navegacion.component.css'
 })
-export class NavegacionComponent {
+export class NavegacionComponent implements OnInit {
   router = inject(Router);
+  nombrePantalla = localStorage.getItem('nombrePantalla');
   
   authRoles = inject(AuthRolesService);
   expand = false;
   animar = false;
+
+
+  ngOnInit(): void {
+    window.addEventListener('storage', () => {
+      this.nombrePantalla = localStorage.getItem('nombrePantalla') ?? '';
+    });
+
+    this.nombrePantalla = localStorage.getItem('nombrePantalla') ?? '';
+  }
 
   Sidebar(){
     this.animar = true;

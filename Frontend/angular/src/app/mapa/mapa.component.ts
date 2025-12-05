@@ -51,6 +51,8 @@ export class MapaComponent implements OnInit, OnDestroy{
     setTimeout(() => { this.mapa = this.servicioMapa.iniciarMapa(); });
     this.cargarToggles();
     this.cargarDatos();
+    localStorage.setItem('nombrePantalla', 'Viajes')
+    window.dispatchEvent(new Event('storage'));
   }
 
   private cargarToggles() {
