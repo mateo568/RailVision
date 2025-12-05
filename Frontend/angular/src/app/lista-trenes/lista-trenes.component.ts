@@ -34,6 +34,9 @@ export class ListaTrenesComponent implements OnInit, OnDestroy{
   ngOnInit(): void {
     this.cargarToggles();
     this.cargarDatos(); 
+
+    localStorage.setItem('nombrePantalla', 'Trenes')
+    window.dispatchEvent(new Event('storage'));
   }
 
   private cargarToggles() {

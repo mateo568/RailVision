@@ -42,6 +42,9 @@ export class ListaRutasComponent implements OnInit, OnDestroy{
   ngOnInit(): void {
     this.cargarToggles();
     this.cargarDatos();
+
+    localStorage.setItem('nombrePantalla', 'Rutas')
+    window.dispatchEvent(new Event('storage'));
   }
 
   private cargarToggles() {

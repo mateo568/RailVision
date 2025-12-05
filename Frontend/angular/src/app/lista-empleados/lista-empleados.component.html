@@ -1,24 +1,26 @@
-<div class="mb-3 d-flex justify-content-between align-items-center">
-  <h4>Lista de empleados</h4>
+<div class="row">
+  <div class="col-2">
+    <label class="form-label">Rol</label>
+    <select class="form-select" [(ngModel)]="filtroRol" (change)="filtrarPorRol(filtroRol)">
+      <option value=""></option>
+      <option value="admin">Admin</option>
+      <option value="operador">Operador</option>
+      <option value="cliente">Cliente</option>
+    </select>
+  </div>
+  <div class="col"></div>
+  <div id="crear" class="col-1">
+      <button
+        *ngIf="authRoles.esAdmin()"
+        class="btn btn-success"
+        data-bs-toggle="tooltip" 
+        data-bs-placement="bottom"
+        title="Crear empleado" 
+        (click)="irPostEmpleado()">
+        <i class="bi bi-plus-square"></i>
+      </button>
+  </div>
 
-  <!-- Solo admin puede crear -->
-  <button
-    *ngIf="authRoles.esAdmin()"
-    class="btn btn-success"
-    title="Crear empleado"
-    (click)="irPostEmpleado()">
-    <i class="bi bi-plus-square"></i> Crear empleado
-  </button>
-</div>
-
-<div class="mb-3">
-  <label>Filtrar por rol</label>
-  <select class="form-select w-auto d-inline ms-2" [(ngModel)]="filtroRol" (change)="filtrarPorRol(filtroRol)">
-    <option value="">Todos</option>
-    <option value="admin">Admin</option>
-    <option value="operador">Operador</option>
-    <option value="cliente">Cliente</option>
-  </select>
 </div>
 
 <!-- Tabla de empleados -->
@@ -38,7 +40,7 @@
       <tr *ngFor="let u of usuariosFiltrados">
         <td class="fw-semibold">{{ u.nombre }} {{ u.apellido }}</td>
         <td>{{ u.email }}</td>
-        <td>
+        <td  class="text-center">
           <span
             class="badge"
             [ngClass]="{
@@ -50,7 +52,7 @@
           </span>
         </td>
 
-        <td>
+        <td class="text-center">
           <span
             class="badge"
             [ngClass]="{
@@ -77,16 +79,16 @@
                 <button
                   class="dropdown-item"
                   (click)="editarUsuario(u.usuario_id)">
-                  <i class="bi bi-pencil-square text-warning"></i> Editar
+                    Editar
                 </button>
               </li>
 
               <!-- Solo admin puede eliminar -->
               <li *ngIf="authRoles.esAdmin()">
                 <button
-                  class="dropdown-item text-danger"
+                  class="dropdown-item"
                   (click)="eliminarUsuario(u.usuario_id)">
-                  <i class="bi bi-trash3"></i> Eliminar
+                    Eliminar
                 </button>
               </li>
 

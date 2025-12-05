@@ -1,3 +1,10 @@
+#crear{
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    margin-right: 15px;
+}
+
 .mb-3{
     margin-right: 15px;
 }

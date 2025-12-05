@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ServicioUsuariosService } from '../../services/servicio-usuarios.service';
 import { Usuario } from '../../models/Entity/usuario';
@@ -14,7 +14,7 @@ declare var bootstrap: any;
   templateUrl: './lista-empleados.component.html',
   styleUrls: ['./lista-empleados.component.css']
 })
-export class ListaEmpleadosComponent implements OnInit, OnDestroy {
+export class ListaEmpleadosComponent implements OnInit, AfterViewInit, OnDestroy {
   usuarios: Usuario[] = [];
   usuariosFiltrados: any[] = [];
 
@@ -30,6 +30,12 @@ export class ListaEmpleadosComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.cargarUsuarios();
+
+    localStorage.setItem('nombrePantalla', 'Empleados')
+    window.dispatchEvent(new Event('storage'));
+  }
+  
+  ngAfterViewInit(): void {
     this.cargarToggles();
   }
 

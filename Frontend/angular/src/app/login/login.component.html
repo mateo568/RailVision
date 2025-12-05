@@ -1,15 +1,22 @@
-<form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="p-4">
-  <h4 class="text-center mb-4">Iniciar sesión</h4>
-
-  <div class="mb-3">
-    <label>Email</label>
-    <input type="email" class="form-control" formControlName="email" />
+<div id="fondo">
+  <div class="login-container">
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <h1 class="text-center mb-4">Bienvenido a RailVision</h1>
+  
+      <h4 class="text-center mb-4">Iniciar sesión</h4>
+    
+      <div class="mb-3">
+        <label>Email</label>
+        <input type="email" class="form-control" formControlName="email" />
+      </div>
+    
+      <div class="mb-3">
+        <label>Contraseña</label>
+        <input type="password" class="form-control" formControlName="password" />
+      </div>
+    
+      <button type="submit" class="btn btn-primary w-100">Iniciar sesión</button>
+    </form>
   </div>
+</div>
 
-  <div class="mb-3">
-    <label>Contraseña</label>
-    <input type="password" class="form-control" formControlName="password" />
-  </div>
-
-  <button type="submit" class="btn btn-primary w-100">Iniciar sesión</button>
-</form>

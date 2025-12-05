@@ -1,8 +1,4 @@
 <form [formGroup]="usuarioForm" (ngSubmit)="onSubmit()" class="p-3">
-  <h4 class="mb-4 text-center">
-    {{ editMode ? 'Editar usuario' : 'Crear nuevo usuario' }}
-  </h4>
-
   <!-- Nombre -->
   <div class="mb-3">
     <label>Nombre</label>
@@ -58,15 +54,27 @@
 
   <!-- Estado -->
   <div class="form-check mb-3">
+    <label class="form-label">Estado</label>
     <input type="checkbox" class="form-check-input" formControlName="estado" id="estadoCheck" />
-    <label class="form-check-label" for="estadoCheck">Usuario activo</label>
+    <label class="form-check-label" for="estadoCheck">
+    </label>
   </div>
 
   <!-- Botones -->
-  <div class="d-flex justify-content-end gap-2 mt-4">
-    <button type="button" class="btn btn-secondary" (click)="volver()">Volver</button>
-    <button type="submit" class="btn btn-success">
-      {{ editMode ? 'Guardar cambios' : 'Crear usuario' }}
-    </button>
+  <div id="botonesForm" class="row">
+    <div class="col"></div>
+    <div class="col-1">
+      <button type="button" class="btn btn-secondary" title="Volver"  data-bs-toggle="tooltip" 
+      data-bs-placement="bottom" (click)="volver()">
+        <i class="bi bi-arrow-left-square"></i>
+      </button>
+    </div>
+    <div class="col-1">
+      <button type="submit" class="btn btn-success" title="Confirmar"  data-bs-toggle="tooltip" 
+      data-bs-placement="bottom">
+        <!-- {{ editMode ? 'Guardar cambios' : 'Crear usuario' }} -->
+        <i class="bi bi-check-circle"></i>
+      </button>
+    </div>
   </div>
 </form>

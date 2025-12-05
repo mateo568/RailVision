@@ -71,7 +71,8 @@ export class FormViajeComponent implements OnInit, OnDestroy{
     setTimeout(() => { this.mapa = this.servicioMapa.iniciarMapa(); });
     this.cargarToggles();
     this.cargarDatos();
-    
+    localStorage.setItem('nombrePantalla', 'Nuevo viaje')
+    window.dispatchEvent(new Event('storage'));
 
     this.nuevoViaje.get("horarioSalida")?.valueChanges.subscribe(() => {
     if (this.rutaViaje) {

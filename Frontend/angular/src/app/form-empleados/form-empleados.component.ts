@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -6,6 +6,7 @@ import { ServicioUsuariosService } from '../../services/servicio-usuarios.servic
 import { Usuario } from '../../models/Entity/usuario';
 import Swal from 'sweetalert2'; // 👈 para los mensajes visuales
 import { AbstractControl } from '@angular/forms';
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-form-empleados',
@@ -14,18 +15,21 @@ import { AbstractControl } from '@angular/forms';
   templateUrl: './form-empleados.component.html',
   styleUrls: ['./form-empleados.component.css']
 })
-export class FormEmpleadosComponent implements OnInit {
+export class FormEmpleadosComponent implements OnInit , AfterViewInit, OnDestroy{
   usuarioForm!: FormGroup;
   editMode = false;
   usuarioId!: number;
   rolesDisponibles: string[] = ['admin', 'operador', 'cliente'];
   submitted = false;
 
+  private tooltips: any[] = [];
+
   constructor(
     private fb: FormBuilder,
     private usuarioService: ServicioUsuariosService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private el: ElementRef
   ) {}
 
   ngOnInit(): void {
@@ -46,6 +50,26 @@ export class FormEmpleadosComponent implements OnInit {
       this.usuarioId = Number(idParam);
       this.cargarUsuario(this.usuarioId);
     }
+
+    if (this.editMode) {
+      localStorage.setItem('nombrePantalla', 'Editar empleado')
+      window.dispatchEvent(new Event('storage'));
+    } else {
+      localStorage.setItem('nombrePantalla', 'Nuevo empleado')
+      window.dispatchEvent(new Event('storage'));
+    }
+  }
+
+  ngAfterViewInit(): void {
+    this.cargarToggles();
+  }
+
+  private cargarToggles() {
+    const tooltipElements = this.el.nativeElement.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltipElements.forEach((el: HTMLElement) => {
+    const tooltip = new bootstrap.Tooltip(el, { container: 'body', trigger: 'hover' });
+    this.tooltips.push(tooltip);
+  });
   }
 
   // 🔹 Cargar usuario para edición
@@ -117,7 +141,18 @@ export class FormEmpleadosComponent implements OnInit {
       });
     }
   }
+
   volver(): void {
     this.router.navigate(['/menu/empleados']);
+  }
+
+  ngOnDestroy(): void {
+    const tooltipTriggerList = this.el.nativeElement.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltipTriggerList.forEach((tooltipTriggerEl: any) => {
+      const t = bootstrap.Tooltip.getInstance(tooltipTriggerEl);
+      if (t) {
+        t.dispose();
+      }
+    });
   }
 }

@@ -12,7 +12,11 @@
     width: 50px;
 }
 
-table{
+#filtrado {
+  margin-bottom: 20px;
+}
+
+.modificar{
     margin-top: 15px;
     border-radius: 0;
     box-shadow: none;
@@ -34,4 +38,60 @@ table{
   opacity: 0.6;
   font-style: italic;
   vertical-align: middle;
+}
+
+/* Contenedor general del switch */
+.switch-label {
+  position: relative;
+  display: inline-block;
+  width: 105px;      /* ⬅️ Cambiale el largo acá */
+  height: 34px;
+}
+
+/* Ocultamos el checkbox real */
+.switch-label input {
+  display: none;
+}
+
+/* Pista del switch (barra de fondo) */
+.switch-label .track {
+  position: absolute;
+  inset: 0;
+  border-radius: 34px;
+  background: #dc3545;     /* rojo cuando está inactivo */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  transition:
+    background 0.35s ease,
+    flex-direction 0.35s ease;
+}
+
+/* Botón circular */
+.switch-label .thumb {
+  width: 28px;
+  height: 28px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+}
+
+/* Estado activado */
+.switch-label input:checked + .track {
+  background: #0d6efd;     /* azul cuando está activo */
+  flex-direction: row-reverse; /* manda el texto a la izquierda y la bolita a la derecha */
+}
+
+/* Movimiento suave del círculo */
+.switch-label input:checked + .track .thumb {
+  transform: translateX(0);
+}
+
+/* Posición inicial */
+.switch-label .track .thumb {
+  transform: translateX(0);
 }

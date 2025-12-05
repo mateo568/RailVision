@@ -1,9 +1,24 @@
-.container{
-    /* background-color: red; */
-    height: 100vh;
+#fondo {
     display: flex;
     align-items: center;
     justify-content: center;
+    min-height: 100vh;
+    background-color: #232D4F;
+    background-image: url("https://www.transparenttextures.com/patterns/az-subtle.png");
+}
+
+.login-container{
+ border-radius: 14px;
+  padding: 5rem;
+
+  /* 👇 tamaño reducido */
+  width: 650px;
+  max-width: 80vw;
+
+  /* un poco de estilo */
+  box-shadow: 0 0 18px rgba(0,0,0,0.35);
+    background-color: gainsboro;
+    background-image: url("https://www.transparenttextures.com/patterns/arches.png");
 }
 
 button, .dato{

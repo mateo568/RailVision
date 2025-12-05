@@ -70,6 +70,8 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
   ngOnInit(): void {
     this.cargarToggles();
     this.cargarDatos();
+    localStorage.setItem('nombrePantalla', 'Lista viajes')
+    window.dispatchEvent(new Event('storage'));
   }
 
   private cargarToggles() {
