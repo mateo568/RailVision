@@ -6,6 +6,6 @@ class Usuario(BaseModel):
     nombre: str
     apellido: str
     email: str
-    password: str
+    password: str | None = None
     rol: str
     estado: bool
