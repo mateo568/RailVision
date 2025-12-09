@@ -1,31 +1,98 @@
- <!-- Top navbar -->
-<nav class="navbar navbar-dark bg-dark shadow justify-content-between fixed-top">
+<nav class="navbar navbar-dark shadow justify-content-between fixed-top">
+  
+  <div class="d-flex align-items-center">
     <button class="btn btn-outline-light" (click)="Sidebar()">☰</button>
-    
-    <div class="dropdown">
-        <button class="btn btn-outline-light  mb-0 dropdown-toggle" type="button" id="perfilMenu" data-bs-toggle="dropdown" aria-expanded="false">
-            Perfil
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="perfilMenu">
-            <li><a class="dropdown-item" href="#">Ver perfil</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Cerrar sesión</a></li>
-        </ul>
-    </div>
-    <!-- <span class="navbar-brand mb-0 h1">Mi App</span> -->
+    <h4 class="text-white ms-3 m-0">RailVision / {{nombrePantalla}}</h4>
+  </div>
+
+  <div class="dropdown">
+    <button class="btn btn-outline-light mb-0 dropdown-toggle" type="button" id="perfilMenu"
+    data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-person-circle"></i>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="perfilMenu">
+      <li><a class="dropdown-item" href="#">Ver perfil</a></li>
+      <li><hr class="dropdown-divider"></li>
+      <li><a class="dropdown-item" (click)="logout()">Cerrar sesión</a></li>
+    </ul>
+  </div>
 </nav>
 
-<div class="sidebar bg-dark text-white" 
-[ngClass]="{ 'sidebar-expanded': expand, 'sidebar-collapsed': !expand }">
-    <h4 class="text-center" >RailVision</h4>
-    <ul class="list-unstyled text-center">
-        <li><button class="nav-link text-white" (click)="navegar('/menu/viajes')">Viajes</button></li>
-        <li><button class="nav-link text-white" (click)="navegar('/menu/trenes')">Trenes</button></li>
-        <li><button class="nav-link text-white" (click)="navegar('/menu/empleados')">Empleados</button></li>
-        <li><button class="nav-link text-white" (click)="navegar('/menu/estaciones')">Estaciones</button></li>
-    </ul>
+<div class="sidebar text-white d-flex flex-column"
+     [ngClass]="{ 'sidebar-expanded': expand, 'sidebar-collapsed': !expand, 'sidebar-animate': animar }">
+
+  <!-- MENU SUPERIOR -->
+  <ul class="list-unstyled flex-grow-1">
+
+    <li>
+      <button class="nav-link text-white" (click)="navegar('/menu/viajes')">
+        <i class="bi bi-sign-turn-slight-right"></i> Viajes
+      </button>
+    </li>
+
+    <li *ngIf="authRoles.esAdmin() || authRoles.esOperador()">
+      <button class="nav-link text-white" (click)="navegar('/menu/trenes')">
+        <i class="bi bi-train-front"></i> Trenes
+      </button>
+    </li>
+
+    <li *ngIf="authRoles.esAdmin()">
+      <button class="nav-link text-white" (click)="navegar('/menu/empleados')">
+        <i class="bi bi-person-badge"></i> Empleados
+      </button>
+    </li>
+
+    <li *ngIf="authRoles.esAdmin() || authRoles.esOperador()">
+      <button class="nav-link text-white" (click)="navegar('/menu/rutas')">
+        <i class="bi bi-signpost-split"></i> Rutas
+      </button>
+    </li>
+
+    <li *ngIf="authRoles.esAdmin()">
+      <button class="nav-link text-white" (click)="navegar('/menu/estaciones')">
+        <i class="bi bi-sign-railroad"></i> Estaciones
+      </button>
+    </li>
+
+    <li>
+      <a id="dashboard" class="nav-link text-white" href="https://lookerstudio.google.com/s/lOsNm8QG4g0" target="_blank">
+        <i class="bi bi-clipboard-data"></i> Dashboard BI
+      </a>
+    </li>
+  </ul>
+
+  <!-- MENU INFERIOR (LEGAL) AL FONDO -->
+  <ul class="list-unstyled mt-auto">
+
+    <span class="sidebar-legal-title">Legal</span>
+
+    <li>
+      <a class="nav-link text-white" href="/legal/proteccion-datos" target="_blank">
+        Protección de datos
+      </a>
+    </li>
+
+    <li>
+      <a class="nav-link text-white" href="/legal/terminos" target="_blank">
+        Términos y condiciones
+      </a>
+    </li>
+
+    <li>
+      <a class="nav-link text-white" href="/legal/faq" target="_blank">
+        Preguntas frecuentes
+      </a>
+    </li>
+
+  </ul>
+
+</div>
+
+<div class="overlay" 
+  *ngIf="expand"
+  (click)="Sidebar()">
 </div>
 
 <section>
-    <router-outlet></router-outlet>
+  <router-outlet></router-outlet>
 </section>

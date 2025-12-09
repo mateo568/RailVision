@@ -9,5 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface EstacionRepository extends JpaRepository<Estacion, Integer> {
-    Optional<Estacion> findByCiudad(Ciudad ciudad);
+    Optional<Estacion> findByCiudadAndBajaLogica(Ciudad ciudad, Boolean estado);
 }

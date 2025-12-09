@@ -1,108 +1,258 @@
 <div class="mb-5">
 
-    <div class="row">
+    <div id="filtrado" class="row">
         <div id="divVolver" class="col-1">
-            <button id="botonVolver" class="btn btn-secondary" (click)="irMenuViajes()">Volver</button>
+            <button id="botonVolver" class="btn btn-secondary" title="Volver" data-bs-toggle="tooltip" 
+            data-bs-placement="bottom" (click)="irMenuViajes()">
+                <i class="bi bi-arrow-left-square"></i>
+            </button>
         </div>
-        <div class="col-1">
-            <label for="">Tren</label>
-            <select class="form-select" aria-label="Default select example">
-                <option selected>Seleccionar...</option>
-                <option value="1">BXL-7000</option>
-                <option value="2">BST-1000</option>
-                <option value="3">BRR-2000</option>
+        <div class="col-2">
+            <label for="">Ruta</label>
+            <select class="form-select" [(ngModel)]="filtroRuta" (change)="filtrar()">
+                <option value=""></option>
+                @for (ruta of listaRutas; track $index) {
+                    <option [value]="filtroNombresRuta(ruta.nombre)">{{filtroNombresRuta(ruta.nombre)}}</option>
+                }
             </select>
+        </div>
+        <div class="col-2">
+            <label for="">Tren</label>
+            <select class="form-select" [(ngModel)]="filtroTren" (change)="filtrar()">
+                <option value=""></option>
+                @for (tren of listaTrenes; track $index) {
+                    <option [value]="tren.tren_id">{{tren.codigo}}</option>
+                }
+            </select>
+        </div>
+        <div class="col-2">
+            <label for="">Estado</label>
+            <select class="form-select" [(ngModel)]="filtroEstado" (change)="filtrar()">
+                <option value=""></option>
+                <option value="en curso">En curso</option>
+                <option value="programado">Programado</option>
+                <option value="finalizado">Finalizado</option>
+                <option value="cancelado">Cancelado</option>
+            </select>
+        </div>
+        <div id="divLimpiar" class="col-1">
+            <button id="botonLimpiar" class="btn btn-secondary"title="Limpiar filtros" data-bs-toggle="tooltip" 
+            data-bs-placement="bottom" (click)="limpiarFiltro()">
+                <i class="bi bi-trash"></i>
+            </button>
         </div>
     </div>
 
-    <!-- <table class="table table-bordered">
-        <thead>
-            <tr>
-            <th scope="col">Ruta</th>
-            <th scope="col">Horaio</th>
-            <th scope="col">Tren</th>
-            <th scope="col">Detalles</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr class="table-success">
-                <td colspan="4">EN CURSO</td>
-            </tr>
-            <tr>
-                <td>Cordoba - Santa Maria</td>
-                <td>15:40 - 17:00</td>
-                <td>BXL-7000</td>
-            </tr>
+    <div class="tabla">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                <th scope="col">Ruta</th>
+                <th scope="col">Fecha salida</th>
+                <th scope="col">Fecha llegada</th>
+                <th scope="col">Tren</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="table-group-divider">
+                @for (viaje of listaFiltrada; track $index) {
+                    <tr>
+                        <td>{{viaje.ruta}}</td>
+                        <td>{{viaje.fechaSalida | date:'dd/MM/yyyy - HH:mm:ss'}}</td>
+                        @if (viaje.fechaLlegada) { <td>{{viaje.fechaLlegada | date:'dd/MM/yyyy - HH:mm:ss'}}</td> }
+                        @else { <td></td> }
+                        <td>{{viaje.tren?.codigo}}</td>
+                        @switch (viaje.estado) {
+                            @case ("en curso") {<td><span class="badge text-bg-success">En curso</span></td>}
+                            @case ("programado") {<td><span class="badge text-bg-primary">Programado</span></td>}
+                            @case ("finalizado") {<td><span class="badge text-bg-secondary">Finalizado</span></td>}
+                            @case ("cancelado") {<td><span class="badge text-bg-danger">Cancelado</span></td>}
+                        }
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <button class="dropdown-item" type="button" data-bs-toggle="modal" 
+                                        data-bs-target="#ModalDetalleViaje" (click)="cargarDetallesViaje(viaje)">Detalles</button>   
+                                        @if(viaje.estado == "programado") {
+                                            <button class="dropdown-item" type="button" (click)="cancelarViaje(viaje.id)">Cancelar</button>
+                                        }   
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 
-            <tr class="table-primary">
-                <td colspan="4">PROGRAMADO</td>
-            </tr>
-            <tr>
-                <td>Cordoba - Colonia caroya</td>
-                <td>16:30 - 17:20</td>
-                <td>BST-1000</td>
-            </tr>
+    <!-- Modal detalle viaje -->
+    <div class="modal fade modal-lg" id="ModalDetalleViaje" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                @if (!modificar) {
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Detalles viaje</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        @if (detallesViaje.detalleCarga.length != 0) {
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Detalle</th>
+                                        <th scope="col">Tipo</th>
+                                        <th scope="col">Peso (t.)</th>
+                                        <th scope="col">Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (carga of detallesViaje.detalleCarga; track $index) {
+                                        <tr>
+                                            <td>{{carga.detalle}}</td>
+                                            <td>{{carga.tipo}}</td>
+                                            <td>{{carga.peso}}</td>
+                                            @switch (carga.estado){
+                                                @case ("activo") { <td><span class="badge text-bg-primary">Activo</span></td> }
+                                                @case ("inactivo") { <td><span class="badge text-bg-danger">Inactivo</span></td> }
+                                            }
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        @else {
+                            <h5>Este viaje no cuenta con cargamento</h5>
+                        }
+                    </div>
+                    @if (viajeModificable) {
+                        <div class="modal-footer">
+                            <button class="btn btn-warning" type="button" (click)="habilitarModificacion()">Modificar</button>
+                        </div>
+                    }
+                }
+                @else {
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Modificar viaje</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form [formGroup]="formViaje" (submit)="submit()">
+                        <div class="modal-body edicion">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="">Fecha</label>
+                                    <input type="date" class="form-control" formControlName="fecha">
+                                </div>
+                                <div class="col">
+                                    <label for="">Horario Salida</label>
+                                    <input type="time" class="form-control" formControlName="horarioSalida" (change)="modificarHorario()">
+                                </div>
+                                <div class="col">
+                                    <label for="">Horario Llegada</label>
+                                    <input type="time" class="form-control" formControlName="horarioLlegada" readonly>
+                                </div>
+                            </div>
+                            <hr>
+                            
+                            @if (arrayCargasActuales.controls.length !== 0) {
+                                <h6>Cargamento actual</h6>
+                                <div class="row">
+                                    <table class="modificar">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Detalle</th>
+                                                <th scope="col">Tipo</th>
+                                                <th scope="col">Peso (t.)</th>
+                                                <th scope="col">Estado</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody formArrayName="cargasActuales">
+                                            <tr *ngFor="let carga of arrayCargasActuales.controls; let i = index" [formGroupName]="i">
+                                                <td> <input class="form-control" type="text" formControlName="detalle"> </td>
+                                                <td>
+                                                    <select name="" id="" class="form-select" formControlName="tipo">
+                                                        <option value="" selected>Seleccionar...</option>
+                                                        <option value="mineria">Mineria</option>
+                                                        <option value="agricultura">Agricultura</option>
+                                                        <option value="general">General</option>
+                                                        <option value="otros">Otros</option>
+                                                    </select> 
+                                                </td>
+                                                <td> <input class="form-control" type="number" formControlName="peso"> </td>
+                                                <td> 
+                                                      <label class="switch-label">
+                                                        <input type="checkbox"
+                                                            [checked]="carga.get('estado')!.value === 'activo'"
+                                                            (change)="cambiarEstadoCarga(i, $event)">
+                                                        <span class="track">
+                                                        <span class="thumb"></span>
+                                                        <span>{{ carga.get('estado')!.value }}</span>
+                                                        </span>
+                                                    </label>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table> 
+                                </div>
+                                <hr>
+                            }
 
-            <tr class="table-light">
-                <td colspan="4">FINALIZADO</td>
-            </tr>
-            <tr>
-                <td>Rio Cuarto - Vicuña Mackena</td>
-                <td>15:30 - 16:15</td>
-                <td>BRR-2000</td>
-            </tr>
-        </tbody>
-    </table> -->
-
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-            <th scope="col">Ruta</th>
-            <th scope="col">Horaio</th>
-            <th scope="col">Tren</th>
-            <th scope="col">Estado</th>
-            <th scope="col">Detalles</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Cordoba - Santa Maria</td>
-                <td>15:40 - 17:00</td>
-                <td>BXL-7000</td>
-                <td class="table-success">EN CURSO</td>
-            </tr>
-            <tr>
-                <td>Cordoba - Santa Maria</td>
-                <td>15:40 - 17:00</td>
-                <td>BXL-7000</td>
-                <td class="table-success">EN CURSO</td>
-            </tr>
-
-            <tr>
-                <td>Cordoba - Colonia caroya</td>
-                <td>16:30 - 17:20</td>
-                <td>BST-1000</td>
-                <td class="table-primary">PROGRAMADO</td>
-            </tr>
-            <tr>
-                <td>Cordoba - Colonia caroya</td>
-                <td>16:30 - 17:20</td>
-                <td>BST-1000</td>
-                <td class="table-primary">PROGRAMADO</td>
-            </tr>
-
-            <tr>
-                <td>Rio Cuarto - Vicuña Mackena</td>
-                <td>15:30 - 16:15</td>
-                <td>BRR-2000</td>
-                <td class="table-light">FINALIZADO</td>
-            </tr>
-            <tr>
-                <td>Rio Cuarto - Vicuña Mackena</td>
-                <td>15:30 - 16:15</td>
-                <td>BRR-2000</td>
-                <td class="table-light">FINALIZADO</td>
-            </tr>
-        </tbody>
-    </table>
+                            <div class="row">
+                                <div class="col">
+                                    <h6>Cargamento nuevo</h6>
+                                </div>
+                                <div class="col"></div>
+                                <div class="col-1">
+                                    <button class="btn btn-primary" type="button" (click)="agregarCargaNueva()">
+                                        <i class="bi bi-plus-square"></i>
+                                    </button>   
+                                </div>
+                            </div>
+                            <div class="row">
+                                <table class="modificar">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Detalle</th>
+                                            <th scope="col">Tipo</th>
+                                            <th scope="col">Peso (t.)</th>
+                                            <th scope="col">Eliminar</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody formArrayName="cargasNuevas">
+                                        <tr *ngFor="let carga of arrayCargasNuevas.controls; let e = index" [formGroupName]="e">
+                                            <td> <input type="text" class="form-control" formControlName="detalle"> </td>
+                                            <td>
+                                                <select name="" id="" class="form-select" formControlName="tipo">
+                                                    <option value="" selected>Seleccionar...</option>
+                                                    <option value="mineria">Mineria</option>
+                                                    <option value="agricultura">Agricultura</option>
+                                                    <option value="general">General</option>
+                                                    <option value="otros">Otros</option>
+                                                </select> 
+                                            </td>
+                                            <td> <input type="number" class="form-control" formControlName="peso"> </td>
+                                            <td> 
+                                                <button class="btn btn-danger" type="button" (click)="eliminarCargaNueva(e)">
+                                                    <i class="bi bi-x-circle"></i>
+                                                </button> 
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" (click)="habilitarModificacion()">Cancelar</button>
+                            <button class="btn btn-primary" type="submit">Confirmar</button>
+                        </div>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
 </div>

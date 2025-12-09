@@ -7,9 +7,17 @@ import { ListaEmpleadosComponent } from './lista-empleados/lista-empleados.compo
 import { FormEmpleadosComponent } from './form-empleados/form-empleados.component';
 import { NavegacionComponent } from './navegacion/navegacion.component';
 import { ListaEstacionesComponent } from './lista-estaciones/lista-estaciones.component';
+import { ListaRutasComponent } from './lista-rutas/lista-rutas.component';
+import { ProteccionDatosComponent } from './legal/proteccion-datos/proteccion-datos.component';
+import { TerminosComponent } from './legal/terminos/terminos.component';
+import { FaqComponent } from './legal/faq/faq.component';
 
 export const routes: Routes = [
     
+    { path: 'legal/proteccion-datos', component: ProteccionDatosComponent },
+    { path: 'legal/terminos', component: TerminosComponent },
+    { path: 'legal/faq', component: FaqComponent },
+
     // Ruta por defecto redirige a login
     { path: '', redirectTo: 'login', pathMatch: 'full' },
 
@@ -47,8 +55,17 @@ export const routes: Routes = [
                 component: FormEmpleadosComponent
             },
             {
+                path: "rutas",
+                component: ListaRutasComponent
+            },
+            {
                 path: "estaciones",
                 component: ListaEstacionesComponent
+            },
+            {
+                path: 'empleados/editar/:id',
+                loadComponent: () => import('./form-empleados/form-empleados.component')
+                    .then(m => m.FormEmpleadosComponent)
             }
         ]
     },

@@ -1,3 +1,4 @@
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import L, { marker } from 'leaflet';
 
@@ -7,6 +8,10 @@ import L, { marker } from 'leaflet';
 export class ServicioMapaService {
 
   private mapa: any;
+  private apiKey = "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjFiMjRhOGY1MzcxODRmYTY5M2FlZGNjZTk1Zjg3NTAwIiwiaCI6Im11cm11cjY0In0=";
+  private ruta: L.GeoJSON | null = null;
+
+  public distanciaRuta: number = 0;
 
   private redIcon = new L.Icon({
     iconUrl: '/assets/leaflet/marker-icon-red.png',
@@ -18,13 +23,22 @@ export class ServicioMapaService {
     shadowSize: [41, 41]
   });
 
-  constructor() { }
+  constructor(private client: HttpClient) { }
 
   iniciarMapa(){
+    const container = L.DomUtil.get('map');
+
+    if (container != null) {
+      while (container.firstChild) { container.removeChild(container.firstChild); }
+      if ((container as any)._leaflet_id) { delete (container as any)._leaflet_id; }
+
+      container.className = "";
+    }
+
     this.mapa = L.map('map', {minZoom: 7, maxZoom: 10, 
       maxBounds: [ [-36, -67], [-29, -61] ], maxBoundsViscosity: 1.0}).setView([-31.4167, -64.1833], 7);
     
-      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.mapa);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.mapa);
 
     this.fixLeafletIconPaths();
 
@@ -72,4 +86,65 @@ export class ServicioMapaService {
     return this.mapa;
   }
 
+  calcularRuta(start: [number, number], end: [number, number], mapa: L.Map): void {
+    const url = 'https://api.openrouteservice.org/v2/directions/driving-car/geojson';
+
+    const headers = new HttpHeaders({
+      'Authorization': this.apiKey,
+      'Content-Type': 'application/json'
+    });
+
+    const body = {
+      coordinates: [start, end],
+    };
+
+    this.client.post<any>(url, body, { headers }).subscribe({
+      next: (response) => {
+        console.log('Ruta ORS:', response);
+
+        const distance = response?.features?.[0]?.properties?.summary?.distance / 1000;
+        this.distanciaRuta = distance ?? null;
+
+        this.dibujarRuta(response, mapa);
+      },
+      error: (err) => {
+        console.error('Error al obtener ruta:', err);
+      }
+    });
+  }
+
+  private dibujarRuta(geojson: any, mapa: L.Map): void {
+    this.ruta = L.geoJSON(geojson, {
+      style: {
+        color: 'green',
+        weight: 4
+      }
+    }).addTo(mapa);
+
+    mapa.fitBounds(this.ruta.getBounds());
+  }
+
+  borrarRuta(mapa: L.Map): void {
+    if (this.ruta) {
+      mapa.removeLayer(this.ruta);
+      this.ruta = null;
+    }
+  }
+
+  eliminarMapa(mapa: L.Map | null): L.Map | null {
+    if (mapa){ 
+      mapa.off();
+      mapa.remove(); 
+    }
+
+    const container = L.DomUtil.get('map');
+    if (container) {
+      while (container.firstChild) { container.removeChild(container.firstChild); }
+      delete (container as any)._leaflet_id;
+      
+      container.className = "";
+    }
+
+    return null;
+  }
 }

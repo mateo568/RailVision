@@ -1,51 +1,80 @@
-<div class="mb-1">
-    <div class="row">
-        <div class="col"></div>
-        <div id="form" class="col">
-            <form [formGroup]="nuevoEmpleado" (submit)="submit()">
-                <label for="">Nombre completo</label>
-                <input type="text" class="form-control" formControlName="nombre">
-
-                <label for="">Email</label>
-                <input type="text" class="form-control" formControlName="email">
-
-                <label for="">Telefono</label>
-                <input type="number" class="form-control" formControlName="telefono">
-
-                <div class="row">
-                    <div class="col">
-                        <label for="">Direccion</label>
-                        <input type="text" class="form-control" formControlName="direccion">
-                    </div>
-                    <div class="col">
-                        <label for="">Departamento</label>
-                        <input type="text" class="form-control" formControlName="departamento">
-                    </div>
-                </div>
-
-                <label for="">Con hijos</label>
-                <input type="checkbox" class="form-check-input form-control" formControlName="hijos">
-
-                <label for="">Obra social</label>
-                <input type="text" class="form-control" formControlName="obraSocial">
-                
-                <label for="">CBU/Alias</label>
-                <input type="text" class="form-control" formControlName="cbu">
-
-                <label for="">CUIL</label>
-                <input type="text" class="form-control" formControlName="cuil">
-
-                <div id="botonesForm" class="row">
-                    <div class="col"></div>
-                    <div class="col-3">
-                        <button type="button" class="btn btn-secondary boton" (click)="irListaEmpleados()">Volver</button>
-                    </div>
-                    <div class="col-3">
-                        <button class="btn btn-success boton" type="submit">Crear</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-        <div class="col"></div>
+<form [formGroup]="usuarioForm" (ngSubmit)="onSubmit()" class="p-3">
+  <!-- Nombre -->
+  <div class="mb-3">
+    <label>Nombre</label>
+    <input type="text" class="form-control" formControlName="nombre" placeholder="Ej: Mateo" />
+    <div *ngIf="isInvalid('nombre')" class="text-danger small">
+      El nombre es obligatorio y debe tener al menos 2 caracteres.
     </div>
-</div>
+  </div>
+
+  <!-- Apellido -->
+  <div class="mb-3">
+    <label>Apellido</label>
+    <input type="text" class="form-control" formControlName="apellido" placeholder="Ej: Acuña" />
+    <div *ngIf="isInvalid('apellido')" class="text-danger small">
+      El apellido es obligatorio y debe tener al menos 2 caracteres.
+    </div>
+  </div>
+
+  <!-- Email -->
+  <div class="mb-3">
+    <label>Email</label>
+    <input type="email" class="form-control" formControlName="email" placeholder="Ej: usuario@correo.com" />
+    <div *ngIf="isInvalid('email')" class="text-danger small">
+      Ingrese un correo electrónico válido.
+    </div>
+  </div>
+
+  <!-- Contraseña -->
+  <div class="mb-3">
+    <label>Contraseña</label>
+    <input type="password"
+          class="form-control"
+          formControlName="password"
+          placeholder="Contraseña"
+          minlength="4"
+          maxlength="50" />
+    <div *ngIf="f['password'].invalid && (f['password'].dirty || submitted)" class="text-danger small">
+      La contraseña debe tener al menos 4 caracteres.
+    </div>
+  </div>
+
+  <!-- Rol -->
+  <div class="mb-3">
+    <label>Rol</label>
+    <select class="form-select" formControlName="rol">
+      <option value="">Seleccione un rol...</option>
+      <option *ngFor="let rol of rolesDisponibles" [value]="rol">{{ rol | titlecase }}</option>
+    </select>
+    <div *ngIf="isInvalid('rol')" class="text-danger small">
+      Seleccione un rol válido.
+    </div>
+  </div>
+
+  <!-- Estado -->
+  <div class="form-check mb-3">
+    <label class="form-label">Estado</label>
+    <input type="checkbox" class="form-check-input" formControlName="estado" id="estadoCheck" />
+    <label class="form-check-label" for="estadoCheck">
+    </label>
+  </div>
+
+  <!-- Botones -->
+  <div id="botonesForm" class="row">
+    <div class="col"></div>
+    <div class="col-1">
+      <button type="button" class="btn btn-secondary" title="Volver"  data-bs-toggle="tooltip" 
+      data-bs-placement="bottom" (click)="volver()">
+        <i class="bi bi-arrow-left-square"></i>
+      </button>
+    </div>
+    <div class="col-1">
+      <button type="submit" class="btn btn-success" title="Confirmar"  data-bs-toggle="tooltip" 
+      data-bs-placement="bottom">
+        <!-- {{ editMode ? 'Guardar cambios' : 'Crear usuario' }} -->
+        <i class="bi bi-check-circle"></i>
+      </button>
+    </div>
+  </div>
+</form>

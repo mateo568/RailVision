@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { Estacion } from '../models/Entity/estacion';
 import { HttpClient } from '@angular/common/http';
 import { Ciudad } from '../models/Entity/ciudad';
-import { DtoPutEstacion } from '../models/Dto/dto-put-estacion';
+import { DtoPutEstacion, DtoPostEstacion } from '../models/Dto/dto-estacion';
 
 @Injectable({
   providedIn: 'root'
@@ -23,11 +23,19 @@ export class ServicioEstacionService {
     return this.client.get<Ciudad[]>(`${this.URL_DATABASE_CIUDAD}`)
   }
 
-  putEstadoEstacion(estacion: DtoPutEstacion): Observable<Estacion>{
+  postEstacion(estacion: DtoPostEstacion) : Observable<Estacion>{
+    return this.client.post<Estacion>(`${this.URL_DATABASE_ESTACION}`, estacion);
+  }
+
+  putEstacion(estacion: DtoPutEstacion): Observable<Estacion>{
     const datos = {
       nombre: estacion.nombre,
       estado: estacion.estado
     }
     return this.client.put<Estacion>(`${this.URL_DATABASE_ESTACION}/${estacion.id}`, datos);
+  }
+
+  deleteEstacion(estacionId: number) {
+    return this.client.delete(`${this.URL_DATABASE_ESTACION}/${estacionId}`)
   }
 }

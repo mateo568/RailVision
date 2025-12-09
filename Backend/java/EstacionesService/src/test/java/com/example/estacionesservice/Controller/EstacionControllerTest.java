@@ -22,13 +22,13 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -104,15 +104,15 @@ public class EstacionControllerTest {
 
         when(ciudadService.consultarCiudad(estacionPostDto.getCiudad())).thenReturn(ciudad);
         when(service.crearEstacion(estacionPostDto.getNombre(),ciudad))
-                .thenThrow(new IllegalArgumentException("Ya existe una estacion en esta ubicacion"));
+                .thenThrow(new IllegalStateException("Ya existe una estacion en esta ubicacion"));
 
-        assertThrows(ServletException.class, () -> mockMvc.perform(post("/railvision/estaciones")
-                                .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(estacionPostDto))));
+//        assertThrows(ServletException.class, () -> mockMvc.perform(post("/railvision/estaciones")
+//                                .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(estacionPostDto))));
 
-//        mockMvc.perform(post("/railvision/estaciones").contentType(MediaType.APPLICATION_JSON)
-//                .content(objectMapper.writeValueAsString(estacionPostDto))).andDo(print()).andExpect(status().isInternalServerError())
-//                .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(IllegalArgumentException.class)
-//                                .hasMessage("Ya existe una estacion en esta ubicacion"));
+        mockMvc.perform(post("/railvision/estaciones").contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(estacionPostDto))).andDo(print()).andExpect(status().isBadRequest())
+                .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(IllegalStateException.class)
+                        .hasMessage("Ya existe una estacion en esta ubicacion"));
 
     }
 
@@ -136,4 +136,14 @@ public class EstacionControllerTest {
         assertThat(estacionResultado.getEstado()).isEqualTo(false);
     }
 
+    @Test
+    void eliminarEstacion() throws Exception {
+
+        doNothing().when(service).eliminarEstacion(estaciones.get(0).getId());
+
+        mockMvc.perform(delete("/railvision/estaciones/1"))
+                .andDo(print()).andExpect(status().isNoContent());
+
+        verify(service, times(1)).eliminarEstacion(1);
+    }
 }

@@ -1,7 +1,6 @@
 #map{
     height: 88vh;
-    width: 88vh;
-    margin-left: 20px;
+    width: 75vh;
 }
 
 #opciones{
@@ -14,6 +13,52 @@
     justify-content: end;
 }
 
-#estadoEstacion{
-    transform: scale(1.5);
+.switch-label {
+  position: relative;
+  display: inline-block;
+  width: 100px;
+  height: 36px;
+}
+
+.switch-label input {
+  display: none;
+}
+
+.switch-label .track {
+  position: absolute;
+  inset: 0;
+  border-radius: 32px;
+  background: #dc3545;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  color: #fff;
+  font-size: 13px;
+  transition: background 0.35s ease-in-out,
+              flex-direction 0.35s ease-in-out;
+}
+
+.switch-label .thumb {
+  width: 26px;
+  height: 26px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.35s cubic-bezier(.4,0,.2,1); /* iOS smooth */
+}
+
+/* Estado activado */
+.switch-label input:checked + .track {
+  background: #0d6efd;
+  flex-direction: row-reverse;
+}
+
+/* Movimiento suave del círculo */
+.switch-label input:checked + .track .thumb {
+  transform: translateX(0);  
+}
+
+/* Movimiento inicial */
+.switch-label .track .thumb {
+  transform: translateX(0);
 }

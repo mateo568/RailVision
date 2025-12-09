@@ -20,6 +20,9 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -34,12 +37,19 @@ public class EstacionServiceTest {
 
     List<Estacion> estaciones = new ArrayList<>();
 
+    Ciudad ciudad;
+
     @BeforeEach
     public void crearListado() {
+        ciudad = Ciudad.builder().id(1).nombre("Cordoba")
+                .provincia("Cordoba").pais("Argentina")
+                .latitud("-30.192039").longitud("-62.193847").build();
+
         estaciones.add(Estacion.builder().id(1).nombre("Prueba 1")
-                .estado(true).fechaCreacion(LocalDateTime.now()).ciudad(new Ciudad()).build());
+                .estado(true).fechaCreacion(LocalDateTime.now()).ciudad(ciudad).bajaLogica(false).build());
         estaciones.add(Estacion.builder().id(2).nombre("Prueba 2")
-                .estado(true).fechaCreacion(LocalDateTime.now()).ciudad(new Ciudad()).build());
+                .estado(true).fechaCreacion(LocalDateTime.now()).ciudad(new Ciudad()).bajaLogica(false).build());
+
     }
 
     @Test
@@ -52,6 +62,27 @@ public class EstacionServiceTest {
         assertThat(resultado).hasSize(2);
         assertThat(resultado.get(0).getId()).isEqualTo(1);
         assertThat(resultado.get(1).getNombre()).isEqualTo("Prueba 2");
+    }
+
+    @Test
+    public void crearEstacion() {
+        when(repository.findByCiudadAndBajaLogica(ciudad, false)).thenReturn(Optional.empty());
+        when(repository.save(any(Estacion.class))).thenReturn(estaciones.get(0));
+
+        Estacion estacion = service.crearEstacion("Prueba 1", ciudad);
+
+        assertEquals("Prueba 1", estacion.getNombre());
+        assertEquals(true, estacion.getEstado());
+        assertEquals("Cordoba", estacion.getCiudad().getNombre());
+    }
+
+    @Test
+    public void crearEstacionInvalida() {
+        when(repository.findByCiudadAndBajaLogica(any(Ciudad.class), eq(false))).thenReturn(Optional.of(estaciones.get(0)));
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> service.crearEstacion("Prueba 1", ciudad));
+
+        assertEquals("Ya existe una estacion en esta ubicacion", exception.getMessage());
     }
 
     @Test
@@ -81,5 +112,23 @@ public class EstacionServiceTest {
 
         assertThatThrownBy(() -> service.modificarEstacion(10, estacionDto)).isInstanceOf(EntityNotFoundException.class)
                 .hasMessageContaining("Estacion no encontrada");
+    }
+
+    @Test
+    void eliminarEstacion() {
+        Estacion estacionEliminada = Estacion.builder().id(1).nombre("Prueba 1")
+                .estado(true).fechaCreacion(LocalDateTime.now()).ciudad(ciudad).bajaLogica(true)
+                .fechaDestruccion(LocalDateTime.now()).build();
+
+        when(repository.findById(any())).thenReturn(Optional.of(estaciones.get(0)));
+        when(repository.save(any(Estacion.class))).thenReturn(estacionEliminada);
+
+        service.eliminarEstacion(estaciones.get(0).getId());
+
+        Estacion resultado = estaciones.get(0);
+
+        assertThat(resultado.getId()).isEqualTo(1);
+        assertThat(resultado.getBajaLogica()).isTrue();
+        assertThat(resultado.getFechaDestruccion()).isNotNull();
     }
 }

@@ -1,11 +1,14 @@
-#spring.application.name=UbicacionesService
-
 spring:
   datasource:
-    url: jdbc:postgresql://db.ryfweaoyhvlveicmrfzt.supabase.co:5432/postgres
-    username: postgres
-    password: Railvision2025
-
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASS}
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 1
+      idle-timeout: 10000
+      max-lifetime: 30000
+      connection-timeout: 20000
   jpa:
     hibernate:
       ddl-auto: update

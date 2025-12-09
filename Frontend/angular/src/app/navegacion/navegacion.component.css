@@ -1,12 +1,24 @@
+.navbar {
+  background: #232D4F;
+}
+
 /* Sidebar base */
 .sidebar {
   position: fixed;
-  top: 56px; /* Altura del navbar */
+  top: 56px;           /* debajo del navbar */
+  bottom: 0;           /* hasta el borde inferior */
   left: 0;
-  height: 100%;
+  width: 220px;
   overflow-y: auto;
-  transition: all 0.3s ease;
+  background: #232D4F;
+  display: flex;
+  flex-direction: column;
   z-index: 1050;
+  transition: none;
+}
+
+.sidebar-animate {
+  transition: width 0.3s ease, padding 0.3s ease;
 }
 
 /* Expandido y colapsado */
@@ -26,13 +38,65 @@
   top: 56px; /* Altura del navbar */
   left: 0;
   width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  height: calc(100vh - 56px);
   z-index: 1040;
+  background: rgba(0, 0, 0, 0.5);
+  transition: opacity 0.3s ease;
 }
 
-section{
+section {
   padding-top: 70px;
+  background-color: gainsboro;
+  background-image: url("https://www.transparenttextures.com/patterns/arches.png");
   padding-left: 100px;
   padding-right: 10px;
+  min-height: 100vh;
+}
+
+/* Botones del sidebar */
+.sidebar button.nav-link {
+  width: 100%;
+  text-align: left;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: white;
+  transition: background 0.25s, padding-left 0.25s;
+}
+
+#dashboard {
+  margin-left: 10px;
+}
+
+.sidebar button.nav-link:hover,
+.sidebar a.nav-link:hover {
+  background: rgba(255, 255, 255, 0.12);
+  padding-left: 20px;
+  transition: background 0.15s ease, padding-left 0.2s ease;
+}
+
+
+/* Items del sidebar */
+.sidebar li {
+  padding: 12px 4px;
+  height: auto;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.sidebar li i {
+  margin-right: 12px;
+  font-size: 1.2rem;
+  opacity: 0.85;
+}
+
+.sidebar ul {
+  padding-left: 0;
+}
+
+.sidebar-legal-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  opacity: 0.6;
+  letter-spacing: 1px;
+  margin: 10px 14px 6px 14px;
 }

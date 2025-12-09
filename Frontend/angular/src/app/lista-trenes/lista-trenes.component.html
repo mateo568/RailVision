@@ -2,30 +2,31 @@
     
     <div class="row">
         
-        <div class="col-1">
-            <label for="">Estado</label>
-            <select class="form-select">
-                <option selected></option>
-                <option value="1">DISPONIBLE</option>
-                <option value="2">OCUPADO</option>
-                <option value="3">INHABILITADO</option>
-            </select>
+        <div class="col-2">
+            <label for="">Codigo</label>
+            <input class="form-control" type="text">
         </div>
 
-        <div class="col-1">
+        <div class="col-2">
+            <label for="">Modelo</label>
+            <input class="form-control" type="text">
+        </div>
+
+        <div class="col-2">
             <label for="">Estado</label>
             <select class="form-select">
-                <option selected></option>
-                <option value="1">DISPONIBLE</option>
-                <option value="2">OCUPADO</option>
-                <option value="3">INHABILITADO</option>
+                <option value=""></option>
+                <option value="1">Activo</option>
+                <option value="2">Mantenimiento</option>
             </select>
         </div>
        
         <div class="col"></div>
        
         <div id="botonCrear" class="col-1">
-           <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal">Crear</button>
+           <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-title="Crear tren" data-bs-placement="bottom">
+                <i class="bi bi-plus-square"></i>
+            </button>
        </div>
    </div>
 
@@ -40,24 +41,14 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col">
+                            <label for="">Modelo</label>
+                            <input type="text" class="form-control" formControlName="cantVagones">
+                        </div>
+                        <div class="col">
                             <label for="">Capacidad maxima peso (t)</label>
                             <input type="number" class="form-control" formControlName="capacidad">
                         </div>
-                        <div class="col">
-                            <label for="">Cantidad maxima vagones</label>
-                            <input type="number" class="form-control" formControlName="cantVagones">
-                        </div>
                     </div>
-                    <!-- <div class="row">
-                        <div class="col">
-                            <label for="">Tipo</label>
-                            <select name="" id="" formControlName="tipo" class="form-select">
-                                <option value="" selected>Seleccionar...</option>
-                                <option value="">Electrico</option>
-                                <option value="">Diesel</option>
-                            </select>
-                        </div>
-                    </div> -->
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary">Registrar</button>
@@ -67,82 +58,56 @@
     </div>
 
     <div class="row tabla">
-       <table class="table table-bordered">
-           <thead>
+       <table class="table table-striped table-hover">
+           <thead class="table-dark">
                <tr>
-               <th scope="col">Numeracion</th>
-               <th scope="col">Ubicacion actual</th>
+               <th scope="col">Codigo</th>
+               <th scope="col">Modelo</th>
                <th scope="col">Capacidad Total (t)</th>
-               <th scope="col">Cant. Vagones</th>
                <th scope="col">Estado</th>
+               <th scope="col">Acciones</th>
                </tr>
            </thead>
-           <tbody>
-               <tr>
-                   <td>MC-0001</td>
-                   <td>Cordoba</td>
-                   <td>500</td>
-                   <td>5</td>
-                   <td class="table-success">DISPONIBLE</td>
-               </tr>
+           <tbody class="table-group-divider">
+            @for (tren of listaTrenes; track $index) {
                 <tr>
-                   <td>MC-0001</td>
-                   <td>Cordoba</td>
-                   <td>500</td>
-                   <td>5</td>
-                   <td class="table-success">DISPONIBLE</td>
-               </tr>
-                <tr>
-                   <td>MC-0001</td>
-                   <td>Cordoba</td>
-                   <td>500</td>
-                   <td>5</td>
-                   <td class="table-success">DISPONIBLE</td>
-               </tr>
-    
-               <tr>
-                   <td>SV-0001</td>
-                   <td>Viajando</td>
-                   <td>200</td>
-                   <td>3</td>
-                   <td class="table-primary">OCUPADO</td>
-               </tr>
-               <tr>
-                   <td>SV-0001</td>
-                   <td>Viajando</td>
-                   <td>200</td>
-                   <td>3</td>
-                   <td class="table-primary">OCUPADO</td>
-               </tr>
-               <tr>
-                   <td>SV-0001</td>
-                   <td>Viajando</td>
-                   <td>200</td>
-                   <td>3</td>
-                   <td class="table-primary">OCUPADO</td>
-               </tr>
-    
-               <tr>
-                   <td>GR-0001</td>
-                   <td>Rio Cuarto</td>
-                   <td>400</td>
-                   <td>6</td>
-                   <td class="table-danger">INHABILITADO</td>
-               </tr>
-               <tr>
-                   <td>GR-0001</td>
-                   <td>Rio Cuarto</td>
-                   <td>400</td>
-                   <td>6</td>
-                   <td class="table-danger">INHABILITADO</td>
-               </tr>
-               <tr>
-                   <td>GR-0001</td>
-                   <td>Rio Cuarto</td>
-                   <td>400</td>
-                   <td>6</td>
-                   <td class="table-danger">INHABILITADO</td>
-               </tr>
+                    <td>{{tren.codigo}}</td>
+                    <td>{{tren.modelo}}</td>
+                    <td>{{tren.capacidad_toneladas}}</td>
+                    @switch (tren.estado) {
+                        @case ("activo") {
+                            <td><span class="badge text-bg-primary">Activo</span></td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <button class="dropdown-item" type="button">Poner en mantenimiento</button>      
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>                 
+                        }
+                        @case ("mantenimiento") {
+                            <td><span class="badge text-bg-warning">Mantenimiento</span></td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <button class="dropdown-item" type="button">Activar</button>      
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>     
+                        }
+                    }
+                </tr>
+            }
            </tbody>
        </table>
     </div>

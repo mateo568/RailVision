@@ -13,4 +13,6 @@ public interface EstacionService {
     Estacion crearEstacion(String nombre, Ciudad ciudad);
 
     Estacion modificarEstacion(Integer id, EstacionPutDto estacionPutDto);
+
+    void eliminarEstacion(Integer id);
 }

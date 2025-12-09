@@ -1,1 +1,24 @@
 /* You can add global styles to this file, and also import other style files */
+table {
+    overflow: hidden;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+#map {
+    overflow: hidden;
+    border-radius: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+}
+
+select, input {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.tabla{
+    margin-right: 15px;
+}
+
+body {
+  font-family: 'Inter', sans-serif !important;
+}

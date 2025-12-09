@@ -1,52 +1,75 @@
 <section>
     <div class="row">
-        <div class="col">
+        <div class="col-5">
             <div class="mapa">
         <div id="map"></div>
     </div>
         </div>
-        <div class="col">
+        <div class="col-7">
             <form [formGroup]="nuevoViaje" (submit)="submit()">
                 <div class="row">
                     <div class="col">
-                        <label for="">Estacion partida</label>
-                        <select name="" id="" formControlName="estacionIda" class="form-select">
+                        <label for="">Estacion origen</label>
+                        <select name="" id="" formControlName="estacionOrigen" class="form-select"
+                        [ngClass]="{'is-invalid': nuevoViaje.get('estacionOrigen')?.invalid}" (change)="filtrarEstaciones()">
                             <option value="" selected>Seleccionar...</option>
-                            <option value="">Cordoba</option>
-                            <option value="">Santa Maria</option>
+                            @for (estacion of listaEstacionesOrigen; track $index) {
+                                <option [value]="estacion.id">{{estacion.ciudad.nombre}}</option>
+                            }
                         </select>
+                         <div *ngIf="nuevoViaje.get('estacionOrigen')?.getError('required')" class="text-danger small">
+                            Seleccione una estación.
+                        </div>
                     </div>
                     <div class="col">
-                        <label for="">Estacion llegada</label>
-                        <select name="" id="" formControlName="estacionVuelta" class="form-select">
+                        <label for="">Estacion destino</label>
+                        <select name="" id="" formControlName="estacionDestino" class="form-select"
+                        [ngClass]="{'is-invalid': nuevoViaje.get('estacionDestino')?.invalid}" (change)="filtrarEstaciones()">
                             <option value="" selected>Seleccionar...</option>
-                            <option value="">Rio Cuarto</option>
-                            <option value="">San Francisco</option>
+                            @for (estacion of listaEstacionesDestino; track $index) {
+                                <option [value]="estacion.id">{{estacion.ciudad.nombre}}</option>
+                            }
                         </select>
+                        <div *ngIf="nuevoViaje.get('estacionDestino')?.getError('required')" class="text-danger small">
+                            Seleccione una estación.
+                        </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-6">
                         <label for="">Tren</label>
-                        <select name="" id="" formControlName="tren" class="form-select">
+                        <select name="" id="" formControlName="tren" class="form-select"
+                        [ngClass]="{'is-invalid': nuevoViaje.get('tren')?.invalid}" (change)="definirLimitePeso()">
                             <option value="" selected>Seleccionar...</option>
-                            <option value="">MC-1000</option>
-                            <option value="">SV-5000</option>
+                            @for (tren of listaTrenes; track $index) {
+                                <option [value]="tren.tren_id.toString()">{{tren.codigo}}</option>
+                            }
                         </select>
+                         <div *ngIf="nuevoViaje.get('tren')?.getError('required')" class="text-danger small">
+                            Seleccione un tren.
+                        </div>
                     </div>
                     <div class="col">
                         <label for="">Fecha</label>
-                        <input type="date" class="form-control" formControlName="fecha">
+                        <input type="date" class="form-control" formControlName="fecha" [min]="fechaMinima" 
+                        [ngClass]="{'is-invalid': nuevoViaje.get('fecha')?.invalid}">
+                        <div *ngIf="nuevoViaje.get('fecha')?.getError('required')" class="text-danger small">
+                            Seleccione una fecha.
+                        </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-6">
                         <label for="">Hora salida</label>
-                        <input type="time" class="form-control" formControlName="horarioSalida">
+                        <input type="time" class="form-control" formControlName="horarioSalida"
+                        [ngClass]="{'is-invalid': nuevoViaje.get('horarioSalida')?.invalid}">
+                        <div *ngIf="nuevoViaje.get('horarioSalida')?.getError('required')" class="text-danger small">
+                            Seleccione una hora.
+                        </div>
                     </div>
                     <div class="col-6">
-                        <label for="">Hora llegada</label>
-                        <input type="time" class="form-control" formControlName="horarioLlegada">
+                        <label for="">Hora llegada (aprox.)</label>
+                        <input type="time" class="form-control" formControlName="horarioLlegada" readonly>
                     </div>
                 </div>
 
@@ -54,46 +77,69 @@
                     <div class="col">
                         <div class="card">
                             <div class="card-header">
-                                Cargamento (Peso total: 0/20t - Vagones totales 0/6)
+                                Cargamento - Peso actual ({{cargaActual}}/{{cargaMaxima}} t.)
                             </div>
                             <div class="card-body">
-                                @for(carga of arrayCargas.controls; track $index){
+                                <div *ngFor="let carga of arrayCargas.controls; let i = index" [formGroupName]="i">
                                     <div class="row">
-                                        <div class="col-5">
-                                            <label for="">Tipo</label>
-                                            <select name="" id="" class="form-select" formControlName="tipo">
-                                                <option value="" selected>Seleccionar...</option>
-                                                <option value="">Mineria</option>
-                                                <option value="">Agricultura</option>
-                                                <option value="">General</option>
-                                            </select>
-                                        </div>
                                         <div class="col-5">
                                             <label for="">Detalle</label>
-                                            <input type="text" class="form-control" formControlName="detalle">
+                                            <input type="text" class="form-control" formControlName="detalle"
+                                            [ngClass]="{'is-invalid': carga.get('detalle')?.invalid}">
+                                            <div *ngIf="carga.get('detalle')?.getError('required')" 
+                                            class="text-danger small">
+                                                Defina el detalle del cargamento.
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-5">
-                                            <label for="">Cantidad vagones</label>
-                                            <input type="number" class="form-control" formControlName="cantVagones">
+                                        <div class="col-3">
+                                            <label for="">Tipo</label>
+                                            <select name="" id="" class="form-select" formControlName="tipo"
+                                            [ngClass]="{'is-invalid': carga.get('tipo')?.invalid}">
+                                                <option value="" selected>Seleccionar...</option>
+                                                <option value="mineria">Mineria</option>
+                                                <option value="agricultura">Agricultura</option>
+                                                <option value="general">General</option>
+                                                <option value="otros">Otros</option>
+                                            </select>
+                                            <div *ngIf="carga.get('tipo')?.getError('required')" 
+                                            class="text-danger small">
+                                                Defina el tipo del cargamento.
+                                            </div>
                                         </div>
-                                        <div class="col-5">
+                                        <div class="col-2">
                                             <label for="">Peso (t)</label>
-                                            <input type="number" class="form-control" formControlName="peso">
+                                            <input type="number" step="0.01" class="form-control" formControlName="peso" (change)="calcularPeso()"
+                                            [ngClass]="{'is-invalid': carga.get('peso')?.invalid}">
+                                            <div *ngIf="carga.get('peso')?.getError('required')" 
+                                            class="text-danger small">
+                                                Defina el peso del cargamento.
+                                            </div>
+                                            <div *ngIf="carga.get('peso')?.getError('min')" 
+                                            class="text-danger small">
+                                                El peso minimo tiene que ser 1.
+                                            </div>
+                                            <div *ngIf="carga.get('peso')?.getError('pattern')" 
+                                            class="text-danger small">
+                                                Escriba hasta 2 decimales (0.00).
+                                            </div>
                                         </div>
-                                        <div class="col">
-                                            <button type="button" class="btn btn-danger" (click)="eliminarCarga($index)">X</button>
+                                        <div class="col"></div>
+                                        <div id="divEliminar" class="col">
+                                            <button type="button" class="btn btn-danger" (click)="eliminarCarga(i)">
+                                                <i class="bi bi-x-circle"></i>
+                                            </button>
                                         </div>
+                                        <hr>
                                     </div>
-                                    <hr>
-                                }
+                                </div>
 
                                 <div class="row">
                                     <div class="col"></div>
                                     <div class="col-2">
-                                        <button type="button" id="botonArray" 
-                                        class="btn btn-primary" (click)="agregarCarga()">Agregar</button>
+                                        <button type="button" id="botonArray" title="Agregar"  data-bs-toggle="tooltip" 
+                                        data-bs-placement="bottom" class="btn btn-primary" (click)="agregarCarga()">
+                                            <i class="bi bi-plus-square"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -101,11 +147,18 @@
                     </div>
                 </div>
                 <div id="botonesForm" class="row">
+                    <div class="col"></div>
                     <div class="col-2">
-                        <button class="btn btn-secondary" (click)="irMenuViajes()">Volver</button>
+                        <button class="btn btn-secondary" title="Volver"  data-bs-toggle="tooltip" 
+                        data-bs-placement="bottom" (click)="irMenuViajes()">
+                            <i class="bi bi-arrow-left-square"></i>
+                        </button>
                     </div>
                     <div class="col-2">
-                        <button class="btn btn-success" type="submit">Crear</button>
+                        <button class="btn btn-success" type="submit" title="Confirmar" data-bs-toggle="tooltip" 
+                        data-bs-placement="bottom">
+                            <i class="bi bi-check-circle"></i>
+                        </button>
                     </div>
                 </div>
             </form>

@@ -39,4 +39,10 @@ public class EstacionController {
     public ResponseEntity<Estacion> putEstacion(@PathVariable Integer id, @RequestBody EstacionPutDto estacionModificada) {
         return ResponseEntity.ok(service.modificarEstacion(id, estacionModificada));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarEstacion(@PathVariable Integer id) {
+        service.eliminarEstacion(id);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -1,0 +1,19 @@
+#opciones{
+    margin-bottom: 20px;
+}
+
+.tabla{
+    margin-right: 15px;
+}
+
+#botonLimpiar{
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    margin-right: 15px;
+    width: 70px;
+}
+
+.bi-circle-fill {
+    margin-left: 5px;
+}

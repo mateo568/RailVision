@@ -1,15 +1,12 @@
 <div class="mb-5 "> 
     <div class="row">
-        <div class="col">
+        <div class="col-5">
             <div class="mapa">
                 <div id="map"></div>
             </div>
         </div>
-        <div class="col">
+        <div class="col-7">
             <div id="opciones" class="row">
-                <div id="crear" class="col-2">
-                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#ModalPostEstacion">Crear</button>
-                </div>
                 <div class="col-3">
                     <label for="filtroEstado" class="form-label">Estado</label>
                     <select name="" id="filtroEstado" class="form-select" [(ngModel)]="filtroEstado" (change)="filtrarDatos()">
@@ -18,11 +15,17 @@
                         <option value="false">Desactivada</option>
                     </select>
                 </div>
+                <div class="col"></div>
+                <div id="crear" class="col-2">
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#ModalPostEstacion" data-bs-title="Crear estación" data-bs-placement="bottom">
+                        <i class="bi bi-plus-square"></i>
+                    </button>
+                </div>
     
             </div>
-            <div class="row">
-                <table class="table table-bordered">
-                    <thead>
+            <div class="row tabla">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
                         <tr>
                         <th scope="col">Nombre</th>
                         <th scope="col">Localidad</th>
@@ -30,7 +33,7 @@
                         <th scope="col">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="table-group-divider">
                         @for (estacion of listaFiltrada; track $index) {
                             <tr>
                                 <td>{{estacion.nombre}}</td>
@@ -38,9 +41,27 @@
                                 @if (estacion.estado) {
                                     <td><span class="badge text-bg-primary">Activa</span></td>
                                 } @else {
-                                    <td><span class="badge text-bg-danger">Desactivada</span></td>
+                                    <td><span class="badge text-bg-danger">Inactiva</span></td>
                                 }
-                                <td><button class="btn" data-bs-toggle="modal" data-bs-target="#ModalPutEstacion" (click)="cargarModalEstacion(estacion)">...</button></td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <button class="dropdown-item" type="button" 
+                                                data-bs-toggle="modal" data-bs-target="#ModalPutEstacion" (click)="cargarModalEstacion(estacion)">Modificar</button>
+                                            </li>
+                                            @if (!estacion.estado) {
+                                                <li>
+                                                    <button class="dropdown-item" type="button"
+                                                    data-bs-toggle="modal" data-bs-target="#ModalDeleteEstacion" (click)="cargarModalEstacion(estacion)">Eliminar</button>      
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </td>
                             </tr>
                         }
                     </tbody>
@@ -53,29 +74,31 @@
     <div class="modal fade" id="ModalPostEstacion" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Registrar nueva estación</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col">
-                            <label for="">Nombre</label>
-                            <input type="text" class="form-control">
-                        </div>
-                        <div class="col">
-                            <label for="">Localidad</label>
-                            <select class="form-select" name="" id="">
-                                @for (ciudad of listaCiudades; track $index) {
-                                    <option value="">{{ciudad.nombre}}</option>
-                                }
-                            </select>
+                <form [formGroup]="nuevaEstacion" (submit)="crearEstacion()">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Registrar nueva estación</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col">
+                                <label for="">Nombre</label>
+                                <input type="text" class="form-control" formControlName="nombre">
+                            </div>
+                            <div class="col">
+                                <label for="">Localidad</label>
+                                <select class="form-select"formControlName="ciudad">
+                                    @for (ciudad of listaCiudades; track $index) {
+                                        <option [value]="ciudad.id">{{ciudad.nombre}}</option>
+                                    }
+                                </select>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary">Registrar</button>
-                </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Registrar</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -89,19 +112,47 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="row">
-                        <div class="col">
-                            <label for="">Nombre</label>
+                    <div class="row align-items-start">
+                        <div class="col d-flex flex-column">
+                            <label>Nombre</label>
                             <input type="text" class="form-control" [(ngModel)]="modalEstacion.nombre">
                         </div>
-                        <div class="col">
-                            <label class="form-check-label" for="estadoEstacion">Estado</label>
-                            <input id="estadoEstacion" type="checkbox" class="form-check-input d-block" [(ngModel)]="modalEstacion.estado">
+                        <div class="col d-flex flex-column">
+                            <label>Estado</label>
+                            <label class="switch-label">
+                                <input type="checkbox" [(ngModel)]="modalEstacion.estado">
+                                <span class="track">
+                                    <span class="thumb"></span>
+                                    <span class="text">
+                                    {{ modalEstacion.estado ? 'Activo' : 'Inactivo' }}
+                                    </span>
+                                </span>
+                            </label>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="modificarEstacion()">Editar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal eliminar estación -->
+    <div class="modal fade" id="ModalDeleteEstacion" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Eliminar estación</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Desea eliminar la estacion? (Tambien se eliminaran las rutas relacionadas a la misma)</p> 
+                    <p><b>IMPORTANTE: Esta accion no es reversible</b></p>
+                </div>  
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" (click)="eliminarEstacion()">Confirmar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 </div>
             </div>
         </div>

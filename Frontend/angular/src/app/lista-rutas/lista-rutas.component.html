@@ -1,0 +1,111 @@
+<div class="pantalla">
+    
+    <div id="opciones" class="row">
+        
+        <div class="col-2">
+            <label for="">Ciudad origen</label>
+            <select class="form-select" [(ngModel)]="filtroCiudadOrigen" (change)="filtrar()">
+                <option value=""></option>
+                @for (ciudad of listaCiudadesOrigen; track $index) {
+                    <option [value]="ciudad">{{ciudad}}</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-2">
+            <label for="">Ciudad destino</label>
+            <select class="form-select" [(ngModel)]="filtroCiudadDestino" (change)="filtrar()">
+                <option value=""></option>
+                @for (ciudad of listaCiudadesDestino; track $index) {
+                    <option [value]="ciudad">{{ciudad}}</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-2">
+            <label for="">Estado</label>
+            <select class="form-select" [(ngModel)]="filtroEstado" (change)="filtrar()">
+                <option value=""></option>
+                <option value="activo">Activa</option>
+                <option value="mantenimiento">Mantenimiento</option>
+                <option value="inactivo">Inactiva</option>                
+            </select>
+        </div>
+       
+        <div id="botonLimpiar" class="col-1" title="Limpiar filtros"  data-bs-toggle="tooltip" 
+                    data-bs-placement="bottom">
+            <button class="btn btn-secondary" (click)="limpiarFiltro()">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+
+        <div class="col"></div>
+
+   </div>
+
+    <div class="row tabla">
+       <table class="table table-striped table-hover">
+           <thead class="table-dark">
+               <tr>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Ciudad origen</th>
+                    <th scope="col">Ciudad destino</th>
+                    <th scope="col">Estado estaciones</th>
+                    <th scope="col">Estado ruta</th>
+                    <th scope="col">Acciones</th>
+               </tr>
+           </thead>
+           <tbody class="table-group-divider">
+                @for (ruta of listaFiltrada; track $index) {
+                    <tr>
+                        <td>{{ruta.nombre}}</td>
+                        <td>{{ruta.ciudadOrigen}}</td>
+                        <td>{{ruta.ciudadDestino}}</td>
+                        <td>
+                            <i class="bi bi-circle-fill" [ngClass]="ruta.estadoEstacionOrigen ? 'text-success' : 'text-danger'"></i>
+                            <i class="bi bi-circle-fill" [ngClass]="ruta.estadoEstacionDestino ? 'text-success' : 'text-danger'"></i>                            
+                        </td>
+                        @switch (ruta.estado) {
+                            @case ("activo") { 
+                                <td><span class="badge text-bg-primary">Activa</span></td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <button class="dropdown-item" type="button" 
+                                                (click)="modificarEstadoRuta(ruta.id, 'mantenimiento')">Poner en mantenimiento</button>      
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>                                
+                            }
+                            @case ("mantenimiento") { 
+                                <td><span class="badge text-bg-warning">Mantenimiento</span></td> 
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <button class="dropdown-item" type="button" 
+                                                (click)="modificarEstadoRuta(ruta.id, 'activo')">Activar</button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            }
+                            @case ("inactivo") { 
+                                <td><span class="badge text-bg-danger">Inactiva</span></td>
+                                <td></td> 
+                            }
+                        }
+                    </tr>
+                }
+           </tbody>
+       </table>
+    </div>
+</div>

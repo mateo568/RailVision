@@ -6,6 +6,7 @@ import com.example.estacionesservice.Entity.Estacion;
 import com.example.estacionesservice.Repository.EstacionRepository;
 import com.example.estacionesservice.Service.EstacionService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,14 +25,16 @@ public class EstacionServiceImpl implements EstacionService {
     }
 
     @Override
+    @Transactional
     public Estacion crearEstacion(String nombre, Ciudad ciudad) {
         Estacion estacion = Estacion.builder().nombre(nombre).estado(true)
-                .fechaCreacion(LocalDateTime.now()).ciudad(ciudad).build();
+                .fechaCreacion(LocalDateTime.now()).ciudad(ciudad)
+                .bajaLogica(false).build();
 
-        Optional<Estacion> estacionExistente = repository.findByCiudad(ciudad);
+        Optional<Estacion> estacionExistente = repository.findByCiudadAndBajaLogica(ciudad, false);
 
         if (estacionExistente.isPresent()) {
-            throw new IllegalArgumentException("Ya existe una estacion en esta ubicacion");
+            throw new IllegalStateException("Ya existe una estacion en esta ubicacion");
         }
 
         return repository.save(estacion);
@@ -44,6 +47,18 @@ public class EstacionServiceImpl implements EstacionService {
         estacion.setNombre(datos.getNombre());
         estacion.setEstado(datos.getEstado());
         return repository.save(estacion);
+    }
+
+    @Override
+    @Transactional
+    public void eliminarEstacion(Integer id) {
+        Estacion estacion = repository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("No se encontro la estacion a eliminar"));
+
+        estacion.setBajaLogica(true);
+        estacion.setFechaDestruccion(LocalDateTime.now());
+
+        repository.save(estacion);
     }
 
 }

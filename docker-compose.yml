@@ -1,10 +1,11 @@
-version: "3.9"
+networks:
+  railvision-network:
+    driver: bridge
+
+## version: "3.9"
 ## Tener en cuenta que cada microservicio tiene su propio Dockerfile en su respectiva carpeta.
 ## Se podria agregar un docker file por cada microservicio, inclusive (ejemplo creacion de trenes con docker file y asi)
 services:
-  # ---------------------------
-  # BACKEND PYTHON
-  # ---------------------------
   python-api:
     build:
       context: ./Backend/python
@@ -16,23 +17,54 @@ services:
       - ./Backend/python/RailVision/.env
     volumes:
       - ./Backend/python/RailVision:/app
-    depends_on:
-      - db
+    # depends_on:
+    #   - db
     networks:
       - railvision-network
 
   # ---------------------------
   # BACKEND JAVA
   # ---------------------------
-  java-api:
+  estaciones-service:
     build:
-      context: ./Backend/java
+      context: ./Backend/java/EstacionesService
       dockerfile: Dockerfile
-    container_name: railvision-java
+    container_name: railvision-estaciones
     ports:
-      - "8080:8080"
-    depends_on:
-      - db
+      - "8081:8081"
+    environment:
+      DB_URL: "jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:5432/postgres?sslmode=require"
+      DB_USER: "postgres.ryfweaoyhvlveicmrfzt"
+      DB_PASS: "Railvision2025-123"
+    networks:
+      - railvision-network
+
+  rutas-service:
+    build:
+      context: ./Backend/java/RutasService
+      dockerfile: Dockerfile
+    container_name: railvision-rutas
+    ports:
+      - "8082:8082"
+    environment:
+      DB_URL: "jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:5432/postgres?sslmode=require"
+      DB_USER: "postgres.ryfweaoyhvlveicmrfzt"
+      DB_PASS: "Railvision2025-123"
+    networks:
+      - railvision-network
+
+  viajes-service:
+    build:
+      context: ./Backend/java/ViajesService
+      dockerfile: Dockerfile
+    container_name: railvision-viajes
+    ports:
+      - "8083:8083"
+    environment:
+      DB_URL: "jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:5432/postgres?sslmode=require"
+      DB_USER: "postgres.ryfweaoyhvlveicmrfzt"
+      DB_PASS: "Railvision2025-123"
+
     networks:
       - railvision-network
 
@@ -48,36 +80,33 @@ services:
       - "4200:80"
     depends_on:
       - python-api
-      - java-api
+      - viajes-service
+      - rutas-service
+      - estaciones-service
     networks:
       - railvision-network
 
-  # ---------------------------
-  # BASE DE DATOS LOCAL POSTGRES
-  # ---------------------------
-  db:
-    image: postgres:15
-    container_name: railvision-db
-    restart: always
-    environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5432:5432"
-    volumes:
-      - db_data:/var/lib/postgresql/data
-    networks:
-      - railvision-network
+#   # -------------------------
+#   # BASE DE DATOS LOCAL (solo para pruebas)
+#   # -------------------------
+#   db:
+#     image: postgres:15
+#     container_name: railvision-db
+#     restart: always
+#     environment:
+#       POSTGRES_DB: postgres
+#       POSTGRES_USER: postgres
+#       POSTGRES_PASSWORD: postgres
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - db_data:/var/lib/postgresql/data
+#     networks:
+#       - railvision-network
+#     # 🚫 desactívalo temporalmente si usas Supabase
+#     # para evitar conflicto con el puerto 5432
 
-# ---------------------------
-# RED COMPARTIDA 
-# ---------------------------
-networks:
-  railvision-network:
 
-# ---------------------------
-# VOLUMENES PERSISTENTES (para cambios en la base de datos, se deja listo para futuras pruebas)
-# ---------------------------
-volumes:
-  db_data:
+
+# volumes:
+#   db_data:

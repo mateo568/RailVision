@@ -1,7 +1,7 @@
 #map{
-    height: 90vh;
-    width: 90vh;
-    margin-left: 20px;
+    height: 85vh;
+    width: 75vh;
+    margin-left: 10px;
 }
 
 .card{
@@ -12,10 +12,21 @@
     margin-top: 10px;
 }
 
+#divEliminar {
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    margin-right: 15px;
+}
+
 #botonesForm{
     margin-top: 15px;
 }
 
 #botonesForm .btn, #botonArray{
     width: 90%;
+}
+
+hr {
+    margin-top: 15px;
 }
