@@ -43,8 +43,10 @@ export class ListaRutasComponent implements OnInit, OnDestroy{
     this.cargarToggles();
     this.cargarDatos();
 
-    localStorage.setItem('nombrePantalla', 'Rutas')
-    window.dispatchEvent(new Event('storage'));
+    setTimeout(() => {
+      localStorage.setItem('nombrePantalla', 'Rutas')
+      window.dispatchEvent(new Event('storage'));
+    });
   }
 
   private cargarToggles() {

@@ -1,13 +1,41 @@
 <div class="row">
+
+  <div class="col-2">
+    <label for="filtroNombre" class="form-label">Nombre</label>
+    <input id="filtroNombre" type="text" class="form-control" [(ngModel)]="filtroNombre" (ngModelChange)="filtrar()">
+  </div>
+
+  <div class="col-3">
+    <label for="filtroEmail" class="form-label">Email</label>
+    <input id="filtroEmail" type="text" class="form-control" [(ngModel)]="filtroEmail" (ngModelChange)="filtrar()">
+  </div>
+
   <div class="col-2">
     <label class="form-label">Rol</label>
-    <select class="form-select" [(ngModel)]="filtroRol" (change)="filtrarPorRol(filtroRol)">
+    <select class="form-select" [(ngModel)]="filtroRol" (change)="filtrar()">
       <option value=""></option>
       <option value="admin">Admin</option>
       <option value="operador">Operador</option>
       <option value="cliente">Cliente</option>
     </select>
   </div>
+
+  <div class="col-2">
+    <label class="form-label">Estado</label>
+    <select class="form-select" [(ngModel)]="filtroEstado" (change)="filtrar()">
+      <option value=""></option>
+      <option value="true">Activo</option>
+      <option value="false">Inactivo</option>
+    </select>
+  </div>
+
+  <div id="botonLimpiar" class="col-1" title="Limpiar filtros"  data-bs-toggle="tooltip" 
+  data-bs-placement="bottom" data-bs-title="Limpiar filtros">
+    <button class="btn btn-secondary" (click)="limpiarFiltros()">
+        <i class="bi bi-trash"></i>
+    </button>
+  </div>
+
   <div class="col"></div>
   <div id="crear" class="col-1">
       <button

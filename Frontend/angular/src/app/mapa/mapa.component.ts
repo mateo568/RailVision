@@ -27,6 +27,11 @@ export class MapaComponent implements OnInit, OnDestroy{
 
   private tooltips: any[] = [];
 
+  private mapa: any;
+  private icono: any;
+
+  fechaActual: string = '';
+
   listaViajes: Viaje[] = [];
   listaRutas: Ruta[] = [];
   listaEstaciones: Estacion[] = [];
@@ -34,9 +39,6 @@ export class MapaComponent implements OnInit, OnDestroy{
 
   listadoViajesCurso: DtoListaMapaViaje[] = [];
   listadoViajeProgramado: DtoListaMapaViaje[] = [];
-
-  private mapa: any;
-  private icono: any;
 
   servicioMapa = inject(ServicioMapaService)
   servicioViaje = inject(ServicioViajesService)
@@ -48,11 +50,15 @@ export class MapaComponent implements OnInit, OnDestroy{
   constructor(private el: ElementRef) {}
 
   ngOnInit(): void {
-    setTimeout(() => { this.mapa = this.servicioMapa.iniciarMapa(); });
+    setTimeout(() => { 
+      this.mapa = this.servicioMapa.iniciarMapa(); 
+      localStorage.setItem('nombrePantalla', 'Viajes')
+      window.dispatchEvent(new Event('storage'));
+    });
+    
     this.cargarToggles();
     this.cargarDatos();
-    localStorage.setItem('nombrePantalla', 'Viajes')
-    window.dispatchEvent(new Event('storage'));
+    this.cargarFechaActual();
   }
 
   private cargarToggles() {
@@ -104,6 +110,40 @@ export class MapaComponent implements OnInit, OnDestroy{
 
     this.listadoViajesCurso.sort((a,b) => new Date(a.fechaLlegada.replace(" ", "T")).getTime() - new Date(b.fechaLlegada.replace(" ", "T")).getTime())
     this.listadoViajeProgramado.sort((a,b) => new Date(a.fechaSalida.replace(" ", "T")).getTime() - new Date(b.fechaSalida.replace(" ", "T")).getTime())
+  }
+
+  private cargarFechaActual() {
+    let fecha = new Date();
+    let mes = '';
+    
+    switch(fecha.getMonth()) {
+      case 0: mes = 'Enero' 
+              break;
+      case 1: mes = 'Febrero'
+              break;
+      case 2: mes = 'Marzo'
+              break;
+      case 3: mes = 'Abril'
+              break;
+      case 4: mes = 'Mayo'
+              break;
+      case 5: mes = 'Junio'
+              break;
+      case 6: mes = 'Julio'
+              break;
+      case 7: mes = 'Agosto'
+              break;
+      case 8: mes = 'Septiembre'
+              break;
+      case 9: mes = 'Octubre'
+              break;
+      case 10: mes = 'Noviembre'
+              break;
+      case 11: mes = 'Diciembre'
+              break;
+    }
+
+    this.fechaActual = `${fecha.getDate()} de ${mes} de ${fecha.getFullYear()}`
   }
 
   trazarViaje(ruta: string, estado: string) {

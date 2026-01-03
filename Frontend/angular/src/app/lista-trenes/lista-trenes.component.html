@@ -4,21 +4,28 @@
         
         <div class="col-2">
             <label for="">Codigo</label>
-            <input class="form-control" type="text">
+            <input class="form-control" type="text" [(ngModel)]="filtroCodigo" (ngModelChange)="filtrar()">
         </div>
 
         <div class="col-2">
             <label for="">Modelo</label>
-            <input class="form-control" type="text">
+            <input class="form-control" type="text" [(ngModel)]="filtroModelo" (ngModelChange)="filtrar()">
         </div>
 
         <div class="col-2">
             <label for="">Estado</label>
-            <select class="form-select">
+            <select class="form-select" [(ngModel)]="filtroEstado" (change)="filtrar()">
                 <option value=""></option>
-                <option value="1">Activo</option>
-                <option value="2">Mantenimiento</option>
+                <option value="activo">Activo</option>
+                <option value="mantenimiento">Mantenimiento</option>
             </select>
+        </div>
+
+        <div id="botonLimpiar" class="col-1" title="Limpiar filtros"  data-bs-toggle="tooltip" 
+        data-bs-placement="bottom" data-bs-title="Limpiar filtros">
+            <button class="btn btn-secondary" (click)="limpiarFiltro()">
+                <i class="bi bi-trash"></i>
+            </button>
         </div>
        
         <div class="col"></div>
@@ -38,21 +45,24 @@
                     <h1 class="modal-title fs-5" id="exampleModalLabel">Registrar nuevo tren</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col">
-                            <label for="">Modelo</label>
-                            <input type="text" class="form-control" formControlName="cantVagones">
-                        </div>
-                        <div class="col">
-                            <label for="">Capacidad maxima peso (t)</label>
-                            <input type="number" class="form-control" formControlName="capacidad">
+                <form [formGroup]="nuevoTren" (submit)="submit()">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col">
+                                <label for="">Modelo</label>
+                                <input type="text" class="form-control" formControlName="modelo">
+                            </div>
+                            <div class="col">
+                                <label for="">Capacidad maxima peso (t)</label>
+                                <input type="number" class="form-control" formControlName="capacidad">
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary">Registrar</button>
-                </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary">Cancelar</button>
+                        <button type="button" class="btn btn-primary">Registrar</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -69,7 +79,7 @@
                </tr>
            </thead>
            <tbody class="table-group-divider">
-            @for (tren of listaTrenes; track $index) {
+            @for (tren of listaFiltrada; track $index) {
                 <tr>
                     <td>{{tren.codigo}}</td>
                     <td>{{tren.modelo}}</td>

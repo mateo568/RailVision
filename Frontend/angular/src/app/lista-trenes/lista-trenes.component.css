@@ -5,6 +5,14 @@
     margin-right: 15px;
 }
 
+#botonLimpiar{
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    margin-right: 15px;
+    width: 70px;
+}
+
 .tabla{
   margin-top: 15px;
   margin-right: 15px;

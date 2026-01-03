@@ -18,7 +18,11 @@ export class ListaEmpleadosComponent implements OnInit, AfterViewInit, OnDestroy
   usuarios: Usuario[] = [];
   usuariosFiltrados: any[] = [];
 
+  filtroNombre: string = '';
+  filtroEmail: string = '';
   filtroRol: string = '';
+  filtroEstado: string = '';
+
   private tooltips: any[] = [];
 
   constructor(
@@ -31,8 +35,10 @@ export class ListaEmpleadosComponent implements OnInit, AfterViewInit, OnDestroy
   ngOnInit(): void {
     this.cargarUsuarios();
 
-    localStorage.setItem('nombrePantalla', 'Empleados')
-    window.dispatchEvent(new Event('storage'));
+    setTimeout(() => {
+      localStorage.setItem('nombrePantalla', 'Empleados')
+      window.dispatchEvent(new Event('storage'));
+    });
   }
   
   ngAfterViewInit(): void {
@@ -43,7 +49,7 @@ export class ListaEmpleadosComponent implements OnInit, AfterViewInit, OnDestroy
   private cargarToggles() {
       const tooltipElements = this.el.nativeElement.querySelectorAll('[data-bs-toggle="tooltip"]');
       tooltipElements.forEach((el: HTMLElement) => {
-      const tooltip = new bootstrap.Tooltip(el);
+      const tooltip = new bootstrap.Tooltip(el, { container: 'body', trigger: 'hover' });
       this.tooltips.push(tooltip);
     });
   }
@@ -52,37 +58,54 @@ export class ListaEmpleadosComponent implements OnInit, AfterViewInit, OnDestroy
   cargarUsuarios(): void {
     this.usuarioService.getUsuarios().subscribe({
       next: (res) => {
-        console.log("📌 Usuarios recibidos del backend:", res.usuarios);
+        console.log("Usuarios recibidos del backend:", res.usuarios);
 
+        this.filtroNombre = "";
+        this.filtroEmail = "";
+        this.filtroRol = '';
+        this.filtroEstado = '';
         this.usuarios = res.usuarios;
-
-        if (this.filtroRol) {
-          this.usuariosFiltrados = this.usuarios.filter(u => u.rol === this.filtroRol);
-          console.log("📌 Aplicando filtro existente:", this.filtroRol);
-        } else {
-          this.usuariosFiltrados = [...this.usuarios];
-          console.log("📌 Sin filtro, mostrando todos");
-        }
-
-        console.log("📌 Usuarios filtrados:", this.usuariosFiltrados);
+        this.usuariosFiltrados = [...this.usuarios];
       },
-      error: (err) => console.error("❌ Error al cargar usuarios:", err)
+      error: (err) => console.error("Error al cargar usuarios:", err)
     });
   }
 
-  filtrarPorRol(rol: string): void {
-    console.log("🔄 Filtro seleccionado:", rol);
-    console.log("👀 Usuarios actuales:", this.usuarios);
+  filtrar(): void {
+    this.usuariosFiltrados = this.usuarios;
 
-    this.filtroRol = rol;
+    if (this.filtroRol) {
+      this.usuariosFiltrados = this.usuariosFiltrados.filter(u => u.rol === this.filtroRol);
+      console.log("Usuarios después del filtro:", this.usuariosFiltrados);
+    } 
 
-    if (rol) {
-      this.usuariosFiltrados = this.usuarios.filter(u => u.rol === rol);
-      console.log("✅ Usuarios después del filtro:", this.usuariosFiltrados);
-    } else {
-      this.usuariosFiltrados = [...this.usuarios];
-      console.log("🔁 Sin filtro → restaurando lista completa");
+    if (this.filtroNombre && this.filtroNombre.length >= 3) {
+      this.usuariosFiltrados = this.usuariosFiltrados.filter( usuario => {
+        var nombreCompleto = `${usuario.nombre} ${usuario.apellido}` 
+        return nombreCompleto.toUpperCase().includes(this.filtroNombre.toUpperCase())
+      })
     }
+
+    if (this.filtroEmail && this.filtroEmail.length >= 3) {
+      this.usuariosFiltrados = this.usuariosFiltrados.filter( usuario => {
+        return usuario.email.toUpperCase().includes(this.filtroEmail.toUpperCase())
+      })
+    }
+
+    if (this.filtroEstado) {
+      const valor = this.filtroEstado === "true";
+      this.usuariosFiltrados = this.usuariosFiltrados.filter( usuario => {
+        return usuario.estado == valor; 
+      });
+    }
+  }
+
+  limpiarFiltros() {
+    this.filtroNombre = "";
+    this.filtroEmail = "";
+    this.filtroRol = '';
+    this.filtroEstado = '';
+    this.filtrar();
   }
 
   eliminarUsuario(id: number): void {
