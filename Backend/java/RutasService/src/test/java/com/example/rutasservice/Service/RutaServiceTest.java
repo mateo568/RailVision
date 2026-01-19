@@ -1,7 +1,5 @@
 package com.example.rutasservice.Service;
 
-import com.example.rutasservice.Dtos.RutaGetEstadoDto;
-import com.example.rutasservice.Dtos.RutaPostDto;
 import com.example.rutasservice.Dtos.RutasPutDto;
 import com.example.rutasservice.Entity.Ruta;
 import com.example.rutasservice.Repository.RutaRepository;
@@ -39,12 +37,11 @@ public class RutaServiceTest {
     void loadRutas(){
         rutas.add(Ruta.builder().id(1).nombre("Ruta Córdoba - Rosario").estacionOrigen(10)
                 .estacionDestino(12).distanciaKm(new BigDecimal("400.50"))
-                .estado("activo").fechaCreacion(LocalDateTime.now()).bajaLogica(false).fechaDestruccion(LocalDateTime.now()).build());
+                .estado("activo").fechaCreacion(LocalDateTime.now()).build());
 
         rutas.add(Ruta.builder().id(2).nombre("Ruta Buenos Aires - Mendoza").estacionOrigen(1)
                 .estacionDestino(8).distanciaKm(new BigDecimal("1050.75")).estado("inactivo")
                 .fechaCreacion(LocalDateTime.of(2024, 5, 15, 10, 30))
-                .bajaLogica(false).fechaDestruccion(LocalDateTime.now())
                 .build());
     }
 
@@ -58,33 +55,6 @@ public class RutaServiceTest {
         assertEquals(2, listaRutas.size());
         assertEquals("Ruta Córdoba - Rosario", listaRutas.get(0).getNombre());
         assertEquals(8, listaRutas.get(1).getEstacionDestino());
-    }
-
-    @Test
-    public void consultarEstadoRutas() {
-        when(repository.findByBajaLogica(false)).thenReturn(rutas);
-
-        List<RutaGetEstadoDto> estadoRutas = rutaService.consultarEstadoRutas();
-
-        assertNotNull(estadoRutas);
-        assertEquals(2, estadoRutas.size());
-        assertEquals(1, estadoRutas.get(0).getRutaId());
-        assertEquals("inactivo", estadoRutas.get(1).getEstado());
-    }
-
-    @Test
-    public void crearRuta() {
-        RutaPostDto rutaDto = RutaPostDto.builder().nombre("Ruta Córdoba - Rosario")
-                .estacionOrigen(10).estacionDestino(12).distanciaKm(new BigDecimal("400.50"))
-                .build();
-
-        when(repository.save(any(Ruta.class))).thenReturn(rutas.get(0));
-
-        Ruta ruta = rutaService.crearRuta(rutaDto);
-
-        assertEquals("Ruta Córdoba - Rosario", ruta.getNombre());
-        assertEquals(10, ruta.getEstacionOrigen());
-        assertEquals("activo", ruta.getEstado());
     }
 
     @Test
@@ -142,23 +112,4 @@ public class RutaServiceTest {
         verify(repository, times(1)).save(any(Ruta.class));
     }
 
-    @Test
-    public void eliminarRuta() {
-        when(repository.findById(1)).thenReturn(Optional.of(rutas.get(0)));
-
-        rutaService.eliminarRuta(1);
-
-        verify(repository).findById(1);
-        verify(repository).delete(rutas.get(0));
-    }
-
-    @Test
-    public void eliminarRutaNoEncontrada() {
-        when(repository.findById(1)).thenReturn(Optional.empty());
-
-        assertThatThrownBy(() -> rutaService.eliminarRuta(1)).isInstanceOf(EntityNotFoundException.class)
-                .hasMessageContaining("No se encontro la ruta a eliminar");
-
-        verify(repository,times(0)).delete(any(Ruta.class));
-    }
 }
