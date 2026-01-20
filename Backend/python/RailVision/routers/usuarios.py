@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Form
 from models.usuario import Usuario
 from db_conection import get_connection
 from passlib.context import CryptContext
+from passlib.hash import bcrypt
 
 
 router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
@@ -110,37 +111,87 @@ def add_usuario(
 # ------------------------------
 # Actualizar usuario
 # ------------------------------
+# @router.put("/update/{usuario_id}")
+# def update_usuario(usuario_id: int, usuario: Usuario):
+#     conn = get_connection()
+#     if not conn:
+#         raise HTTPException(status_code=500, detail="No se pudo conectar a la base de datos")
+
+#     try:
+#         cursor = conn.cursor()
+#         query = """
+#             UPDATE usuarios
+#             SET nombre = %s,
+#                 apellido = %s,
+#                 email = %s,
+#                 password_hash = %s,
+#                 rol = %s,
+#                 estado = %s
+#             WHERE usuario_id = %s;
+#         """
+#         cursor.execute(query, (
+#             usuario.nombre,
+#             usuario.apellido,
+#             usuario.email,
+#             usuario.password_hash,
+#             usuario.rol,
+#             usuario.estado,
+#             usuario_id
+#         ))
+#         conn.commit()
+#         cursor.close()
+#         conn.close()
+#         return {"status": "updated", "usuario_id": usuario_id}
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
+    
+
 @router.put("/update/{usuario_id}")
 def update_usuario(usuario_id: int, usuario: Usuario):
+
     conn = get_connection()
     if not conn:
         raise HTTPException(status_code=500, detail="No se pudo conectar a la base de datos")
 
     try:
         cursor = conn.cursor()
+
+        # Si viene contraseña, hashearla
+        password_hash = None
+        if usuario.password:
+            password_hash = bcrypt.hash(usuario.password)
+        else:
+            # Mantener la contraseña actual
+            cursor.execute("SELECT password_hash FROM usuarios WHERE usuario_id = %s", (usuario_id,))
+            password_hash = cursor.fetchone()[0]
+
         query = """
-            UPDATE usuarios
-            SET nombre = %s,
-                apellido = %s,
-                email = %s,
-                password_hash = %s,
-                rol = %s,
-                estado = %s
-            WHERE usuario_id = %s;
+        UPDATE usuarios
+        SET nombre = %s,
+            apellido = %s,
+            email = %s,
+            password_hash = %s,
+            rol = %s,
+            estado = %s
+        WHERE usuario_id = %s;
         """
+
         cursor.execute(query, (
             usuario.nombre,
             usuario.apellido,
             usuario.email,
-            usuario.password_hash,
+            password_hash,
             usuario.rol,
             usuario.estado,
             usuario_id
         ))
+
         conn.commit()
         cursor.close()
         conn.close()
+
         return {"status": "updated", "usuario_id": usuario_id}
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

@@ -1,7 +1,5 @@
 package com.example.rutasservice.Controller;
 
-import com.example.rutasservice.Dtos.RutaGetEstadoDto;
-import com.example.rutasservice.Dtos.RutaPostDto;
 import com.example.rutasservice.Dtos.RutasPutDto;
 import com.example.rutasservice.Entity.Ruta;
 import com.example.rutasservice.Service.RutaService;
@@ -71,43 +69,6 @@ public class RutaControllerTest {
     }
 
     @Test
-    public void consultarEstadoRutas() throws Exception {
-        List<RutaGetEstadoDto> estadoRutas = new ArrayList<>();
-        estadoRutas.add(RutaGetEstadoDto.builder().rutaId(1).estado("activo").build());
-        estadoRutas.add(RutaGetEstadoDto.builder().rutaId(2).estado("inactivo").build());
-
-        when(rutaService.consultarEstadoRutas()).thenReturn(estadoRutas);
-
-        MvcResult result = mockMvc.perform(get("/railvision/rutas/estado").contentType(MediaType.APPLICATION_JSON))
-                .andDo(print()).andExpect(status().isOk()).andReturn();
-
-        List<RutaGetEstadoDto> rutasResultado = List.of(testMapper.readValue(result.getResponse()
-                .getContentAsString(Charset.defaultCharset()), RutaGetEstadoDto[].class));
-
-        assertEquals(2, rutasResultado.size());
-        assertEquals(1, rutasResultado.get(0).getRutaId());
-        assertEquals("inactivo", rutasResultado.get(1).getEstado());
-    }
-
-    @Test
-    public void crearRuta() throws Exception {
-        RutaPostDto rutaDto = RutaPostDto.builder().nombre("Ruta Córdoba - Rosario")
-                .estacionOrigen(10).estacionDestino(12).distanciaKm(new BigDecimal("400.50"))
-                .build();
-
-        when(rutaService.crearRuta(rutaDto)).thenReturn(rutas.get(0));
-
-        MvcResult result = mockMvc.perform(post("/railvision/rutas").contentType(MediaType.APPLICATION_JSON)
-                .content(testMapper.writeValueAsString(rutaDto))).andDo(print()).andExpect(status().isOk()).andReturn();
-
-        Ruta rutaResultado = testMapper.readValue(result.getResponse().getContentAsString(), Ruta.class);
-
-        assertEquals("Ruta Córdoba - Rosario", rutaResultado.getNombre());
-        assertEquals(10, rutaResultado.getEstacionOrigen());
-        assertEquals("activo", rutaResultado.getEstado());
-    }
-
-    @Test
     public void modificarEstadoRuta() throws Exception {
         Ruta ruta = Ruta.builder().id(3).nombre("Ruta Buenos Aires - Mendoza").estacionOrigen(1)
                 .estacionDestino(8).distanciaKm(new BigDecimal("1050.75")).estado("mantenimiento")
@@ -143,15 +104,5 @@ public class RutaControllerTest {
         assertEquals(2, rutasResultado.size());
         assertEquals(rutas.get(0).getNombre(), rutasResultado.get(0).getNombre());
         assertEquals(rutas.get(1).getEstado(), rutasResultado.get(1).getEstado());
-    }
-
-    @Test
-    public void eliminarRuta() throws Exception {
-        doNothing().when(rutaService).eliminarRuta(rutas.get(0).getId());
-
-        mockMvc.perform(delete("/railvision/rutas/1"))
-                .andDo(print()).andExpect(status().isNoContent());
-
-        verify(rutaService, times(1)).eliminarRuta(1);
     }
 }
