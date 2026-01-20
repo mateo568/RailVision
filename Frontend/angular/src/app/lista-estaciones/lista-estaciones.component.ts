@@ -42,6 +42,7 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
   })
   
   filtroEstado: string = "";
+  filtroNombre: string = "";
 
   servicioMapa = inject(ServicioMapaService)
   servicioEstacion = inject(ServicioEstacionService)
@@ -51,12 +52,14 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
   constructor(private el: ElementRef) {}
 
   ngOnInit(): void {
-    setTimeout(() => { this.mapa = this.servicioMapa.iniciarMapa(); });
+    setTimeout(() => { 
+      this.mapa = this.servicioMapa.iniciarMapa(); 
+      localStorage.setItem('nombrePantalla', 'Estaciones')
+      window.dispatchEvent(new Event('storage'));
+    });
+
     this.cargarToggles();
     this.cargarDatos();
-
-    localStorage.setItem('nombrePantalla', 'Estaciones')
-    window.dispatchEvent(new Event('storage'));
   }
   
   private cargarToggles() {
@@ -119,6 +122,12 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
     this.mapa = this.servicioMapa.limpiarIconos();
     this.listaFiltrada = this.listaEstaciones.filter(estacion => estacion.bajaLogica === false);
 
+    if(this.filtroNombre && this.filtroNombre.length >= 3) {
+      this.listaFiltrada = this.listaFiltrada.filter( estacion => {
+        return estacion.nombre.toUpperCase().includes(this.filtroNombre.toUpperCase())
+      })
+    }
+
     if (this.filtroEstado !== null && this.filtroEstado !== ""){
       const valor = this.filtroEstado === "true";
       this.listaFiltrada = this.listaFiltrada.filter( estacion => {
@@ -126,6 +135,12 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
       });
     }
     this.cargarIconosEstacion();
+  }
+
+  limpiarFiltros() {
+    this.filtroNombre = "";
+    this.filtroEstado = "";
+    this.filtrarDatos(); 
   }
 
   crearEstacion(){
@@ -141,6 +156,7 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
 
       const sub = this.servicioEstacion.postEstacion(estacion).subscribe(() =>{
         this.mapa = this.servicioMapa.limpiarIconos();
+        this.filtroNombre = "";
         this.filtroEstado = "";
         Swal.fire('Listo', 'Se ha creado la nueva estación', 'success');
         this.cerrarModal('ModalPostEstacion')
@@ -155,6 +171,7 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
     if (this.modalEstacion.nombre && this.modalEstacion.nombre?.trim().length >= 7) {
       const sub = this.servicioEstacion.putEstacion(this.modalEstacion).subscribe(() =>{
         this.mapa = this.servicioMapa.limpiarIconos();
+        this.filtroNombre = "";
         this.filtroEstado = "";
         this.modificarRutas()
       });
@@ -227,6 +244,8 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
      
       this.cerrarModal('ModalDeleteEstacion');
       this.mapa = this.servicioMapa.limpiarIconos();
+      this.filtroNombre = "";
+      this.filtroEstado = "";      
       this.cargarDatos();
     } 
     catch (error) {

@@ -68,11 +68,15 @@ export class FormViajeComponent implements OnInit, OnDestroy{
   constructor(private el: ElementRef) {}
 
   ngOnInit(): void {
-    setTimeout(() => { this.mapa = this.servicioMapa.iniciarMapa(); });
+    
+    setTimeout(() => { 
+      this.mapa = this.servicioMapa.iniciarMapa(); 
+      localStorage.setItem('nombrePantalla', 'Nuevo viaje')
+      window.dispatchEvent(new Event('storage'));
+    });
+
     this.cargarToggles();
     this.cargarDatos();
-    localStorage.setItem('nombrePantalla', 'Nuevo viaje')
-    window.dispatchEvent(new Event('storage'));
 
     this.nuevoViaje.get("horarioSalida")?.valueChanges.subscribe(() => {
     if (this.rutaViaje) {
