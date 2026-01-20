@@ -6,19 +6,19 @@ export interface DtoListaViaje {
     tren: Tren | undefined;
     ruta: string;
     usuarioId: number;
-    fechaSalida: string;
-    fechaLlegada: string;
+    fechaSalida: Date | null;
+    fechaLlegada: Date | null;
     carga: number;
     estado: string;
-    fechaCreacion: string;
+    fechaCreacion: Date | null;
     detalleCarga: Cargamento[];
 }
 
 export interface DtoListaMapaViaje {
     id: number;
     ruta: string;
-    fechaSalida: string;
-    fechaLlegada: string;
+    fechaSalida: Date | null;
+    fechaLlegada: Date | null;
     tren: string;
     estado: string;
 }

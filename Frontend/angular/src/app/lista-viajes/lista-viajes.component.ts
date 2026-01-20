@@ -36,8 +36,8 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
   filtroEstado: string = "";
 
 
-  detallesViaje: DtoListaViaje = { id: 0, tren: undefined, ruta: '', usuarioId: 0, fechaSalida: '', fechaLlegada: '',
-                                  carga: 0, estado: '', fechaCreacion: '', detalleCarga: [] };
+  detallesViaje: DtoListaViaje = { id: 0, tren: undefined, ruta: '', usuarioId: 0, fechaSalida: null, fechaLlegada: null,
+                                  carga: 0, estado: '', fechaCreacion: null, detalleCarga: [] };
   viajeModificable: boolean = false;
   modificar: boolean = false;
   fechaSalidaActualizada: string = "";
@@ -94,8 +94,11 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
         trenes: this.servicioTrenes.getTrenes()
       }).subscribe(({rutas, viajes, trenes}) =>{
         this.listaRutas = rutas;
-        console.log(this.listaRutas)
-        this.listaViajes = viajes;
+        this.listaViajes = viajes.map(v => ({
+          ...v,
+          fechaSalida: this.parsearFechas(v.fechaSalida),
+          fechaLlegada: this.parsearFechas(v.fechaLlegada)
+        }));
         this.listaTrenes = trenes;
         this.cargarListado();
       })
@@ -128,6 +131,17 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
 
     this.listadoViajes.sort((a,b) => estados.indexOf(a.estado) - estados.indexOf(b.estado))
     this.filtrar()
+  }
+
+  private parsearFechas(fecha: any): Date | null {
+    if (!fecha) return null;
+
+    if (Array.isArray(fecha)) {
+      const [y, m, d, h = 0, min = 0, s = 0] = fecha;
+      return new Date(y, m - 1, d, h, min, s);
+    }
+
+    return new Date(fecha);
   }
 
   filtroNombresRuta(nombre: string): string {
@@ -172,9 +186,9 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
 
     this.modificar = false;
     
-    this.formViaje.get("fecha")?.setValue(this.detallesViaje.fechaSalida.split("T")[0]);    
-    this.formViaje.get("horarioSalida")?.setValue(this.detallesViaje.fechaSalida.substring(11,16));
-    this.formViaje.get("horarioLlegada")?.setValue(this.detallesViaje.fechaLlegada.substring(11,16));
+    this.formViaje.get("fecha")?.setValue(this.formatearFechaSalida(this.detallesViaje.fechaSalida));    
+    this.formViaje.get("horarioSalida")?.setValue(this.detallesViaje.fechaSalida ? this.detallesViaje.fechaSalida.toTimeString().slice(0, 5) : '');
+    this.formViaje.get("horarioLlegada")?.setValue(this.detallesViaje.fechaLlegada ? this.detallesViaje.fechaLlegada.toTimeString().slice(0, 5) : '');
     this.cargarDuracionViaje();
 
     this.arrayCargasActuales.clear();
@@ -202,6 +216,13 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
     if (tiempoSalida > tiempoLlegada) { tiempoLlegada += 60 * 24; }
 
     this.duracionViaje = tiempoLlegada - tiempoSalida;
+  }
+
+  private formatearFechaSalida(date: any): string {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
   }
 
   habilitarModificacion() {

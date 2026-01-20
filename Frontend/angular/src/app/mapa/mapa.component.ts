@@ -78,7 +78,13 @@ export class MapaComponent implements OnInit, OnDestroy{
         trenes: this.servicioTrenes.getTrenes()
       }).subscribe(({rutas, viajes, estaciones, trenes}) =>{
         this.listaRutas = rutas;
-        this.listaViajes = viajes;
+
+        this.listaViajes = viajes.map(v => ({
+          ...v,
+          fechaSalida: this.parsearFechas(v.fechaSalida),
+          fechaLlegada: this.parsearFechas(v.fechaLlegada)
+        }));
+
         this.listaEstaciones = estaciones;
         this.listaTrenes = trenes;
         this.cargarListados();
@@ -108,8 +114,19 @@ export class MapaComponent implements OnInit, OnDestroy{
       if (viaje.estado === "programado" && this.listadoViajeProgramado.length < 3){ this.listadoViajeProgramado.push(item) }
     });
 
-    this.listadoViajesCurso.sort((a,b) => new Date(a.fechaLlegada.replace(" ", "T")).getTime() - new Date(b.fechaLlegada.replace(" ", "T")).getTime())
-    this.listadoViajeProgramado.sort((a,b) => new Date(a.fechaSalida.replace(" ", "T")).getTime() - new Date(b.fechaSalida.replace(" ", "T")).getTime())
+    this.listadoViajesCurso.sort((a,b) => this.parsearFechas(a.fechaLlegada)!.getTime() - this.parsearFechas(b.fechaLlegada)!.getTime() )
+    this.listadoViajeProgramado.sort((a,b) => this.parsearFechas(a.fechaSalida)!.getTime() - this.parsearFechas(b.fechaSalida)!.getTime())
+  }
+
+  private parsearFechas(fecha: any): Date | null {
+    if (!fecha) return null;
+
+    if (Array.isArray(fecha)) {
+      const [y, m, d, h = 0, min = 0, s = 0] = fecha;
+      return new Date(y, m - 1, d, h, min, s);
+    }
+
+    return new Date(fecha);
   }
 
   private cargarFechaActual() {
