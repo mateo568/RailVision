@@ -43,6 +43,7 @@ export class FormViajeComponent implements OnInit, OnDestroy{
 
   cargaMaxima: number = 0;
   cargaActual: number = 0;
+  fechaMinima: string = "";
 
   private servicioMapa = inject(ServicioMapaService)
   private servicioViaje = inject(ServicioViajesService)
@@ -74,6 +75,12 @@ export class FormViajeComponent implements OnInit, OnDestroy{
       localStorage.setItem('nombrePantalla', 'Nuevo viaje')
       window.dispatchEvent(new Event('storage'));
     });
+
+    const mañana = new Date();
+    mañana.setDate(mañana.getDate() + 1);
+
+    // Formato YYYY-MM-DD requerido por input date
+    this.fechaMinima = mañana.toISOString().split('T')[0];
 
     this.cargarToggles();
     this.cargarDatos();
@@ -110,8 +117,8 @@ export class FormViajeComponent implements OnInit, OnDestroy{
   }
 
   filtrarEstaciones() {
-    this.listaEstacionesOrigen = this.listaEstaciones;
-    this.listaEstacionesDestino = this.listaEstaciones;
+    this.listaEstacionesOrigen = this.listaEstaciones.filter(e => e.estado === true && e.bajaLogica === false);
+    this.listaEstacionesDestino = this.listaEstaciones.filter(e => e.estado === true && e.bajaLogica === false);
     this.rutaInexistente = false;
 
     let estacionOrigen = this.nuevoViaje.get("estacionOrigen")?.value
