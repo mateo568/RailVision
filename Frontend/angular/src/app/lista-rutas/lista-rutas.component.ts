@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { forkJoin, Observable, Subscription } from 'rxjs';
 import { Ruta } from '../../models/Entity/ruta';
 import { ServicioRutasService } from '../../services/servicio-rutas.service';
@@ -8,12 +8,13 @@ import { ServicioEstacionService } from '../../services/servicio-estacion.servic
 import { DtoListadoRutas } from '../../models/Dto/dto-ruta';
 import { NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 declare var bootstrap: any;
 
 @Component({
   selector: 'app-lista-rutas',
   standalone: true,
-  imports: [NgClass, FormsModule],
+  imports: [NgClass, FormsModule, MatPaginatorModule],
   templateUrl: './lista-rutas.component.html',
   styleUrl: './lista-rutas.component.css'
 })
@@ -21,6 +22,8 @@ export class ListaRutasComponent implements OnInit, OnDestroy{
   private subscripciones: Subscription[] = [];
 
   private tooltips: any[] = [];
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator
 
   listaRutas: Ruta[] = [];  // Datos del observable "rutas" estructurado en base a la entidad de rutas de la base de datos
   listaEstaciones: Estacion[] = [];
@@ -33,6 +36,8 @@ export class ListaRutasComponent implements OnInit, OnDestroy{
   filtroCiudadOrigen: string = "";
   filtroCiudadDestino: string = "";
   listaFiltrada: DtoListadoRutas[] = [];  // Datos filtrado de "listadoRutas"
+  paginaActual: DtoListadoRutas[] = [];
+  pageSize = 10;
 
   servicioRuta = inject(ServicioRutasService)
   servicioEstacion = inject(ServicioEstacionService)
@@ -123,6 +128,9 @@ export class ListaRutasComponent implements OnInit, OnDestroy{
         return ruta.ciudadDestino === this.filtroCiudadDestino;
       } )
     }
+
+    this.paginator.firstPage()
+    this.actualizarPaginado()
   }
 
   limpiarFiltro(){
@@ -130,6 +138,18 @@ export class ListaRutasComponent implements OnInit, OnDestroy{
     this.filtroCiudadOrigen = "";
     this.filtroCiudadDestino = "";
     this.filtrar();
+  }
+
+  actualizarPaginado() {
+    if (!this.paginator) {
+      this.paginaActual = this.listaFiltrada.slice(0, this.pageSize);
+      return;
+    }
+
+    const inicio = this.paginator.pageIndex * this.paginator.pageSize;
+    const fin = inicio + this.paginator.pageSize;
+
+    this.paginaActual = this.listaFiltrada.slice(inicio, fin);
   }
 
   modificarEstadoRuta(id: number, estado: string){
