@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ServicioMapaService } from '../../services/servicio-mapa.service';
 import { firstValueFrom, forkJoin, Observable, Subscription } from 'rxjs';
 import { Estacion } from '../../models/Entity/estacion';
@@ -13,11 +13,12 @@ import { DtoDeleteRuta, DtoPutRuta } from '../../models/Dto/dto-ruta';
 import { ServicioViajesService } from '../../services/servicio-viajes.service';
 declare var bootstrap: any;
 import Swal from 'sweetalert2';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-lista-estaciones',
   standalone: true,
-  imports: [CommonModule, ɵInternalFormsSharedModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ɵInternalFormsSharedModule, ReactiveFormsModule, FormsModule, MatPaginatorModule],
   templateUrl: './lista-estaciones.component.html',
   styleUrl: './lista-estaciones.component.css'
 })
@@ -30,10 +31,14 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
 
   private tooltips: any[] = [];
 
+  @ViewChild(MatPaginator) paginator!: MatPaginator
+
   listaCiudades: Ciudad[] = [];
   listaEstaciones: Estacion[] = [];
   listaRutas: Ruta[] = [];
   listaFiltrada: Estacion[] = [];
+  paginaActual: Estacion[] = [];
+  pageSize = 10;
 
   modalEstacion: DtoPutEstacion = { id: 0, nombre: "", estado: true };
   nuevaEstacion = new FormGroup({
@@ -86,7 +91,7 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
         this.listaEstaciones = estaciones;
         this.listaFiltrada = this.listaEstaciones.filter(estacion => estacion.bajaLogica === false);
         // this.filtrarCiudadesDisponibles();
-        this.cargarIconosEstacion();
+        this.filtrarDatos();
       }))
 
   }
@@ -134,6 +139,9 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
         return estacion.estado == valor; 
       });
     }
+
+    this.paginator.firstPage()
+    this.actualizarPaginado()
     this.cargarIconosEstacion();
   }
 
@@ -141,6 +149,19 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
     this.filtroNombre = "";
     this.filtroEstado = "";
     this.filtrarDatos(); 
+  }
+
+  actualizarPaginado() {
+    if (!this.paginator) {
+      this.paginaActual = this.listaFiltrada.slice(0, this.pageSize);
+      return;
+    }
+
+    const inicio = this.paginator.pageIndex * this.paginator.pageSize;
+    const fin = inicio + this.paginator.pageSize;
+
+    this.paginaActual = this.listaFiltrada.slice(inicio, fin);
+    console.log("Estaciones: " + this.paginaActual.length)
   }
 
   crearEstacion(){

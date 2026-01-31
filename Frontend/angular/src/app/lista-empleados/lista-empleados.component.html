@@ -65,7 +65,7 @@
     </thead>
 
     <tbody>
-      <tr *ngFor="let u of usuariosFiltrados">
+      <tr *ngFor="let u of paginaActual">
         <td class="fw-semibold">{{ u.nombre }} {{ u.apellido }}</td>
         <td>{{ u.email }}</td>
         <td  class="text-center">
@@ -133,4 +133,6 @@
       </tr>
     </tbody>
   </table>
+
+  <mat-paginator [length]="usuariosFiltrados.length" [pageSize]="pageSize" showFirstLastButtons (page)="actualizarPaginado()"></mat-paginator>
 </div>

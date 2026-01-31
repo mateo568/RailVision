@@ -1,22 +1,25 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ServicioUsuariosService } from '../../services/servicio-usuarios.service';
 import { Usuario } from '../../models/Entity/usuario';
 import { Router } from '@angular/router';
 import { AuthRolesService } from '../../services/servicio-auth-roles.service';
 import { FormsModule } from '@angular/forms';   // 👈 NUEVO
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 declare var bootstrap: any;
 
 @Component({
   selector: 'app-lista-empleados',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatPaginatorModule],
   templateUrl: './lista-empleados.component.html',
   styleUrls: ['./lista-empleados.component.css']
 })
 export class ListaEmpleadosComponent implements OnInit, AfterViewInit, OnDestroy {
   usuarios: Usuario[] = [];
   usuariosFiltrados: any[] = [];
+  paginaActual: any[] = [];
+  pageSize = 10;
 
   filtroNombre: string = '';
   filtroEmail: string = '';
@@ -24,6 +27,8 @@ export class ListaEmpleadosComponent implements OnInit, AfterViewInit, OnDestroy
   filtroEstado: string = '';
 
   private tooltips: any[] = [];
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator
 
   constructor(
     private usuarioService: ServicioUsuariosService,
@@ -66,6 +71,7 @@ export class ListaEmpleadosComponent implements OnInit, AfterViewInit, OnDestroy
         this.filtroEstado = '';
         this.usuarios = res.usuarios;
         this.usuariosFiltrados = [...this.usuarios];
+        this.filtrar();
       },
       error: (err) => console.error("Error al cargar usuarios:", err)
     });
@@ -98,6 +104,9 @@ export class ListaEmpleadosComponent implements OnInit, AfterViewInit, OnDestroy
         return usuario.estado == valor; 
       });
     }
+
+    this.paginator.firstPage()
+    this.actualizarPaginado()
   }
 
   limpiarFiltros() {
@@ -106,6 +115,18 @@ export class ListaEmpleadosComponent implements OnInit, AfterViewInit, OnDestroy
     this.filtroRol = '';
     this.filtroEstado = '';
     this.filtrar();
+  }
+
+  actualizarPaginado() {
+    if (!this.paginator) {
+      this.paginaActual = this.usuariosFiltrados.slice(0, this.pageSize);
+      return;
+    }
+
+    const inicio = this.paginator.pageIndex * this.paginator.pageSize;
+    const fin = inicio + this.paginator.pageSize;
+
+    this.paginaActual = this.usuariosFiltrados.slice(inicio, fin);
   }
 
   eliminarUsuario(id: number): void {

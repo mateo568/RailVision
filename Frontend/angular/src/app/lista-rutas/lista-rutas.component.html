@@ -56,7 +56,7 @@
                </tr>
            </thead>
            <tbody class="table-group-divider">
-                @for (ruta of listaFiltrada; track $index) {
+                @for (ruta of paginaActual; track $index) {
                     <tr>
                         <td>{{ruta.nombre}}</td>
                         <td>{{ruta.ciudadOrigen}}</td>
@@ -107,5 +107,7 @@
                 }
            </tbody>
        </table>
+
+        <mat-paginator [length]="listaFiltrada.length" [pageSize]="pageSize" showFirstLastButtons (page)="actualizarPaginado()"></mat-paginator>
     </div>
 </div>

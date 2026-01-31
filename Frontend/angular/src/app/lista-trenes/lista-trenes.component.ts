@@ -1,15 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Tren } from '../../models/Entity/tren';
 import { ServicioTrenesService } from '../../services/servicio-trenes.service';
 import { forkJoin, Subscription } from 'rxjs';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 declare var bootstrap: any;
 
 @Component({
   selector: 'app-lista-trenes',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatPaginatorModule],
   templateUrl: './lista-trenes.component.html',
   styleUrl: './lista-trenes.component.css'
 })
@@ -19,8 +20,12 @@ export class ListaTrenesComponent implements OnInit, OnDestroy{
   
   private tooltips: any[] = [];
 
+  @ViewChild(MatPaginator) paginator!: MatPaginator
+
   listaTrenes: Tren[] = [];
   listaFiltrada: Tren[] = [];
+  paginaActual: Tren[] = [];
+  pageSize = 10;
 
   filtroCodigo: string = "";
   filtroModelo: string = "";
@@ -90,6 +95,9 @@ export class ListaTrenesComponent implements OnInit, OnDestroy{
         return tren.estado === this.filtroEstado;
       })
     }
+
+    this.paginator.firstPage()
+    this.actualizarPaginado()
   }
 
   limpiarFiltro() {
@@ -97,6 +105,18 @@ export class ListaTrenesComponent implements OnInit, OnDestroy{
     this.filtroModelo = "";
     this.filtroEstado = "";
     this.filtrar()
+  }
+
+  actualizarPaginado() {
+    if (!this.paginator) {
+      this.paginaActual = this.listaFiltrada.slice(0, this.pageSize);
+      return;
+    }
+
+    const inicio = this.paginator.pageIndex * this.paginator.pageSize;
+    const fin = inicio + this.paginator.pageSize;
+
+    this.paginaActual = this.listaFiltrada.slice(inicio, fin);
   }
 
   submit() {
