@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RutaGetEstadoDto {
     private Integer rutaId;
+    private String nombre;
     private String estado;
 }
