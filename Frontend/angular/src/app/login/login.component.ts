@@ -32,8 +32,10 @@ export class LoginComponent {
 
     this.authService.login(email, password).subscribe({
       next: (res) => {
-        localStorage.setItem('token', res.access_token);
+        // localStorage.setItem('token', res.access_token);
+        console.log('LOGIN RESPONSE:', res);
         localStorage.setItem('rol', res.rol); //Se guarda el rol de usuario
+        localStorage.setItem('usuario_id', res.usuario_id.toString());
         Swal.fire('Bienvenido', 'Inicio de sesión exitoso', 'success');
         this.router.navigate(['/menu/viajes']);
       },
