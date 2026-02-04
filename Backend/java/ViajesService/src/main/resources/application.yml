@@ -22,3 +22,5 @@ server:
 services:
   rutas:
     url: http://rutas-service:8082/railvision/rutas
+  usuarios:
+    url: http://python-api:8000/usuarios

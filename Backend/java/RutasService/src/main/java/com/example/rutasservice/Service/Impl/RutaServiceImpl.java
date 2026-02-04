@@ -33,7 +33,7 @@ public class RutaServiceImpl implements RutaService {
 
         for (Ruta r : rutas) {
             listaDto.add(RutaGetEstadoDto.builder()
-                    .rutaId(r.getId()).estado(r.getEstado()).build());
+                    .rutaId(r.getId()).nombre(r.getNombre()).estado(r.getEstado()).build());
         }
 
         return listaDto;
