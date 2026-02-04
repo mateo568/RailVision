@@ -1,5 +1,6 @@
 package com.example.viajesservice.Entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +24,7 @@ public class Notificacion {
     @Column(nullable = false)
     private String mensaje;
 
+    @JsonFormat(pattern = "dd/MM/yyyy")
     @Column(name = "fecha_creacion", nullable = false)
     private LocalDateTime fechaCreacion;
 

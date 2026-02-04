@@ -29,9 +29,9 @@ public class NotificacionServiceImpl implements NotificacionService {
         String horaFin = fin.format(DateTimeFormatter.ofPattern("HH:mm"));
 
         String mensaje = switch (estado) {
-            case "cancelado" -> "El viaje de " + ruta + " de las " + horaInicio + " - " + horaFin + " ha sido cancelado";
-            case "en curso" -> "El viaje de " + ruta + " de las " + horaInicio + " - " + horaFin + " ha comenzado";
-            case "finalizado" -> "El viaje de " + ruta + " de las " + horaInicio + " - " + horaFin + " ha finalizado";
+            case "cancelado" -> "El viaje de " + ruta + " (" + horaInicio + " - " + horaFin + ") ha sido cancelado";
+            case "en curso" -> "El viaje de " + ruta + " (" + horaInicio + " - " + horaFin + ") ha comenzado";
+            case "finalizado" -> "El viaje de " + ruta + " (" + horaInicio + " - " + horaFin + ") ha finalizado";
             default -> "";
         };
 

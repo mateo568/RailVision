@@ -100,3 +100,19 @@ section {
   letter-spacing: 1px;
   margin: 10px 14px 6px 14px;
 }
+
+#notificaciones {
+  margin-right: 8px;
+}
+
+#notificaciones .dropdown-item {
+  background-color: transparent !important;
+  cursor: default !important;
+}
+
+#notificaciones .dropdown-item:hover,
+#notificaciones .dropdown-item:focus,
+#notificaciones .dropdown-item:active {
+  background-color: transparent !important;
+  color: inherit !important;
+}

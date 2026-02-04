@@ -2,6 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { Router, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthRolesService } from '../../services/servicio-auth-roles.service';
+import { NotificacionUsuario } from '../../models/Entity/notificacion-usuario';
+import { ServicioNotificacionesService } from '../../services/servicio-notificaciones.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-navegacion',
@@ -11,9 +14,12 @@ import { AuthRolesService } from '../../services/servicio-auth-roles.service';
   styleUrl: './navegacion.component.css'
 })
 export class NavegacionComponent implements OnInit {
+  listaNotificaciones: NotificacionUsuario[] = [];
+  
+  servicioNotificaciones = inject(ServicioNotificacionesService);
   router = inject(Router);
   nombrePantalla = localStorage.getItem('nombrePantalla');
-  
+
   authRoles = inject(AuthRolesService);
   expand = false;
   animar = false;
@@ -25,6 +31,7 @@ export class NavegacionComponent implements OnInit {
     });
 
     this.nombrePantalla = localStorage.getItem('nombrePantalla') ?? '';
+    this.cargarNotificaciones();
   }
 
   Sidebar(){
@@ -42,4 +49,15 @@ export class NavegacionComponent implements OnInit {
     this.router.navigate(['/login']);
   }
   
+  cargarNotificaciones() {
+    forkJoin({
+      notificaciones: this.servicioNotificaciones.getNotificacionesNoLeidas(13)
+    }).subscribe(({notificaciones}) => {
+      this.listaNotificaciones = notificaciones
+    })
+  }
+
+  marcarNotificacionLeida(id: number) {
+    console.log(`Notificacion ${id} leida`)
+  }
 }

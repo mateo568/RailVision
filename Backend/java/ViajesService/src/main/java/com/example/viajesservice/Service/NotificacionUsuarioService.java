@@ -8,4 +8,5 @@ import java.util.List;
 public interface NotificacionUsuarioService {
     List<NotificacionUsuario> consultarNotificacionesUsuario(Integer usuarioId);
     void crearNotificacionesUsuarios(Notificacion notificacion);
+    void cambiarNotificacionLeida(Integer notificacionId);
 }

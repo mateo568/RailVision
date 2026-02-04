@@ -20,4 +20,10 @@ public class NotificacionController {
     public ResponseEntity<List<NotificacionUsuario>> consultarNotificaciones(@PathVariable Integer id) {
         return ResponseEntity.ok(service.consultarNotificacionesUsuario(id));
     }
+
+    @PutMapping("usuario/{id}/leida")
+    public ResponseEntity<Void> modificarNotificacionLeida(@PathVariable Integer id) {
+        service.cambiarNotificacionLeida(id);
+        return ResponseEntity.ok().build();
+    }
 }
