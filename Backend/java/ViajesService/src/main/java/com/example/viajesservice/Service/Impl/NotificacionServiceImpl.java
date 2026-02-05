@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -22,11 +23,15 @@ public class NotificacionServiceImpl implements NotificacionService {
     NotificacionUsuarioService notificacionUsuarioService;
 
     @Override
-    public void crearNotificacion(Integer viajeId, String nombreRuta, ZonedDateTime inicio, ZonedDateTime fin, String estado) {
+    public void crearNotificacion(Integer viajeId, String nombreRuta, LocalDateTime inicio, LocalDateTime fin, String estado) {
 
         String ruta = nombreRuta.substring(5);
-        String horaInicio = inicio.format(DateTimeFormatter.ofPattern("HH:mm"));
-        String horaFin = fin.format(DateTimeFormatter.ofPattern("HH:mm"));
+        ZoneId zona = ZoneId.of("America/Argentina/Buenos_Aires");
+        ZonedDateTime horaZonaInicio = inicio.atZone(zona);
+        ZonedDateTime horaZonaFin = fin.atZone(zona);
+
+        String horaInicio = horaZonaInicio.format(DateTimeFormatter.ofPattern("HH:mm"));
+        String horaFin = horaZonaFin.format(DateTimeFormatter.ofPattern("HH:mm"));
 
         String mensaje = switch (estado) {
             case "cancelado" -> "El viaje de " + ruta + " (" + horaInicio + " - " + horaFin + ") ha sido cancelado";

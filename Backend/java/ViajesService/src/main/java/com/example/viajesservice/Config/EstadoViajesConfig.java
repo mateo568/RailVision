@@ -151,19 +151,19 @@ public class EstadoViajesConfig {
             if ( limiteHoraCancelacion && (estadoRuta.equals("mantenimiento") || estadoRuta.equals("inactivo")) &&
                     (viaje.getEstado().equals("programado"))) {
                 viaje.setEstado("cancelado");
-                notificacionService.crearNotificacion(viaje.getId(),nombreRuta,inicio,salida,"cancelado");
+                notificacionService.crearNotificacion(viaje.getId(),nombreRuta,viaje.getFechaSalida(),viaje.getFechaLlegada(),"cancelado");
                 viajesActualizados.add(viaje);
             }
 
             if (esHoraDeSalida && viaje.getEstado().equals("programado") && estadoRuta.equals("activo")) {
                 viaje.setEstado("en curso");
-                notificacionService.crearNotificacion(viaje.getId(),nombreRuta,inicio,salida,"en curso");
+                notificacionService.crearNotificacion(viaje.getId(),nombreRuta,viaje.getFechaSalida(),viaje.getFechaLlegada(),"en curso");
                 viajesActualizados.add(viaje);
             }
 
             if (esHoraDeLlegada && viaje.getEstado().equals("en curso") && estadoRuta.equals("activo")) {
                 viaje.setEstado("finalizado");
-                notificacionService.crearNotificacion(viaje.getId(),nombreRuta,inicio,salida,"finalizado");
+                notificacionService.crearNotificacion(viaje.getId(),nombreRuta,viaje.getFechaSalida(),viaje.getFechaLlegada(),"finalizado");
                 viajesActualizados.add(viaje);
             }
         }

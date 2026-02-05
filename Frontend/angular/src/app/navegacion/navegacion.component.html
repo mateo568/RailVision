@@ -28,7 +28,7 @@
               </small>
             </div>
             <div>
-              <button class="btn btn-outline-secondary btn-sm" (click)="marcarNotificacionLeida(13)">
+              <button class="btn btn-outline-secondary btn-sm" (click)="marcarNotificacionLeida(n.id)" [disabled]="cargandoNotificaciones">
                 <i class="bi bi-check-circle"></i>
               </button>
             </div>

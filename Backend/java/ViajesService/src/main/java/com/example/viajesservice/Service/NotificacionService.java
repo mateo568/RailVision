@@ -1,7 +1,7 @@
 package com.example.viajesservice.Service;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
 public interface NotificacionService {
-    void crearNotificacion(Integer viajeId, String nombreRuta, ZonedDateTime inicio, ZonedDateTime fin, String estado);
+    void crearNotificacion(Integer viajeId, String nombreRuta, LocalDateTime inicio, LocalDateTime fin, String estado);
 }
