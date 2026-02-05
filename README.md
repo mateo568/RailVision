@@ -88,19 +88,11 @@ Ejemplos de vistas materializadas:
 - `dm_carga_por_ruta`
 - `dm_trenes_activos`
 
-⚠️ Las materialized views **NO se actualizan automáticamente**.
-
 ---
 
-## 🔄 Refresh del datamart
-
-Para mantener el dashboard actualizado se utiliza una función SQL:
-
-```sql
-SELECT refresh_materialized_views();
-
-
 ## 👤 Autor/es
+
+
 DEV : Mateo Gabriel Acuña 
 DEV : Agustin Abraham Louitaff
 
