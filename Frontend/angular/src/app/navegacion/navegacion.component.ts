@@ -15,10 +15,12 @@ import { forkJoin } from 'rxjs';
 })
 export class NavegacionComponent implements OnInit {
   listaNotificaciones: NotificacionUsuario[] = [];
+  cargandoNotificaciones: boolean = false;
   
   servicioNotificaciones = inject(ServicioNotificacionesService);
   router = inject(Router);
   nombrePantalla = localStorage.getItem('nombrePantalla');
+  usuarioId = Number(localStorage.getItem("usuario_id"));
 
   authRoles = inject(AuthRolesService);
   expand = false;
@@ -31,6 +33,8 @@ export class NavegacionComponent implements OnInit {
     });
 
     this.nombrePantalla = localStorage.getItem('nombrePantalla') ?? '';
+    this.usuarioId = Number(localStorage.getItem("usuario_id")) ?? '';
+
     this.cargarNotificaciones();
   }
 
@@ -50,14 +54,29 @@ export class NavegacionComponent implements OnInit {
   }
   
   cargarNotificaciones() {
+    this.cargandoNotificaciones = true;
     forkJoin({
-      notificaciones: this.servicioNotificaciones.getNotificacionesNoLeidas(13)
-    }).subscribe(({notificaciones}) => {
-      this.listaNotificaciones = notificaciones
-    })
+      notificaciones: this.servicioNotificaciones.getNotificacionesNoLeidas(this.usuarioId)
+    }).subscribe({
+      next: ({notificaciones}) => {
+        this.listaNotificaciones = notificaciones;
+        this.cargandoNotificaciones = false;
+      },
+      error: (error) => {
+        console.error('Error al cargar notificaciones:', error);
+        this.cargandoNotificaciones = false;
+      }
+    });
   }
 
   marcarNotificacionLeida(id: number) {
-    console.log(`Notificacion ${id} leida`)
+    this.servicioNotificaciones.putNotificacionLeida(id).subscribe({
+    next: () => {
+      this.cargarNotificaciones();
+    },
+    error: (error) => {
+      console.error('Error al marcar notificación como leída:', error);
+    }
+  });
   }
 }
