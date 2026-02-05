@@ -1,15 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, inject, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Tren } from '../../models/Entity/tren';
 import { ServicioTrenesService } from '../../services/servicio-trenes.service';
 import { forkJoin, Subscription } from 'rxjs';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 declare var bootstrap: any;
 
 @Component({
   selector: 'app-lista-trenes',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatPaginatorModule],
   templateUrl: './lista-trenes.component.html',
   styleUrl: './lista-trenes.component.css'
 })
@@ -19,12 +20,21 @@ export class ListaTrenesComponent implements OnInit, OnDestroy{
   
   private tooltips: any[] = [];
 
+  @ViewChild(MatPaginator) paginator!: MatPaginator
+
   listaTrenes: Tren[] = [];
+  listaFiltrada: Tren[] = [];
+  paginaActual: Tren[] = [];
+  pageSize = 10;
+
+  filtroCodigo: string = "";
+  filtroModelo: string = "";
+  filtroEstado: string = "";
 
   private servicioTren = inject(ServicioTrenesService);
 
   nuevoTren = new FormGroup({
-      tipo: new FormControl('',[Validators.required]),
+      modelo: new FormControl('',[Validators.required]),
       capacidad: new FormControl(0,[Validators.required]),
       //cantVagones: new FormControl('',[Validators.required]),
   })
@@ -35,8 +45,10 @@ export class ListaTrenesComponent implements OnInit, OnDestroy{
     this.cargarToggles();
     this.cargarDatos(); 
 
-    localStorage.setItem('nombrePantalla', 'Trenes')
-    window.dispatchEvent(new Event('storage'));
+    setTimeout(() => {
+      localStorage.setItem('nombrePantalla', 'Trenes')
+      window.dispatchEvent(new Event('storage'));
+    });
   }
 
   private cargarToggles() {
@@ -57,8 +69,58 @@ export class ListaTrenesComponent implements OnInit, OnDestroy{
         trenes: this.servicioTren.getTrenes()
       }).subscribe(({trenes}) =>{
         this.listaTrenes = trenes;
+        this.filtrar()
       })
     )
+  }
+
+  filtrar() {
+    this.listaFiltrada = this.listaTrenes;
+    console.log(this.filtroCodigo)
+
+    if (this.filtroCodigo && this.filtroCodigo.length >= 3){
+      this.listaFiltrada = this.listaFiltrada.filter( tren => {
+        return tren.codigo.toUpperCase().includes(this.filtroCodigo.toUpperCase());
+      })
+    }
+
+    if (this.filtroModelo && this.filtroModelo.length >= 3) {
+      this.listaFiltrada = this.listaFiltrada.filter( tren => {
+        return tren.modelo.toUpperCase().includes(this.filtroModelo.toUpperCase());
+      })
+    }
+
+    if(this.filtroEstado) {
+      this.listaFiltrada = this.listaFiltrada.filter( tren => {
+        return tren.estado === this.filtroEstado;
+      })
+    }
+
+    this.paginator.firstPage()
+    this.actualizarPaginado()
+  }
+
+  limpiarFiltro() {
+    this.filtroCodigo = "";
+    this.filtroModelo = "";
+    this.filtroEstado = "";
+    this.filtrar()
+  }
+
+  actualizarPaginado() {
+    if (!this.paginator) {
+      this.paginaActual = this.listaFiltrada.slice(0, this.pageSize);
+      return;
+    }
+
+    const inicio = this.paginator.pageIndex * this.paginator.pageSize;
+    const fin = inicio + this.paginator.pageSize;
+
+    this.paginaActual = this.listaFiltrada.slice(inicio, fin);
+  }
+
+  submit() {
+
   }
 
   ngOnDestroy(): void {

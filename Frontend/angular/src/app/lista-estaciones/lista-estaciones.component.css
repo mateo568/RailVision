@@ -13,6 +13,14 @@
     justify-content: end;
 }
 
+#botonLimpiar{
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    margin-right: 15px;
+    width: 70px;
+}
+
 .switch-label {
   position: relative;
   display: inline-block;

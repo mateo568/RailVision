@@ -4,6 +4,7 @@ import { routes } from './app.routes';
 import { provideHttpClient } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 export class NoReuseStrategy implements RouteReuseStrategy {
   shouldDetach(): boolean { return false; }
@@ -18,6 +19,6 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes), {provide: RouteReuseStrategy, useClass: NoReuseStrategy} ,
     provideHttpClient(),
-    importProvidersFrom(ReactiveFormsModule, BrowserAnimationsModule)
+    importProvidersFrom(ReactiveFormsModule, BrowserAnimationsModule), provideAnimationsAsync()
   ]
 };

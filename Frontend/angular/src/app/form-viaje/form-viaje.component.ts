@@ -69,17 +69,21 @@ export class FormViajeComponent implements OnInit, OnDestroy{
   constructor(private el: ElementRef) {}
 
   ngOnInit(): void {
-    setTimeout(() => { this.mapa = this.servicioMapa.iniciarMapa(); });
-    this.cargarToggles();
-    this.cargarDatos();
-    localStorage.setItem('nombrePantalla', 'Nuevo viaje')
-    window.dispatchEvent(new Event('storage'));
+    
+    setTimeout(() => { 
+      this.mapa = this.servicioMapa.iniciarMapa(); 
+      localStorage.setItem('nombrePantalla', 'Nuevo viaje')
+      window.dispatchEvent(new Event('storage'));
+    });
 
     const mañana = new Date();
     mañana.setDate(mañana.getDate() + 1);
 
     // Formato YYYY-MM-DD requerido por input date
     this.fechaMinima = mañana.toISOString().split('T')[0];
+
+    this.cargarToggles();
+    this.cargarDatos();
 
     this.nuevoViaje.get("horarioSalida")?.valueChanges.subscribe(() => {
     if (this.rutaViaje) {

@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ServicioMapaService } from '../../services/servicio-mapa.service';
 import { firstValueFrom, forkJoin, Observable, Subscription } from 'rxjs';
 import { Estacion } from '../../models/Entity/estacion';
@@ -13,11 +13,12 @@ import { DtoDeleteRuta, DtoPutRuta } from '../../models/Dto/dto-ruta';
 import { ServicioViajesService } from '../../services/servicio-viajes.service';
 declare var bootstrap: any;
 import Swal from 'sweetalert2';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-lista-estaciones',
   standalone: true,
-  imports: [CommonModule, ɵInternalFormsSharedModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ɵInternalFormsSharedModule, ReactiveFormsModule, FormsModule, MatPaginatorModule],
   templateUrl: './lista-estaciones.component.html',
   styleUrl: './lista-estaciones.component.css'
 })
@@ -30,10 +31,14 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
 
   private tooltips: any[] = [];
 
+  @ViewChild(MatPaginator) paginator!: MatPaginator
+
   listaCiudades: Ciudad[] = [];
   listaEstaciones: Estacion[] = [];
   listaRutas: Ruta[] = [];
   listaFiltrada: Estacion[] = [];
+  paginaActual: Estacion[] = [];
+  pageSize = 10;
 
   modalEstacion: DtoPutEstacion = { id: 0, nombre: "", estado: true };
   nuevaEstacion = new FormGroup({
@@ -42,6 +47,7 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
   })
   
   filtroEstado: string = "";
+  filtroNombre: string = "";
 
   servicioMapa = inject(ServicioMapaService)
   servicioEstacion = inject(ServicioEstacionService)
@@ -51,12 +57,14 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
   constructor(private el: ElementRef) {}
 
   ngOnInit(): void {
-    setTimeout(() => { this.mapa = this.servicioMapa.iniciarMapa(); });
+    setTimeout(() => { 
+      this.mapa = this.servicioMapa.iniciarMapa(); 
+      localStorage.setItem('nombrePantalla', 'Estaciones')
+      window.dispatchEvent(new Event('storage'));
+    });
+
     this.cargarToggles();
     this.cargarDatos();
-
-    localStorage.setItem('nombrePantalla', 'Estaciones')
-    window.dispatchEvent(new Event('storage'));
   }
   
   private cargarToggles() {
@@ -83,7 +91,7 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
         this.listaEstaciones = estaciones;
         this.listaFiltrada = this.listaEstaciones.filter(estacion => estacion.bajaLogica === false);
         // this.filtrarCiudadesDisponibles();
-        this.cargarIconosEstacion();
+        this.filtrarDatos();
       }))
 
   }
@@ -119,13 +127,41 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
     this.mapa = this.servicioMapa.limpiarIconos();
     this.listaFiltrada = this.listaEstaciones.filter(estacion => estacion.bajaLogica === false);
 
+    if(this.filtroNombre && this.filtroNombre.length >= 3) {
+      this.listaFiltrada = this.listaFiltrada.filter( estacion => {
+        return estacion.nombre.toUpperCase().includes(this.filtroNombre.toUpperCase())
+      })
+    }
+
     if (this.filtroEstado !== null && this.filtroEstado !== ""){
       const valor = this.filtroEstado === "true";
       this.listaFiltrada = this.listaFiltrada.filter( estacion => {
         return estacion.estado == valor; 
       });
     }
+
+    this.paginator.firstPage()
+    this.actualizarPaginado()
     this.cargarIconosEstacion();
+  }
+
+  limpiarFiltros() {
+    this.filtroNombre = "";
+    this.filtroEstado = "";
+    this.filtrarDatos(); 
+  }
+
+  actualizarPaginado() {
+    if (!this.paginator) {
+      this.paginaActual = this.listaFiltrada.slice(0, this.pageSize);
+      return;
+    }
+
+    const inicio = this.paginator.pageIndex * this.paginator.pageSize;
+    const fin = inicio + this.paginator.pageSize;
+
+    this.paginaActual = this.listaFiltrada.slice(inicio, fin);
+    console.log("Estaciones: " + this.paginaActual.length)
   }
 
   crearEstacion(){
@@ -141,6 +177,7 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
 
       const sub = this.servicioEstacion.postEstacion(estacion).subscribe(() =>{
         this.mapa = this.servicioMapa.limpiarIconos();
+        this.filtroNombre = "";
         this.filtroEstado = "";
         Swal.fire('Listo', 'Se ha creado la nueva estación', 'success');
         this.cerrarModal('ModalPostEstacion')
@@ -155,6 +192,7 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
     if (this.modalEstacion.nombre && this.modalEstacion.nombre?.trim().length >= 7) {
       const sub = this.servicioEstacion.putEstacion(this.modalEstacion).subscribe(() =>{
         this.mapa = this.servicioMapa.limpiarIconos();
+        this.filtroNombre = "";
         this.filtroEstado = "";
         this.modificarRutas()
       });
@@ -227,6 +265,8 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
      
       this.cerrarModal('ModalDeleteEstacion');
       this.mapa = this.servicioMapa.limpiarIconos();
+      this.filtroNombre = "";
+      this.filtroEstado = "";      
       this.cargarDatos();
     } 
     catch (error) {

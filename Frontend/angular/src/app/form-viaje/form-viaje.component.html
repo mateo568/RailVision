@@ -39,21 +39,21 @@
                     <div class="col-6">
                         <label for="">Tren</label>
                         <select name="" id="" formControlName="tren" class="form-select"
-                        [ngClass]="{'is-invalid': nuevoViaje.get('tren')?.invalid}" (change)="definirLimitePeso()">
+                        [ngClass]="{'is-invalid': nuevoViaje.get('tren')?.invalid && nuevoViaje.get('tren')?.touched}" (change)="definirLimitePeso()">
                             <option value="" selected>Seleccionar...</option>
                             @for (tren of listaTrenes; track $index) {
                                 <option [value]="tren.tren_id.toString()">{{tren.codigo}}</option>
                             }
                         </select>
-                         <div *ngIf="nuevoViaje.get('tren')?.getError('required')" class="text-danger small">
+                         <div *ngIf="nuevoViaje.get('tren')?.getError('required') && nuevoViaje.get('tren')?.touched" class="text-danger small">
                             Seleccione un tren.
                         </div>
                     </div>
                     <div class="col">
                         <label for="">Fecha</label>
                         <input type="date" class="form-control" formControlName="fecha" [min]="fechaMinima" 
-                        [ngClass]="{'is-invalid': nuevoViaje.get('fecha')?.invalid}">
-                        <div *ngIf="nuevoViaje.get('fecha')?.getError('required')" class="text-danger small">
+                        [ngClass]="{'is-invalid': nuevoViaje.get('fecha')?.invalid && nuevoViaje.get('fecha')?.touched}">
+                        <div *ngIf="nuevoViaje.get('fecha')?.getError('required') && nuevoViaje.get('fecha')?.touched" class="text-danger small">
                             Seleccione una fecha.
                         </div>
                     </div>
@@ -62,8 +62,8 @@
                     <div class="col-6">
                         <label for="">Hora salida</label>
                         <input type="time" class="form-control" formControlName="horarioSalida"
-                        [ngClass]="{'is-invalid': nuevoViaje.get('horarioSalida')?.invalid}">
-                        <div *ngIf="nuevoViaje.get('horarioSalida')?.getError('required')" class="text-danger small">
+                        [ngClass]="{'is-invalid': nuevoViaje.get('horarioSalida')?.invalid && nuevoViaje.get('horarioSalida')?.touched}">
+                        <div *ngIf="nuevoViaje.get('horarioSalida')?.getError('required') && nuevoViaje.get('horarioSalida')?.touched" class="text-danger small">
                             Seleccione una hora.
                         </div>
                     </div>
@@ -164,5 +164,4 @@
             </form>
         </div>   
     </div>
-
 </section>

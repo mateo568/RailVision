@@ -5,10 +5,10 @@ export interface Viaje {
     trenId: number;
     rutaId: number;
     usuarioId: number;
-    fechaSalida: string;
-    fechaLlegada: string;
+    fechaSalida: Date | null;
+    fechaLlegada: Date | null;
     carga: number;
     estado: string;
-    fechaCreacion: string;
+    fechaCreacion: Date | null;
     cargamentos: Cargamento[];
 }

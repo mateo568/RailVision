@@ -5,6 +5,15 @@
     margin-right: 15px;
 }
 
+#botonLimpiar{
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    margin-right: 15px;
+    width: 70px;
+}
+
+
 .mb-3{
     margin-right: 15px;
 }

@@ -5,17 +5,52 @@
     <h4 class="text-white ms-3 m-0">RailVision / {{nombrePantalla}}</h4>
   </div>
 
-  <div class="dropdown">
-    <button class="btn btn-outline-light mb-0 dropdown-toggle" type="button" id="perfilMenu"
-    data-bs-toggle="dropdown" aria-expanded="false">
-      <i class="bi bi-person-circle"></i>
-    </button>
-    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="perfilMenu">
-      <li><a class="dropdown-item" href="#">Ver perfil</a></li>
-      <li><hr class="dropdown-divider"></li>
-      <li><a class="dropdown-item" (click)="logout()">Cerrar sesión</a></li>
-    </ul>
+  <div class="d-flex align-items-center">
+    <div id="notificaciones" class="dropdown">
+      <button class="btn btn-outline-light mb-0 dropdown-toggle" type="button" id="notificacionesMenu"
+      data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-bell"></i>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificacionesMenu">
+        
+        <li *ngIf="listaNotificaciones.length === 0" class="dropdown-item text-muted">
+          No hay notificaciones
+        </li>
+
+        <li *ngFor="let n of listaNotificaciones" class="dropdown-item" (click)="$event.stopPropagation()">
+          <div style="display: grid; grid-template-columns: 1fr auto; gap: 0.5rem; align-items: start;">
+            <div style="overflow-wrap: break-word; word-break: break-word;">
+              <div class="fw-bold">
+                {{n.notificacion.mensaje}}
+              </div>
+              <small class="text-muted">
+                {{ n.notificacion.fechaCreacion}}
+              </small>
+            </div>
+            <div>
+              <button class="btn btn-outline-secondary btn-sm" (click)="marcarNotificacionLeida(n.id)" [disabled]="cargandoNotificaciones">
+                <i class="bi bi-check-circle"></i>
+              </button>
+            </div>
+          </div>
+          <hr>
+        </li>
+      </ul>
+    </div>
+
+    <div class="dropdown">
+      <button class="btn btn-outline-light mb-0 dropdown-toggle" type="button" id="perfilMenu"
+      data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-person-circle"></i>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="perfilMenu">
+        <li><a class="dropdown-item" href="#">Ver perfil</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" (click)="logout()">Cerrar sesión</a></li>
+      </ul>
+    </div>
   </div>
+  
 </nav>
 
 <div class="sidebar text-white d-flex flex-column"
@@ -55,7 +90,7 @@
     </li>
 
     <li>
-      <a id="dashboard" class="nav-link text-white" href="https://lookerstudio.google.com/s/lOsNm8QG4g0" target="_blank">
+      <a id="dashboard" class="nav-link text-white" href="https://lookerstudio.google.com/reporting/7a63b82d-b15b-487d-9ede-12df8c8f9ef9/page/MZahF" target="_blank">
         <i class="bi bi-clipboard-data"></i> Dashboard BI
       </a>
     </li>

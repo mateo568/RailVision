@@ -7,6 +7,10 @@
         </div>
         <div class="col-7">
             <div id="opciones" class="row">
+                <div class="col-4">
+                    <label for="filtroNombre" class="form-label">Nombre</label>
+                    <input id="filtroNombre" type="text" class="form-control" [(ngModel)]="filtroNombre" (ngModelChange)="filtrarDatos()">
+                </div>
                 <div class="col-3">
                     <label for="filtroEstado" class="form-label">Estado</label>
                     <select name="" id="filtroEstado" class="form-select" [(ngModel)]="filtroEstado" (change)="filtrarDatos()">
@@ -15,6 +19,13 @@
                         <option value="false">Desactivada</option>
                     </select>
                 </div>
+                <div id="botonLimpiar" class="col-1" title="Limpiar filtros"  data-bs-toggle="tooltip" 
+                data-bs-placement="bottom" data-bs-title="Limpiar filtros">
+                    <button class="btn btn-secondary" (click)="limpiarFiltros()">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+
                 <div class="col"></div>
                 <div id="crear" class="col-2">
                     <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#ModalPostEstacion" data-bs-title="Crear estación" data-bs-placement="bottom">
@@ -34,7 +45,7 @@
                         </tr>
                     </thead>
                     <tbody class="table-group-divider">
-                        @for (estacion of listaFiltrada; track $index) {
+                        @for (estacion of paginaActual; track $index) {
                             <tr>
                                 <td>{{estacion.nombre}}</td>
                                 <td>{{estacion.ciudad.nombre}}</td>
@@ -66,6 +77,8 @@
                         }
                     </tbody>
                 </table>
+
+                 <mat-paginator [length]="listaFiltrada.length" [pageSize]="pageSize" showFirstLastButtons (page)="actualizarPaginado()"></mat-paginator>
             </div>
         </div>
     </div>

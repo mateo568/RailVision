@@ -3,6 +3,7 @@ package com.example.viajesservice.Config;
 import com.example.viajesservice.Dtos.RestTemplate.EstadoRutaDto;
 import com.example.viajesservice.Entity.Viaje;
 import com.example.viajesservice.Repository.ViajeRepository;
+import com.example.viajesservice.Service.NotificacionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +34,9 @@ public class EstadoViajesConfig {
 
     @Autowired
     ViajeRepository repository;
+
+    @Autowired
+    NotificacionService notificacionService;
 
     @Autowired
     RestTemplate restTemplate;
@@ -125,6 +129,11 @@ public class EstadoViajesConfig {
                             () -> new IllegalStateException("El estado de la ruta no esta definido")
                     );
 
+            String nombreRuta = rutas.stream().filter(r -> r.getRutaId().equals(viaje.getRutaId()))
+                    .map(EstadoRutaDto::getNombre).findFirst().orElseThrow(
+                            () -> new IllegalStateException("El nombre de la ruta no esta definido")
+                    );
+
             boolean esHoraDeSalida = !viaje.getFechaSalida().isBefore(inicioMinuto) &&
                             !viaje.getFechaSalida().isAfter(finMinuto);
 
@@ -142,16 +151,19 @@ public class EstadoViajesConfig {
             if ( limiteHoraCancelacion && (estadoRuta.equals("mantenimiento") || estadoRuta.equals("inactivo")) &&
                     (viaje.getEstado().equals("programado"))) {
                 viaje.setEstado("cancelado");
+                notificacionService.crearNotificacion(viaje.getId(),nombreRuta,viaje.getFechaSalida(),viaje.getFechaLlegada(),"cancelado");
                 viajesActualizados.add(viaje);
             }
 
             if (esHoraDeSalida && viaje.getEstado().equals("programado") && estadoRuta.equals("activo")) {
                 viaje.setEstado("en curso");
+                notificacionService.crearNotificacion(viaje.getId(),nombreRuta,viaje.getFechaSalida(),viaje.getFechaLlegada(),"en curso");
                 viajesActualizados.add(viaje);
             }
 
             if (esHoraDeLlegada && viaje.getEstado().equals("en curso") && estadoRuta.equals("activo")) {
                 viaje.setEstado("finalizado");
+                notificacionService.crearNotificacion(viaje.getId(),nombreRuta,viaje.getFechaSalida(),viaje.getFechaLlegada(),"finalizado");
                 viajesActualizados.add(viaje);
             }
         }

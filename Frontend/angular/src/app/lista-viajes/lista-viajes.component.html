@@ -36,7 +36,7 @@
             </select>
         </div>
         <div id="divLimpiar" class="col-1">
-            <button id="botonLimpiar" class="btn btn-secondary"title="Limpiar filtros" data-bs-toggle="tooltip" 
+            <button id="botonLimpiar" class="btn btn-secondary" title="Limpiar filtros" data-bs-toggle="tooltip" 
             data-bs-placement="bottom" (click)="limpiarFiltro()">
                 <i class="bi bi-trash"></i>
             </button>
@@ -56,7 +56,7 @@
                 </tr>
             </thead>
             <tbody class="table-group-divider">
-                @for (viaje of listaFiltrada; track $index) {
+                @for (viaje of paginaActual; track $index) {
                     <tr>
                         <td>{{viaje.ruta}}</td>
                         <td>{{viaje.fechaSalida | date:'dd/MM/yyyy - HH:mm:ss'}}</td>
@@ -89,6 +89,8 @@
                 }
             </tbody>
         </table>
+
+        <mat-paginator [length]="listaFiltrada.length" [pageSize]="pageSize" showFirstLastButtons (page)="actualizarPaginado()"></mat-paginator>
     </div>
 
     <!-- Modal detalle viaje -->

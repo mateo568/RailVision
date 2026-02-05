@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { forkJoin, Observable, Subscription } from 'rxjs';
 import { Viaje } from '../../models/Entity/viaje';
@@ -10,13 +10,14 @@ import { DtoListaViaje, DtoPutCargamento, DtoPutViaje } from '../../models/Dto/d
 import { FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ServicioTrenesService } from '../../services/servicio-trenes.service';
 import { Tren } from '../../models/Entity/tren';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 declare var bootstrap: any;
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-lista-viajes',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, MatPaginatorModule],
   templateUrl: './lista-viajes.component.html',
   styleUrl: './lista-viajes.component.css'
 })
@@ -25,19 +26,24 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
 
   private tooltips: any[] = [];
 
+  @ViewChild(MatPaginator) paginator!: MatPaginator
+
   listaViajes: Viaje[] = [];
   listaRutas: Ruta[] = [];
   listaTrenes: Tren[] = [];
 
   listadoViajes: DtoListaViaje[] = [];
   listaFiltrada: DtoListaViaje[] = [];
+  paginaActual: DtoListaViaje[] = [];
+  pageSize = 10;
+
   filtroRuta: string = "";
   filtroTren: string = "";
   filtroEstado: string = "";
 
 
-  detallesViaje: DtoListaViaje = { id: 0, tren: undefined, ruta: '', usuarioId: 0, fechaSalida: '', fechaLlegada: '',
-                                  carga: 0, estado: '', fechaCreacion: '', detalleCarga: [] };
+  detallesViaje: DtoListaViaje = { id: 0, tren: undefined, ruta: '', usuarioId: 0, fechaSalida: null, fechaLlegada: null,
+                                  carga: 0, estado: '', fechaCreacion: null, detalleCarga: [] };
   viajeModificable: boolean = false;
   modificar: boolean = false;
   fechaSalidaActualizada: string = "";
@@ -68,10 +74,13 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
   constructor(private el: ElementRef) {}
 
   ngOnInit(): void {
+    setTimeout(() => {
+      localStorage.setItem('nombrePantalla', 'Lista viajes')
+      window.dispatchEvent(new Event('storage'));
+    });
+
     this.cargarToggles();
     this.cargarDatos();
-    localStorage.setItem('nombrePantalla', 'Lista viajes')
-    window.dispatchEvent(new Event('storage'));
   }
 
   private cargarToggles() {
@@ -91,8 +100,11 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
         trenes: this.servicioTrenes.getTrenes()
       }).subscribe(({rutas, viajes, trenes}) =>{
         this.listaRutas = rutas;
-        console.log(this.listaRutas)
-        this.listaViajes = viajes;
+        this.listaViajes = viajes.map(v => ({
+          ...v,
+          fechaSalida: this.parsearFechas(v.fechaSalida),
+          fechaLlegada: this.parsearFechas(v.fechaLlegada)
+        }));
         this.listaTrenes = trenes;
         this.cargarListado();
       })
@@ -127,6 +139,17 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
     this.filtrar()
   }
 
+  private parsearFechas(fecha: any): Date | null {
+    if (!fecha) return null;
+
+    if (Array.isArray(fecha)) {
+      const [y, m, d, h = 0, min = 0, s = 0] = fecha;
+      return new Date(y, m - 1, d, h, min, s);
+    }
+
+    return new Date(fecha);
+  }
+
   filtroNombresRuta(nombre: string): string {
     return nombre.replace(/^Ruta\s*/i, "")
   }
@@ -152,6 +175,9 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
         return viaje.estado === this.filtroEstado;
       })
     }
+
+    this.paginator.firstPage()
+    this.actualizarPaginado()
   }
 
   limpiarFiltro() {
@@ -159,6 +185,18 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
     this.filtroTren = "";
     this.filtroEstado = "";
     this.filtrar();
+  }
+
+  actualizarPaginado() {
+    if (!this.paginator) {
+      this.paginaActual = this.listaFiltrada.slice(0, this.pageSize);
+      return;
+    }
+
+    const inicio = this.paginator.pageIndex * this.paginator.pageSize;
+    const fin = inicio + this.paginator.pageSize;
+
+    this.paginaActual = this.listaFiltrada.slice(inicio, fin);
   }
 
   cargarDetallesViaje(viaje: DtoListaViaje) {
@@ -169,9 +207,9 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
 
     this.modificar = false;
     
-    this.formViaje.get("fecha")?.setValue(this.detallesViaje.fechaSalida.split("T")[0]);    
-    this.formViaje.get("horarioSalida")?.setValue(this.detallesViaje.fechaSalida.substring(11,16));
-    this.formViaje.get("horarioLlegada")?.setValue(this.detallesViaje.fechaLlegada.substring(11,16));
+    this.formViaje.get("fecha")?.setValue(this.formatearFechaSalida(this.detallesViaje.fechaSalida));    
+    this.formViaje.get("horarioSalida")?.setValue(this.detallesViaje.fechaSalida ? this.detallesViaje.fechaSalida.toTimeString().slice(0, 5) : '');
+    this.formViaje.get("horarioLlegada")?.setValue(this.detallesViaje.fechaLlegada ? this.detallesViaje.fechaLlegada.toTimeString().slice(0, 5) : '');
     this.cargarDuracionViaje();
 
     this.arrayCargasActuales.clear();
@@ -199,6 +237,13 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
     if (tiempoSalida > tiempoLlegada) { tiempoLlegada += 60 * 24; }
 
     this.duracionViaje = tiempoLlegada - tiempoSalida;
+  }
+
+  private formatearFechaSalida(date: any): string {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
   }
 
   habilitarModificacion() {

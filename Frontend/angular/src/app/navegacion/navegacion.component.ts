@@ -2,6 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { Router, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthRolesService } from '../../services/servicio-auth-roles.service';
+import { NotificacionUsuario } from '../../models/Entity/notificacion-usuario';
+import { ServicioNotificacionesService } from '../../services/servicio-notificaciones.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-navegacion',
@@ -11,9 +14,14 @@ import { AuthRolesService } from '../../services/servicio-auth-roles.service';
   styleUrl: './navegacion.component.css'
 })
 export class NavegacionComponent implements OnInit {
+  listaNotificaciones: NotificacionUsuario[] = [];
+  cargandoNotificaciones: boolean = false;
+  
+  servicioNotificaciones = inject(ServicioNotificacionesService);
   router = inject(Router);
   nombrePantalla = localStorage.getItem('nombrePantalla');
-  
+  usuarioId = Number(localStorage.getItem("usuario_id"));
+
   authRoles = inject(AuthRolesService);
   expand = false;
   animar = false;
@@ -25,6 +33,9 @@ export class NavegacionComponent implements OnInit {
     });
 
     this.nombrePantalla = localStorage.getItem('nombrePantalla') ?? '';
+    this.usuarioId = Number(localStorage.getItem("usuario_id")) ?? '';
+
+    this.cargarNotificaciones();
   }
 
   Sidebar(){
@@ -42,4 +53,30 @@ export class NavegacionComponent implements OnInit {
     this.router.navigate(['/login']);
   }
   
+  cargarNotificaciones() {
+    this.cargandoNotificaciones = true;
+    forkJoin({
+      notificaciones: this.servicioNotificaciones.getNotificacionesNoLeidas(this.usuarioId)
+    }).subscribe({
+      next: ({notificaciones}) => {
+        this.listaNotificaciones = notificaciones;
+        this.cargandoNotificaciones = false;
+      },
+      error: (error) => {
+        console.error('Error al cargar notificaciones:', error);
+        this.cargandoNotificaciones = false;
+      }
+    });
+  }
+
+  marcarNotificacionLeida(id: number) {
+    this.servicioNotificaciones.putNotificacionLeida(id).subscribe({
+    next: () => {
+      this.cargarNotificaciones();
+    },
+    error: (error) => {
+      console.error('Error al marcar notificación como leída:', error);
+    }
+  });
+  }
 }

@@ -51,13 +51,14 @@ export class FormEmpleadosComponent implements OnInit , AfterViewInit, OnDestroy
       this.cargarUsuario(this.usuarioId);
     }
 
-    if (this.editMode) {
-      localStorage.setItem('nombrePantalla', 'Editar empleado')
+    setTimeout(() => {
+      let nombrePantalla = '';  
+      if (this.editMode) { nombrePantalla = 'Editar empleado' } 
+      else { nombrePantalla = 'Nuevo empleado' }
+        
+      localStorage.setItem('nombrePantalla', nombrePantalla) 
       window.dispatchEvent(new Event('storage'));
-    } else {
-      localStorage.setItem('nombrePantalla', 'Nuevo empleado')
-      window.dispatchEvent(new Event('storage'));
-    }
+    });
   }
 
   ngAfterViewInit(): void {
@@ -67,9 +68,9 @@ export class FormEmpleadosComponent implements OnInit , AfterViewInit, OnDestroy
   private cargarToggles() {
     const tooltipElements = this.el.nativeElement.querySelectorAll('[data-bs-toggle="tooltip"]');
     tooltipElements.forEach((el: HTMLElement) => {
-    const tooltip = new bootstrap.Tooltip(el, { container: 'body', trigger: 'hover' });
-    this.tooltips.push(tooltip);
-  });
+      const tooltip = new bootstrap.Tooltip(el, { container: 'body', trigger: 'hover' });
+      this.tooltips.push(tooltip);
+    });
   }
 
   // 🔹 Cargar usuario para edición
