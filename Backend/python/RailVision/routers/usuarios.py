@@ -199,6 +199,25 @@ def update_usuario(usuario_id: int, usuario: Usuario):
 # ------------------------------
 # Eliminar usuario
 # ------------------------------
+# @router.delete("/delete/{usuario_id}")
+# def delete_usuario(usuario_id: int):
+#     conn = get_connection()
+#     if not conn:
+#         raise HTTPException(status_code=500, detail="No se pudo conectar a la base de datos")
+
+#     try:
+#         cursor = conn.cursor()
+#         query = "DELETE FROM usuarios WHERE usuario_id = %s;"
+#         cursor.execute(query, (usuario_id,))
+#         conn.commit()
+#         cursor.close()
+#         conn.close()
+#         return {"status": "deleted", "usuario_id": usuario_id}
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
+
+
+
 @router.delete("/delete/{usuario_id}")
 def delete_usuario(usuario_id: int):
     conn = get_connection()
@@ -207,11 +226,18 @@ def delete_usuario(usuario_id: int):
 
     try:
         cursor = conn.cursor()
-        query = "DELETE FROM usuarios WHERE usuario_id = %s;"
-        cursor.execute(query, (usuario_id,))
+
+        cursor.execute(
+            "UPDATE usuarios SET estado = false WHERE usuario_id = %s;",
+            (usuario_id,)
+        )
+
         conn.commit()
         cursor.close()
         conn.close()
-        return {"status": "deleted", "usuario_id": usuario_id}
+
+        return {"status": "disabled", "usuario_id": usuario_id}
+
     except Exception as e:
+        conn.rollback()
         raise HTTPException(status_code=500, detail=str(e))
