@@ -45,7 +45,7 @@ public class NotificacionUsuarioServiceImpl implements NotificacionUsuarioServic
         List<UsuarioGetDto> usuarios = obtenerUsuarios();
         List<NotificacionUsuario> notificaciones = new ArrayList<>();
 
-        usuarios = usuarios.stream().filter(u -> !"cliente".equals(u.getRol())).collect(Collectors.toList());
+        usuarios = usuarios.stream().filter(u -> !"cliente".equals(u.getRol()) && u.getEstado()).collect(Collectors.toList());
         if(usuarios.isEmpty()) { return; }
 
         for (UsuarioGetDto u: usuarios) {

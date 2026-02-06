@@ -110,8 +110,8 @@ export class MapaComponent implements OnInit, OnDestroy{
         estado: viaje.estado,
       }
 
-      if (viaje.estado === "en curso" && this.listadoViajesCurso.length < 3) { this.listadoViajesCurso.push(item) }
-      if (viaje.estado === "programado" && this.listadoViajeProgramado.length < 3){ this.listadoViajeProgramado.push(item) }
+      if (viaje.estado === "en curso" && this.compararFechaHoy(viaje.fechaLlegada) && this.listadoViajesCurso.length < 3) { this.listadoViajesCurso.push(item) }
+      if (viaje.estado === "programado" && this.compararFechaHoy(viaje.fechaSalida) && this.listadoViajeProgramado.length < 3){ this.listadoViajeProgramado.push(item) }
     });
 
     this.listadoViajesCurso.sort((a,b) => this.parsearFechas(a.fechaLlegada)!.getTime() - this.parsearFechas(b.fechaLlegada)!.getTime() )
@@ -127,6 +127,17 @@ export class MapaComponent implements OnInit, OnDestroy{
     }
 
     return new Date(fecha);
+  }
+
+  private compararFechaHoy(fecha: any): boolean {
+    const fechaParseada = this.parsearFechas(fecha);
+    if (!fechaParseada) return false;
+    
+    const hoy = new Date();
+    
+    return hoy.getFullYear() === fechaParseada.getFullYear() &&
+          hoy.getMonth() === fechaParseada.getMonth() &&
+          hoy.getDate() === fechaParseada.getDate();
   }
 
   private cargarFechaActual() {

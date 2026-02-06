@@ -87,3 +87,23 @@ def delete_tren(tren_id: int):
         return {"status": "success"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/estado/{tren_id}")
+def update_estado_tren(tren_id: int, estado: str):
+    conn = get_connection()
+    if not conn:
+        raise HTTPException(status_code=500, detail="No se pudo conectar a la base de datos")
+
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "UPDATE trenes SET estado = %s WHERE tren_id = %s;",
+            (estado, tren_id)
+        )
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return {"status": "updated", "tren_id": tren_id, "estado": estado}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
