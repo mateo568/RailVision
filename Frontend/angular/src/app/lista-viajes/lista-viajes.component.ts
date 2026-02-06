@@ -103,7 +103,8 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
         this.listaViajes = viajes.map(v => ({
           ...v,
           fechaSalida: this.parsearFechas(v.fechaSalida),
-          fechaLlegada: this.parsearFechas(v.fechaLlegada)
+          fechaLlegada: this.parsearFechas(v.fechaLlegada),
+          fechaCreacion: this.parsearFechas(v.fechaCreacion)
         }));
         this.listaTrenes = trenes;
         this.cargarListado();
@@ -135,7 +136,9 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
       this.listadoViajes.push(item)
     });
 
-    this.listadoViajes.sort((a,b) => estados.indexOf(a.estado) - estados.indexOf(b.estado))
+    this.listadoViajes.sort((a,b) => 
+      estados.indexOf(a.estado) - estados.indexOf(b.estado) || (a.fechaSalida?.getTime() || 0) - (b.fechaSalida?.getTime() || 0)
+    )
     this.filtrar()
   }
 

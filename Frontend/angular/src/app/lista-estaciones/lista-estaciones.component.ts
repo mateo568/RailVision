@@ -90,20 +90,20 @@ export class ListaEstacionesComponent implements OnInit, OnDestroy{
         this.listaCiudades = ciudades;
         this.listaEstaciones = estaciones;
         this.listaFiltrada = this.listaEstaciones.filter(estacion => estacion.bajaLogica === false);
-        // this.filtrarCiudadesDisponibles();
+        this.filtrarCiudadesDisponibles();
         this.filtrarDatos();
       }))
 
   }
 
-  // filtrarCiudadesDisponibles() {
-  //   this.listaCiudades = this.listaCiudades.filter(ciudad =>{
-  //     const estacionActiva = this.listaEstaciones.find(estacion => estacion.ciudad.id === ciudad.id 
-  //       && estacion.bajaLogica === false);
+  filtrarCiudadesDisponibles() {
+    this.listaCiudades = this.listaCiudades.filter(ciudad =>{
+      const estacionActiva = this.listaEstaciones.find(estacion => estacion.ciudad.id === ciudad.id 
+        && estacion.bajaLogica === false);
 
-  //     return !estacionActiva;
-  //   });
-  // }
+      return !estacionActiva;
+    });
+  }
 
   cargarIconosEstacion(){
     this.listaFiltrada.forEach(estacion => {

@@ -8,29 +8,29 @@
         <div class="col-7">
             <form [formGroup]="nuevoViaje" (submit)="submit()">
                 <div class="row">
-                    <div class="col">
+                    <div class="col-6">
                         <label for="">Estacion origen</label>
                         <select name="" id="" formControlName="estacionOrigen" class="form-select"
-                        [ngClass]="{'is-invalid': nuevoViaje.get('estacionOrigen')?.invalid}" (change)="filtrarEstaciones()">
+                        [ngClass]="{'is-invalid': nuevoViaje.get('estacionOrigen')?.invalid && nuevoViaje.get('estacionOrigen')?.touched}" (change)="filtrarEstaciones()">
                             <option value="" selected>Seleccionar...</option>
                             @for (estacion of listaEstacionesOrigen; track $index) {
                                 <option [value]="estacion.id">{{estacion.ciudad.nombre}}</option>
                             }
                         </select>
-                         <div *ngIf="nuevoViaje.get('estacionOrigen')?.getError('required')" class="text-danger small">
+                         <div *ngIf="nuevoViaje.get('estacionOrigen')?.getError('required') && nuevoViaje.get('estacionOrigen')?.touched" class="text-danger small">
                             Seleccione una estación.
                         </div>
                     </div>
-                    <div class="col">
+                    <div class="col-6">
                         <label for="">Estacion destino</label>
                         <select name="" id="" formControlName="estacionDestino" class="form-select"
-                        [ngClass]="{'is-invalid': nuevoViaje.get('estacionDestino')?.invalid}" (change)="filtrarEstaciones()">
+                        [ngClass]="{'is-invalid': nuevoViaje.get('estacionDestino')?.invalid && nuevoViaje.get('estacionDestino')?.touched}" (change)="filtrarEstaciones()">
                             <option value="" selected>Seleccionar...</option>
                             @for (estacion of listaEstacionesDestino; track $index) {
                                 <option [value]="estacion.id">{{estacion.ciudad.nombre}}</option>
                             }
                         </select>
-                        <div *ngIf="nuevoViaje.get('estacionDestino')?.getError('required')" class="text-danger small">
+                        <div *ngIf="nuevoViaje.get('estacionDestino')?.getError('required') && nuevoViaje.get('estacionDestino')?.touched" class="text-danger small">
                             Seleccione una estación.
                         </div>
                     </div>
@@ -85,8 +85,8 @@
                                         <div class="col-5">
                                             <label for="">Detalle</label>
                                             <input type="text" class="form-control" formControlName="detalle"
-                                            [ngClass]="{'is-invalid': carga.get('detalle')?.invalid}">
-                                            <div *ngIf="carga.get('detalle')?.getError('required')" 
+                                            [ngClass]="{'is-invalid': carga.get('detalle')?.invalid && carga.get('detalle')?.dirty}">
+                                            <div *ngIf="carga.get('detalle')?.getError('required') && carga.get('detalle')?.dirty" 
                                             class="text-danger small">
                                                 Defina el detalle del cargamento.
                                             </div>
@@ -94,14 +94,14 @@
                                         <div class="col-3">
                                             <label for="">Tipo</label>
                                             <select name="" id="" class="form-select" formControlName="tipo"
-                                            [ngClass]="{'is-invalid': carga.get('tipo')?.invalid}">
+                                            [ngClass]="{'is-invalid': carga.get('tipo')?.invalid && carga.get('tipo')?.dirty}">
                                                 <option value="" selected>Seleccionar...</option>
                                                 <option value="mineria">Mineria</option>
                                                 <option value="agricultura">Agricultura</option>
                                                 <option value="general">General</option>
                                                 <option value="otros">Otros</option>
                                             </select>
-                                            <div *ngIf="carga.get('tipo')?.getError('required')" 
+                                            <div *ngIf="carga.get('tipo')?.getError('required') && carga.get('tipo')?.dirty" 
                                             class="text-danger small">
                                                 Defina el tipo del cargamento.
                                             </div>
@@ -109,16 +109,16 @@
                                         <div class="col-2">
                                             <label for="">Peso (t)</label>
                                             <input type="number" step="0.01" class="form-control" formControlName="peso" (change)="calcularPeso()"
-                                            [ngClass]="{'is-invalid': carga.get('peso')?.invalid}">
-                                            <div *ngIf="carga.get('peso')?.getError('required')" 
+                                            [ngClass]="{'is-invalid': carga.get('peso')?.invalid && carga.get('peso')?.dirty}">
+                                            <div *ngIf="carga.get('peso')?.getError('required') && carga.get('peso')?.dirty" 
                                             class="text-danger small">
                                                 Defina el peso del cargamento.
                                             </div>
-                                            <div *ngIf="carga.get('peso')?.getError('min')" 
+                                            <div *ngIf="carga.get('peso')?.getError('min') && carga.get('peso')?.dirty" 
                                             class="text-danger small">
                                                 El peso minimo tiene que ser 1.
                                             </div>
-                                            <div *ngIf="carga.get('peso')?.getError('pattern')" 
+                                            <div *ngIf="carga.get('peso')?.getError('pattern') && carga.get('peso')?.dirty" 
                                             class="text-danger small">
                                                 Escriba hasta 2 decimales (0.00).
                                             </div>

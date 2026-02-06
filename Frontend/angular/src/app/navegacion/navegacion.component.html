@@ -9,7 +9,11 @@
     <div id="notificaciones" class="dropdown">
       <button class="btn btn-outline-light mb-0 dropdown-toggle" type="button" id="notificacionesMenu"
       data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="bi bi-bell"></i>
+        @if (listaNotificaciones.length > 0) {
+          <i class="bi bi-bell-fill"></i>
+        } @else {
+          <i class="bi bi-bell-slash"></i>
+        }
       </button>
       <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificacionesMenu">
         
