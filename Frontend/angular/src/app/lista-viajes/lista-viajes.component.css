@@ -95,3 +95,12 @@
 .switch-label .track .thumb {
   transform: translateX(0);
 }
+
+.loader-overlay {
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #0d6efd;
+}
