@@ -98,7 +98,8 @@ public class EstadoViajesConfig {
 
 
         // Conseguir todos los viajes del dia de hoy activos o programados
-        LocalDate hoy = LocalDate.now();
+        ZoneId zonaArg = ZoneId.of("America/Argentina/Buenos_Aires");
+        LocalDate hoy = LocalDate.now(zonaArg);
 
         LocalDateTime inicioDia = hoy.atStartOfDay();
         LocalDateTime finDia = hoy.atTime(23, 59, 59);

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -44,13 +45,14 @@ public class NotificacionUsuarioServiceImpl implements NotificacionUsuarioServic
     public void crearNotificacionesUsuarios(Notificacion notificacion) {
         List<UsuarioGetDto> usuarios = obtenerUsuarios();
         List<NotificacionUsuario> notificaciones = new ArrayList<>();
+        ZoneId zona = ZoneId.of("America/Argentina/Buenos_Aires");
 
         usuarios = usuarios.stream().filter(u -> !"cliente".equals(u.getRol()) && u.getEstado()).collect(Collectors.toList());
         if(usuarios.isEmpty()) { return; }
 
         for (UsuarioGetDto u: usuarios) {
             notificaciones.add(NotificacionUsuario.builder().leida(false).notificacion(notificacion)
-                    .usuarioId(u.getUsuario_id()).fechaCreacion(LocalDateTime.now()).build());
+                    .usuarioId(u.getUsuario_id()).fechaCreacion(LocalDateTime.now(zona)).build());
         }
 
         repository.saveAll(notificaciones);
