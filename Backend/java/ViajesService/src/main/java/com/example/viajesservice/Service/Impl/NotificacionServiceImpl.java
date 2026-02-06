@@ -40,7 +40,7 @@ public class NotificacionServiceImpl implements NotificacionService {
             default -> "";
         };
 
-        Notificacion notificacion = Notificacion.builder().mensaje(mensaje).fechaCreacion(LocalDateTime.now()).referenciaViaje(viajeId).build();
+        Notificacion notificacion = Notificacion.builder().mensaje(mensaje).fechaCreacion(LocalDateTime.now(zona)).referenciaViaje(viajeId).build();
 
         repository.save(notificacion);
         notificacionUsuarioService.crearNotificacionesUsuarios(notificacion);
