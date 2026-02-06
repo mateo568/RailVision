@@ -5,6 +5,7 @@ import { Tren } from '../../models/Entity/tren';
 import { ServicioTrenesService } from '../../services/servicio-trenes.service';
 import { forkJoin, Subscription } from 'rxjs';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import Swal from 'sweetalert2';
 declare var bootstrap: any;
 
 @Component({
@@ -120,7 +121,59 @@ export class ListaTrenesComponent implements OnInit, OnDestroy{
   }
 
   submit() {
+    if (this.nuevoTren.invalid) return;
 
+    const tren = {
+      codigo: `TREN-${Date.now()}`,
+      modelo: this.nuevoTren.value.modelo!,
+      capacidad_toneladas: this.nuevoTren.value.capacidad!,
+      estado: 'activo'
+    };
+
+    this.servicioTren.addTren(tren).subscribe({
+      next: () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Tren creado',
+          text: 'El tren fue registrado correctamente',
+          timer: 1500,
+          showConfirmButton: false
+        });
+
+        this.cargarDatos();     // refresca la tabla
+        this.nuevoTren.reset();
+      },
+      error: (err: any) => {
+        Swal.fire('Error', 'No se pudo crear el tren', 'error');
+        console.error(err);
+      }
+    });
+  }
+
+  ponerEnMantenimiento(trenId: number) {
+    this.servicioTren.updateEstadoTren(trenId, 'mantenimiento')
+      .subscribe({
+        next: () => {
+          Swal.fire('Actualizado', 'Tren en mantenimiento', 'success');
+          this.cargarDatos();
+        },
+        error: () => {
+          Swal.fire('Error', 'No se pudo cambiar el estado', 'error');
+        }
+      });
+  }
+
+  activarTren(trenId: number) {
+    this.servicioTren.updateEstadoTren(trenId, 'activo')
+      .subscribe({
+        next: () => {
+          Swal.fire('Actualizado', 'Tren activado', 'success');
+          this.cargarDatos();
+        },
+        error: () => {
+          Swal.fire('Error', 'No se pudo cambiar el estado', 'error');
+        }
+      });
   }
 
   ngOnDestroy(): void {

@@ -60,7 +60,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary">Cancelar</button>
-                        <button type="button" class="btn btn-primary">Registrar</button>
+                        <button type="submit" class="btn btn-primary">Registrar</button>
                     </div>
                 </form>
             </div>
@@ -94,7 +94,7 @@
                                     </button>
                                     <ul class="dropdown-menu">
                                         <li>
-                                            <button class="dropdown-item" type="button">Poner en mantenimiento</button>      
+                                            <button class="dropdown-item" type="button" (click)="ponerEnMantenimiento(tren.tren_id)"> Poner en mantenimiento </button>
                                         </li>
                                     </ul>
                                 </div>
@@ -109,7 +109,7 @@
                                     </button>
                                     <ul class="dropdown-menu">
                                         <li>
-                                            <button class="dropdown-item" type="button">Activar</button>      
+                                            <button class="dropdown-item" type="button" (click)="activarTren(tren.tren_id)"> Activar </button>     
                                         </li>
                                     </ul>
                                 </div>
