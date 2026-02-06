@@ -16,16 +16,77 @@ Permite administrar rutas, trenes, viajes, cargamentos y notificaciones, y visua
 ---
 
 ## 🧱 Arquitectura general
+
+Frontend (Angular)
+|
+v
+Backend (APIs + Jobs automáticos)
+|
+v
+Base de Datos (PostgreSQL)
+|
+v
 Frontend (Dashboard)
 |
 v
 Datamart (Materialized Views)
 |
 v
-Base de Datos (PostgreSQL)
-|
-v
-Backend (APIs + Jobs automáticos)
+
+---
+
+## 🖥️ Frontend (Angular)
+
+El frontend de RailVision está desarrollado en **Angular** y es el encargado de la interacción con el usuario.
+
+### Funcionalidades principales del frontend
+
+- Listado y gestión de trenes
+- Creación de trenes mediante formularios
+- Cambio de estado de trenes (activo / mantenimiento)
+- Filtros por código, modelo y estado
+- Paginación de resultados
+- Visualización del estado operativo mediante badges
+- Integración con el dashboard de métricas
+
+### Comunicación con el backend
+
+El frontend se comunica con el backend mediante servicios Angular (`HttpClient`), consumiendo endpoints REST como:
+
+- `GET /trenes`
+- `POST /trenes/add`
+- `PUT /trenes/estado/{tren_id}`
+- Endpoints de viajes, usuarios y dashboard
+
+Los servicios encapsulan la lógica de acceso a datos y permiten mantener una separación clara entre UI y lógica de negocio.
+
+### Tecnologías utilizadas
+
+- Angular (standalone components)
+- Angular Material (paginador)
+- Bootstrap (layout, modales, dropdowns)
+- SweetAlert2 (feedback visual al usuario)
+
+---
+
+## ⚙️ Backend
+
+### Funcionalidades principales
+
+- Autenticación de usuarios
+- Gestión de viajes y cargamentos
+- Cambio automático de estado de viajes
+- Validaciones de integridad de datos
+- Jobs programados para actualización de estados
+
+### Cambio automático de estado
+
+Un proceso automático evalúa los viajes y:
+- Finaliza viajes cuando la `fecha_llegada` es menor a `NOW()`
+- Ignora viajes cancelados
+- Maneja valores `NULL` de forma defensiva
+
+---
 
 ## 🗄️ Modelo de datos (resumen)
 
@@ -55,25 +116,6 @@ Principales entidades del sistema:
 📌 El campo `fecha_llegada` representa:
 - **ETA** para viajes *programados* o *en curso*
 - **Hora real de llegada** para viajes *finalizados*
-
----
-
-## ⚙️ Backend
-
-### Funcionalidades principales
-
-- Autenticación de usuarios
-- Gestión de viajes y cargamentos
-- Cambio automático de estado de viajes
-- Validaciones de integridad de datos
-- Jobs programados para actualización de estados
-
-### Cambio automático de estado
-
-Un proceso automático evalúa los viajes y:
-- Finaliza viajes cuando la `fecha_llegada` es menor a `NOW()`
-- Ignora viajes cancelados
-- Maneja valores `NULL` de forma defensiva
 
 ---
 
