@@ -43,8 +43,19 @@
         </div>
     </div>
 
-    <div class="tabla">
-        <table class="table table-striped table-hover">
+    <div class="tabla position-relative">
+
+        @if (loading) {
+            <div class="loader-overlay">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p class="mt-2 mb-0">Cargando viajes...</p>
+            </div>
+        }
+
+        @if (!loading) {
+            <table class="table table-striped table-hover">
             <thead class="table-dark">
                 <tr>
                 <th scope="col">Ruta</th>
@@ -57,40 +68,72 @@
             </thead>
             <tbody class="table-group-divider">
                 @for (viaje of paginaActual; track $index) {
-                    <tr>
-                        <td>{{viaje.ruta}}</td>
-                        <td>{{viaje.fechaSalida | date:'dd/MM/yyyy - HH:mm:ss'}}</td>
-                        @if (viaje.fechaLlegada) { <td>{{viaje.fechaLlegada | date:'dd/MM/yyyy - HH:mm:ss'}}</td> }
-                        @else { <td></td> }
-                        <td>{{viaje.tren?.codigo}}</td>
-                        @switch (viaje.estado) {
-                            @case ("en curso") {<td><span class="badge text-bg-success">En curso</span></td>}
-                            @case ("programado") {<td><span class="badge text-bg-primary">Programado</span></td>}
-                            @case ("finalizado") {<td><span class="badge text-bg-secondary">Finalizado</span></td>}
-                            @case ("cancelado") {<td><span class="badge text-bg-danger">Cancelado</span></td>}
-                        }
-                        <td>
-                            <div class="dropdown">
-                                <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="bi bi-three-dots-vertical"></i>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        <button class="dropdown-item" type="button" data-bs-toggle="modal" 
-                                        data-bs-target="#ModalDetalleViaje" (click)="cargarDetallesViaje(viaje)">Detalles</button>   
-                                        @if(viaje.estado == "programado") {
-                                            <button class="dropdown-item" type="button" (click)="cancelarViaje(viaje.id)">Cancelar</button>
-                                        }   
-                                    </li>
-                                </ul>
-                            </div>
-                        </td>
-                    </tr>
+                <tr>
+                    <td>{{viaje.ruta}}</td>
+                    <td>{{viaje.fechaSalida | date:'dd/MM/yyyy - HH:mm:ss'}}</td>
+
+                    @if (viaje.fechaLlegada) {
+                    <td>{{viaje.fechaLlegada | date:'dd/MM/yyyy - HH:mm:ss'}}</td>
+                    } @else {
+                    <td></td>
+                    }
+
+                    <td>{{viaje.tren?.codigo}}</td>
+
+                    @switch (viaje.estado) {
+                    @case ("en curso") {
+                        <td><span class="badge text-bg-success">En curso</span></td>
+                    }
+                    @case ("programado") {
+                        <td><span class="badge text-bg-primary">Programado</span></td>
+                    }
+                    @case ("finalizado") {
+                        <td><span class="badge text-bg-secondary">Finalizado</span></td>
+                    }
+                    @case ("cancelado") {
+                        <td><span class="badge text-bg-danger">Cancelado</span></td>
+                    }
+                    }
+
+                    <td>
+                    <div class="dropdown">
+                        <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                        <li>
+                            <button class="dropdown-item"
+                            type="button"
+                            data-bs-toggle="modal"
+                            data-bs-target="#ModalDetalleViaje"
+                            (click)="cargarDetallesViaje(viaje)">
+                            Detalles
+                            </button>
+
+                            @if (viaje.estado == "programado") {
+                            <button class="dropdown-item"
+                                type="button"
+                                (click)="cancelarViaje(viaje.id)">
+                                Cancelar
+                            </button>
+                            }
+                        </li>
+                        </ul>
+                    </div>
+                    </td>
+                </tr>
                 }
             </tbody>
-        </table>
+            </table>
 
-        <mat-paginator [length]="listaFiltrada.length" [pageSize]="pageSize" showFirstLastButtons (page)="actualizarPaginado()"></mat-paginator>
+            <mat-paginator
+            [length]="listaFiltrada.length"
+            [pageSize]="pageSize"
+            showFirstLastButtons
+            (page)="actualizarPaginado()">
+            </mat-paginator>
+        }
+
     </div>
 
     <!-- Modal detalle viaje -->

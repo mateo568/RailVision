@@ -40,6 +40,7 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
   filtroRuta: string = "";
   filtroTren: string = "";
   filtroEstado: string = "";
+  loading = false;
 
 
   detallesViaje: DtoListaViaje = { id: 0, tren: undefined, ruta: '', usuarioId: 0, fechaSalida: null, fechaLlegada: null,
@@ -92,24 +93,34 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
   }
 
   cargarDatos() {
+    this.loading = true;
 
     this.subscripciones.push(
       forkJoin({
         rutas: this.servicioRuta.getRutas(),
         viajes: this.servicioViaje.getViajes(),
         trenes: this.servicioTrenes.getTrenes()
-      }).subscribe(({rutas, viajes, trenes}) =>{
-        this.listaRutas = rutas;
-        this.listaViajes = viajes.map(v => ({
-          ...v,
-          fechaSalida: this.parsearFechas(v.fechaSalida),
-          fechaLlegada: this.parsearFechas(v.fechaLlegada),
-          fechaCreacion: this.parsearFechas(v.fechaCreacion)
-        }));
-        this.listaTrenes = trenes;
-        this.cargarListado();
+      }).subscribe({
+        next: ({ rutas, viajes, trenes }) => {
+          this.listaRutas = rutas;
+          this.listaViajes = viajes.map(v => ({
+            ...v,
+            fechaSalida: this.parsearFechas(v.fechaSalida),
+            fechaLlegada: this.parsearFechas(v.fechaLlegada),
+            fechaCreacion: this.parsearFechas(v.fechaCreacion)
+          }));
+          this.listaTrenes = trenes;
+
+          this.cargarListado();
+
+          // ⭐ APAGAR LOADING ACÁ
+          this.loading = false;
+        },
+        error: () => {
+          this.loading = false;
+        }
       })
-    )
+    );
   }
 
   cargarListado() {
@@ -161,26 +172,26 @@ export class ListaViajesComponent implements OnInit, OnDestroy{
     this.listaFiltrada = this.listadoViajes;
 
     if (this.filtroRuta) {
-      this.listaFiltrada = this.listaFiltrada.filter( viaje =>{
-        return viaje.ruta === this.filtroRuta;
-      })
+      this.listaFiltrada = this.listaFiltrada.filter(v => v.ruta === this.filtroRuta);
     }
 
     if (this.filtroTren) {
-      console.log(this.filtroTren)
-      this.listaFiltrada = this.listaFiltrada.filter( viaje =>{
-        return viaje.tren?.tren_id.toString() === this.filtroTren;
-      })
+      this.listaFiltrada = this.listaFiltrada.filter(v =>
+        v.tren?.tren_id.toString() === this.filtroTren
+      );
     }
 
     if (this.filtroEstado) {
-      this.listaFiltrada = this.listaFiltrada.filter( viaje =>{
-        return viaje.estado === this.filtroEstado;
-      })
+      this.listaFiltrada = this.listaFiltrada.filter(v =>
+        v.estado === this.filtroEstado
+      );
     }
 
-    this.paginator.firstPage()
-    this.actualizarPaginado()
+  if (this.paginator) {
+    this.paginator.firstPage();
+  }
+
+    this.actualizarPaginado();
   }
 
   limpiarFiltro() {
